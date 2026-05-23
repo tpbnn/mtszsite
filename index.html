@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>캄몬스타즈</title>
+
+<link rel="stylesheet" href="common.css" />
+  
+</head>
+<body data-page="home">
+
+
+<div class="floating-banner">
+  <a href="http://calm-hoxy.vercel.app/" target="_blank">
+    <img src="./banner/banner1.png" alt="배너1">
+  </a>
+  <a href="https://fmcalm.vercel.app/" target="_blank">
+    <img src="./banner/banner2.png" alt="배너2">
+  </a>
+  <a href="https://calm-mstz.vercel.app/" target="_blank">
+    <img src="./banner/banner3.png" alt="배너3">
+  </a>
+  <a href="https://www.fmkorea.com/starcraft/" target="_blank">
+    <img src="./banner/banner4.png" alt="배너4">
+  </a>
+  <a href="https://www.youtube.com//" target="_blank">
+    <img src="./banner/banner5.png" alt="배너5">
+  </a>
+  <a href="https://www.naver.com/" target="_blank">
+    <img src="./banner/banner6.png" alt="배너6">
+  </a>
+  <a href="https://www.sooplive.com/" target="_blank">
+    <img src="./banner/banner0.png" alt="배너7">
+  </a>
+  <a href="https://www.youtube.com/watch?v=lFhkNyVihAE&list=PLaB279zqSXOLQMatpnBpl4wAFkfAwcWgO&pp=sAgC/" target="_blank">
+    <img src="./banner/banner7.png" alt="배너8">
+  </a>
+  <a href="https://lazygyu.github.io/roulette/" target="_blank">
+    <img src="./banner/banner8.png" alt="배너9">
+  </a>
+</div>
+
+
+
+  <div class="app">
+    
+<header class="topbar">
+  <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
+  <nav class="nav">
+ <a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a>
+    <button class="theme-button" onclick="toggleTheme()">
+  🌙 모드
+</button>
+    
+  </nav>
+</header>
+
+    
+<main id="page-home" class="page">
+  <section class="home-simple">
+
+    <section class="card hero-main home-brand">
+
+  <div class="brand-left">
+    <div class="brand-logo-box">
+      <video class="brand-logo-video"
+        src="https://i.namu.wiki/i/Jzj9ngXxf3uQLGfTPvp-AmXEZ7QlEVfgotr3TuaTDFXvIDqua3u2jnr7OUymy80G6KMOs1fVH5-2mhaZ_FBmaA.mp4"
+        autoplay
+        muted
+        loop
+        playsinline>
+      </video>
+    </div>
+
+    <div>
+      <div class="kicker">
+        <span class="live-dot"></span>
+        STARCRAFT CREW
+      </div>
+
+      <h1>캄몬스타즈</h1>
+
+      <p>
+        "아무리 지친 깊은 밤을 지나도 여기 그대와 난, 여전히 푸르다"
+      </p>
+    </div>
+  </div>
+
+  <!-- 추가 -->
+  <div class="brand-award">
+    <div class="award-text">
+      2024 Lanette<br>
+      SOOP Starcraft University<br>
+      League Champions
+    </div>
+
+    <img src="./icons/trophy.png" alt="트로피">
+  </div>
+
+</section>
+
+    <!-- <div class="card hero-main home-brand">
+      <div class="brand-logo-box">
+        <video class="brand-logo-video" src="https://i.namu.wiki/i/Jzj9ngXxf3uQLGfTPvp-AmXEZ7QlEVfgotr3TuaTDFXvIDqua3u2jnr7OUymy80G6KMOs1fVH5-2mhaZ_FBmaA.mp4" autoplay muted loop playsinline></video>
+      </div>
+      <div>
+        <div class="kicker"><span class="live-dot"></span> STARCRAFT CREW</div>
+        <h1>캄몬스타즈</h1>
+        <p>"아무리 지친 깊은 밤을 지나도 여기 그대와 난, 여전히 푸르다"</p>
+      </div>
+    </div> -->
+
+    <div class="section-title">
+      <div>
+        <h2>현재 방송 중인 멤버</h2>
+        <span id="liveCount" class="section-sub-count">방송 정보 불러오는 중...</span>
+      </div>
+      <button class="refresh-button" onclick="refreshLiveStatus()">라이브 새로고침</button>
+    </div>
+    <div id="liveList" class="live-grid"></div>
+
+    <div class="card panel">
+      <div class="section-title">
+        <div><h2>방송국 최신 글</h2></div>
+        <button class="refresh-button" onclick="refreshPostsFromSoop()">게시글 새로고침</button>
+      </div>
+      <div id="postList" class="post-list vertical-posts"></div>
+      <button id="loadMorePostsButton" class="load-more-button" style="display:none;" onclick="loadMorePosts()">게시글 20개 더 보기</button>
+    </div>
+  </section>
+</main>
+  </div>
+<script type="module" src="app.js"></script>
+<script src="./theme.js?v=3"></script>
+</body>
+<footer class="footer">
+
+  <div class="footer-copy">
+    © 2026 주니.킨콘. All Rights Reserved.
+  </div>
+
+  <div class="footer-links">
+
+    <a
+      href="https://www.sooplive.com/station/joony86"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/soop-logo.png"
+  alt="SOOP"
+/>
+    </a>
+
+    <a
+      href="https://www.youtube.com/@kinkonvv"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/youtube-logo.png"
+  alt="YouTube"
+/>
+    </a>
+
+  </div>
+
+</footer>
+</html>
