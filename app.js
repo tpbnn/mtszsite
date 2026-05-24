@@ -21,8 +21,12 @@ let posts = [];
 let visiblePostCount = 20;
 let autoRefreshTimerId = null;
 
+const POST_CACHE_KEY = 'calm_posts_cache_v1';
+const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v1';
+const POST_CACHE_MS = 5 * 60 * 1000;
+
 const SOOP_PROXY_BASE_URL = 'https://fancalmmstz.hyungjoonjoo.workers.dev';
-const AUTO_REFRESH_INTERVAL_MS = 30 * 1000;
+const AUTO_REFRESH_INTERVAL_MS = 60 * 1000;
 const maps = ['투혼','폴리포이드','레트로','네메시스','버미어','라데온'];
 const raceName = {T:'테란', Z:'저그', P:'프로토스', R:'랜덤', Terran:'테란', Zerg:'저그', Protoss:'프로토스'};
 const raceIcon = {T:'T', Z:'Z', P:'P', R:'R', Terran:'T', Zerg:'Z', Protoss:'P'};
@@ -65,16 +69,36 @@ function normalizeRace(value){
 }
 function toggleTheme(){ document.body.classList.toggle('light-mode'); }
 
+// async function fetchLiveData(soopId){
+//   // const response = await fetch(`${SOOP_PROXY_BASE_URL}/?type=live&id=${encodeURIComponent(soopId)}&_=${Date.now()}`);
+//   fetch(`${SOOP_PROXY_BASE_URL}/?type=live&id=${encodeURIComponent(soopId)}`);
+//   if(!response.ok) throw new Error(`LIVE HTTP ${response.status}`);
+//   return await response.json();
+// }
+// async function fetchPostData(soopId){
+//   // const response = await fetch(`${SOOP_PROXY_BASE_URL}/?type=posts&id=${encodeURIComponent(soopId)}&_=${Date.now()}`);
+//   fetch(`${SOOP_PROXY_BASE_URL}/?type=live&id=${encodeURIComponent(soopId)}`);
+//   if(!response.ok) throw new Error(`POST HTTP ${response.status}`);
+//   return await response.json();
+// }
 async function fetchLiveData(soopId){
-  const response = await fetch(`${SOOP_PROXY_BASE_URL}/?type=live&id=${encodeURIComponent(soopId)}&_=${Date.now()}`);
+  const response = await fetch(
+    `${SOOP_PROXY_BASE_URL}/?type=live&id=${encodeURIComponent(soopId)}`
+  );
+
   if(!response.ok) throw new Error(`LIVE HTTP ${response.status}`);
   return await response.json();
 }
+
 async function fetchPostData(soopId){
-  const response = await fetch(`${SOOP_PROXY_BASE_URL}/?type=posts&id=${encodeURIComponent(soopId)}&_=${Date.now()}`);
+  const response = await fetch(
+    `${SOOP_PROXY_BASE_URL}/?type=posts&id=${encodeURIComponent(soopId)}`
+  );
+
   if(!response.ok) throw new Error(`POST HTTP ${response.status}`);
   return await response.json();
 }
+
 
 async function loadMembersFromFirebase(){
   const querySnapshot = await getDocs(collection(db, 'members'));
@@ -174,6 +198,44 @@ function setupSelects(){
     }
   });
 }
+
+function loadPostsFromCache(){
+  try{
+    const cached = localStorage.getItem(POST_CACHE_KEY);
+    if(!cached) return false;
+
+    posts = JSON.parse(cached);
+    visiblePostCount = 20;
+    renderPosts();
+    return true;
+  }catch(error){
+    console.warn('게시글 캐시 불러오기 실패', error);
+    return false;
+  }
+}
+
+function savePostsToCache(){
+  try{
+    localStorage.setItem(POST_CACHE_KEY, JSON.stringify(posts));
+    localStorage.setItem(POST_CACHE_TIME_KEY, String(Date.now()));
+  }catch(error){
+    console.warn('게시글 캐시 저장 실패', error);
+  }
+}
+
+function isPostCacheExpired(){
+  const savedAt = Number(localStorage.getItem(POST_CACHE_TIME_KEY) || 0);
+  return !savedAt || Date.now() - savedAt > POST_CACHE_MS;
+}
+
+async function loadPostsWithCache(){
+  const hasCache = loadPostsFromCache();
+
+  if(!hasCache || isPostCacheExpired()){
+    await refreshPostsFromSoop();
+  }
+}
+
 
 function renderHome(){
   const live = members.filter(m => m.live === true);
@@ -357,10 +419,11 @@ async function refreshPostsFromSoop(){
     }
   });
 
-  posts = [...unique.values()];
-  visiblePostCount = 20;
+posts = [...unique.values()];
+visiblePostCount = 20;
 
-  renderPosts();
+savePostsToCache();
+renderPosts();
 }
 function renderPosts(){
   const postListEl = document.getElementById('postList'); if(!postListEl) return;
@@ -468,25 +531,78 @@ function startAutoRefresh(){
   if(autoRefreshTimerId) clearInterval(autoRefreshTimerId);
   autoRefreshTimerId = setInterval(async () => {
     const page = pageName();
-    if(page === 'home'){ await refreshLiveStatus(); await refreshPostsFromSoop(); }
+    // if(page === 'home'){ await refreshLiveStatus(); await refreshPostsFromSoop(); }
+    if(page === 'home'){
+  await refreshLiveStatus();
+}
     if(page === 'members'){ await refreshLiveStatus(); }
     if(page === 'tiers'){ await refreshTierLiveStatus(); }
   }, AUTO_REFRESH_INTERVAL_MS);
 }
 
+// async function init(){
+//   setActiveNav();
+//   const page = pageName();
+//   try{
+//     if(['home','members','records','matches','admin'].includes(page)) await loadMembersFromFirebase();
+//     // if(page === 'home'){ await refreshLiveStatus(); await refreshPostsFromSoop(); }
+//     if(page === 'home'){
+//   await refreshLiveStatus();
+// }
+//     if(page === 'members') await refreshLiveStatus();
+//     if(page === 'tiers') await loadTierExcel();
+//     if(page === 'records') renderHeadToHead();
+//     if(page === 'schedule') renderSchedule();
+//     if(page === 'matches') renderEntries();
+//     if(page === 'admin') loadAdminMembers();
+//     // startAutoRefresh();
+//   }catch(error){
+//     console.error('초기화 실패', error);
+//   }
+// }
+
 async function init(){
   setActiveNav();
+
   const page = pageName();
+
   try{
-    if(['home','members','records','matches','admin'].includes(page)) await loadMembersFromFirebase();
-    if(page === 'home'){ await refreshLiveStatus(); await refreshPostsFromSoop(); }
-    if(page === 'members') await refreshLiveStatus();
-    if(page === 'tiers') await loadTierExcel();
-    if(page === 'records') renderHeadToHead();
-    if(page === 'schedule') renderSchedule();
-    if(page === 'matches') renderEntries();
-    if(page === 'admin') loadAdminMembers();
-    startAutoRefresh();
+
+    if(['home','members','records','matches','admin'].includes(page)){
+      await loadMembersFromFirebase();
+    }
+
+    if(page === 'home'){
+      await refreshLiveStatus();
+      await loadPostsWithCache();
+    }
+
+    if(page === 'members'){
+      await refreshLiveStatus();
+    }
+
+    if(page === 'tiers'){
+      await loadTierExcel();
+    }
+
+    if(page === 'records'){
+      renderHeadToHead();
+    }
+
+    if(page === 'schedule'){
+      renderSchedule();
+    }
+
+    if(page === 'matches'){
+      renderEntries();
+    }
+
+    if(page === 'admin'){
+      loadAdminMembers();
+    }
+
+    // startAutoRefresh();
+
   }catch(error){
     console.error('초기화 실패', error);
   }
