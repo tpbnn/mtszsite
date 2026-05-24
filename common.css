@@ -2211,3 +2211,361 @@ body:not(.light-mode) .home-brand{
   height:auto;
   object-fit:contain;
 }
+
+/* 모바일에서는 플로팅 배너 숨김 */
+@media (max-width: 768px){
+  .floating-banner{
+    display:none !important;
+  }
+}
+
+@media (max-width: 768px){
+
+  .brand-logo-box{
+    width:60px;
+    height:60px;
+    flex-shrink:0;
+    
+  }
+
+  .brand-logo-video{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+  }
+
+}
+
+/* 모바일 멤버 카드 세로 간격 줄이기 */
+@media (max-width: 768px){
+
+  .crew-card{
+    aspect-ratio:auto !important;
+    min-height:auto !important;
+    padding:20px 16px !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+  }
+
+  .crew-profile{
+    width:82px !important;
+    height:82px !important;
+    margin-bottom:8px !important;
+  }
+
+  .crew-name{
+    font-size:28px !important;
+    line-height:1.15 !important;
+  }
+
+  .crew-race{
+    margin-top:2px !important;
+    margin-bottom:16px !important;
+  }
+
+  .crew-station{
+    margin-top:18px !important;
+    height:44px !important;
+  }
+
+}
+
+
+/* =========================
+   경기결과 모바일 최적화
+========================= */
+@media (max-width:768px){
+
+  /* 상단 통계 3칸 → 가로 스크롤 */
+  .team-stats-summary{
+    display:flex !important;
+    gap:12px;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+
+  .team-stat-box{
+    min-width:160px;
+    flex:0 0 auto;
+
+    padding:14px !important;
+    border-radius:18px;
+  }
+
+  .team-stat-box h3{
+    font-size:15px !important;
+    line-height:1.35 !important;
+    word-break:keep-all;
+  }
+
+  .team-stat-box strong{
+    font-size:14px !important;
+    line-height:1.5 !important;
+  }
+
+  .team-stat-line{
+    font-size:12px !important;
+    line-height:1.45 !important;
+  }
+
+  /* 경기 리스트 줄바꿈 */
+  .team-match-head{
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+
+    align-items:flex-start !important;
+    text-align:left !important;
+  }
+
+  .team-match-head > div,
+  .team-match-head > button{
+    width:100%;
+    white-space:normal !important;
+    word-break:keep-all;
+  }
+
+  .match-date,
+  .match-opponent,
+  .match-type,
+  .match-score,
+  .match-note-inline{
+    font-size:16px !important;
+    line-height:1.5 !important;
+  }
+
+  /* 세트보기 버튼 */
+  .set-toggle{
+    width:100% !important;
+    height:44px !important;
+  }
+
+}
+
+/* 모바일 경기결과 카드 정렬 */
+@media (max-width:768px){
+
+  .team-match-head{
+    display:grid !important;
+    grid-template-columns:1fr auto !important;
+    gap:10px 18px !important;
+    align-items:start !important;
+  }
+
+  .match-date{
+    grid-column:1;
+    grid-row:1;
+  }
+
+  .match-opponent{
+    grid-column:1;
+    grid-row:2;
+  }
+
+  .match-type{
+    grid-column:1;
+    grid-row:3;
+  }
+
+  .team-match-result{
+    grid-column:2;
+    grid-row:1;
+    justify-self:end;
+  }
+
+  .match-note-inline{
+    grid-column:2;
+    grid-row:2;
+    justify-self:end;
+    text-align:right !important;
+    white-space:normal !important;
+  }
+
+  .match-score{
+    grid-column:2;
+    grid-row:3;
+    justify-self:end;
+    text-align:right !important;
+  }
+
+  .set-toggle{
+    grid-column:1 / -1;
+    grid-row:4;
+    width:100% !important;
+    margin-top:12px;
+  }
+
+}
+
+/* =========================
+   선수별 전적 모바일 최적화
+========================= */
+@media (max-width:768px){
+
+  .player-game-row{
+    display:grid !important;
+    grid-template-columns:1fr auto !important;
+    gap:10px 16px !important;
+
+    padding:22px 20px !important;
+    border-radius:22px !important;
+
+    background:#ffffff !important;
+    border:1px solid #d7e2ff !important;
+    color:#111827 !important;
+  }
+
+  body:not(.light-mode) .player-game-row{
+    background:rgba(255,255,255,.05) !important;
+    border:1px solid rgba(255,255,255,.09) !important;
+    color:#ffffff !important;
+  }
+
+  .player-game-row > div{
+    font-size:17px !important;
+    line-height:1.45 !important;
+    font-weight:900 !important;
+    color:inherit !important;
+    white-space:normal !important;
+    word-break:keep-all !important;
+  }
+
+  /* 날짜 */
+  .player-game-row > div:nth-child(1){
+    grid-column:1;
+    grid-row:1;
+  }
+
+  /* 상대팀 */
+  .player-game-row > div:nth-child(2){
+    grid-column:1;
+    grid-row:2;
+  }
+
+  /* 경기유형 */
+  .player-game-row > div:nth-child(3){
+    grid-column:1;
+    grid-row:3;
+  }
+
+  /* 종족 */
+  .player-game-row > div:nth-child(4){
+    grid-column:1;
+    grid-row:4;
+  }
+
+  /* 승패 */
+  .player-game-row > div:nth-child(5){
+    grid-column:2;
+    grid-row:1;
+    justify-self:end;
+  }
+
+  /* 상대선수 */
+  .player-game-row > div:nth-child(6){
+    grid-column:2;
+    grid-row:2;
+    justify-self:end;
+    text-align:right !important;
+  }
+
+  /* 유튜브 버튼 */
+  .player-game-row > div:nth-child(7){
+    grid-column:2;
+    grid-row:3;
+    justify-self:end;
+  }
+
+  .player-game-row .win,
+  .player-game-row .lose{
+    width:38px !important;
+    height:38px !important;
+    font-size:16px !important;
+    color:#fff !important;
+  }
+
+}
+
+/* =========================
+   개인전적 라이트모드 가독성 보정
+   PC + 모바일 공통
+========================= */
+
+body.light-mode #page-records .player-card,
+body.light-mode #page-records .enhanced-player-card,
+body.light-mode #page-records .stats-card,
+body.light-mode #page-records .match-item{
+  background:#ffffff !important;
+  border:1px solid #d7e2ff !important;
+  color:#111827 !important;
+}
+
+body.light-mode #page-records .player-name,
+body.light-mode #page-records .stats-title,
+body.light-mode #page-records .match-date,
+body.light-mode #page-records .match-name strong,
+body.light-mode #page-records .match-map,
+body.light-mode #page-records .player-summary{
+  color:#111827 !important;
+}
+
+body.light-mode #page-records .player-meta,
+body.light-mode #page-records .stats-row,
+body.light-mode #page-records .post-preview{
+  color:#4b5563 !important;
+}
+
+body.light-mode #page-records .stats-row{
+  border-bottom:1px solid #e1e8f8 !important;
+}
+
+body.light-mode #page-records .match-badges span,
+body.light-mode #page-records .player-badges span{
+  background:#eef3ff !important;
+  color:#334155 !important;
+  border:1px solid #d7e2ff !important;
+}
+
+body.light-mode #page-records .win{
+  color:#008cff !important;
+}
+
+body.light-mode #page-records .lose{
+  color:#ff2a51 !important;
+}
+
+/* 최근 경기 리스트 */
+body.light-mode #page-records .match-list{
+  background:transparent !important;
+}
+
+body.light-mode #page-records .match-item{
+  box-shadow:0 6px 16px rgba(30,64,175,.06) !important;
+}
+
+/* 모바일에서도 동일 적용 */
+@media (max-width:768px){
+
+  body.light-mode #page-records .match-item{
+    background:#ffffff !important;
+    border:1px solid #d7e2ff !important;
+    color:#111827 !important;
+  }
+
+  body.light-mode #page-records .match-item *{
+    color:inherit;
+  }
+
+  body.light-mode #page-records .match-badges span{
+    background:#eef3ff !important;
+    color:#334155 !important;
+  }
+
+  body.light-mode #page-records .win{
+    color:#008cff !important;
+  }
+
+  body.light-mode #page-records .lose{
+    color:#ff2a51 !important;
+  }
+
+}
