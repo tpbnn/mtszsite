@@ -479,14 +479,94 @@ async function refreshTierLiveStatus(){
 }
 
 function normalizeSoopPost(channel, post){
-  const userId = String(post?.userId ?? post?.user_id ?? post?.writerId ?? post?.writer_id ?? post?.bjId ?? '').trim().toLowerCase();
-  const titleNo = String(post?.titleNo ?? post?.title_no ?? post?.postNo ?? post?.post_no ?? post?.no ?? '');
-  const title = String(post?.titleName ?? post?.title_name ?? post?.title ?? post?.subject ?? '');
-  const rawContent = post?.content ?? post?.contents ?? post?.description ?? '';
-  const content = String(typeof rawContent === 'string' ? rawContent : (rawContent?.text_content ?? rawContent?.summary ?? '')).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/gi, ' ').replace(/\s+/g, ' ').trim();
-  const regDate = String(post?.regDate ?? post?.reg_date ?? post?.createdAt ?? post?.created_at ?? '');
-  const userName = String(post?.userNick ?? post?.user_nick ?? post?.writerNick ?? post?.writer_nick ?? channel.name ?? channel.soopId ?? '');
-  return { id:`${channel.soopId}-${titleNo || title}`, userId, title, content, date:regDate ? regDate.slice(0,10) : '', time:regDate, name:userName, profileImage:channel.profileImage || channel.liveThumbnail || '', url:post?.url || (titleNo ? `https://www.sooplive.com/station/${channel.soopId}/post/${titleNo}` : channel.station) };
+  const userId = String(
+    post?.userId ??
+    post?.user_id ??
+    post?.writerId ??
+    post?.writer_id ??
+    post?.bjId ??
+    post?.bj_id ??
+    post?.station_user_id ??
+    post?.stationUserId ??
+    ''
+  ).trim().toLowerCase();
+
+  const titleNo = String(
+    post?.titleNo ??
+    post?.title_no ??
+    post?.postNo ??
+    post?.post_no ??
+    post?.bbsNo ??
+    post?.bbs_no ??
+    post?.boardNo ??
+    post?.board_no ??
+    post?.no ??
+    ''
+  );
+
+  const title = String(
+    post?.titleName ??
+    post?.title_name ??
+    post?.title ??
+    post?.subject ??
+    post?.board_title ??
+    ''
+  );
+
+  const rawContent =
+    post?.content ??
+    post?.contents ??
+    post?.description ??
+    post?.text ??
+    '';
+
+  const content = String(
+    typeof rawContent === 'string'
+      ? rawContent
+      : (rawContent?.text_content ?? rawContent?.summary ?? '')
+  )
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const regDate = String(
+    post?.regDate ??
+    post?.reg_date ??
+    post?.createdAt ??
+    post?.created_at ??
+    post?.writeDate ??
+    post?.write_date ??
+    post?.wdate ??
+    post?.date ??
+    post?.reg_datetime ??
+    post?.regDt ??
+    ''
+  );
+
+  const userName = String(
+    post?.userNick ??
+    post?.user_nick ??
+    post?.writerNick ??
+    post?.writer_nick ??
+    post?.nick ??
+    post?.nickname ??
+    channel.name ??
+    channel.soopId ??
+    ''
+  );
+
+  return {
+    id: `${channel.soopId}-${titleNo || title}`,
+    userId,
+    title,
+    content,
+    date: regDate ? regDate.slice(0, 10) : '',
+    time: regDate,
+    name: userName,
+    profileImage: channel.profileImage || channel.liveThumbnail || '',
+    url: post?.url || (titleNo ? `https://www.sooplive.com/station/${channel.soopId}/post/${titleNo}` : channel.station)
+  };
 }
 function sortPostsByRecent(list){ return list.sort((a,b) => (Date.parse(String(b.time || b.date || '').replace(' ', 'T')) || 0) - (Date.parse(String(a.time || a.date || '').replace(' ', 'T')) || 0)); }
 
