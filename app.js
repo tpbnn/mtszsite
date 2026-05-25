@@ -21,8 +21,8 @@ const firebaseTools = { collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 // let visiblePostCount = 20;
 // let autoRefreshTimerId = null;
 
-// const POST_CACHE_KEY = 'calm_posts_cache_v3';
-// const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v3';
+// const POST_CACHE_KEY = 'calm_posts_cache_v4';
+// const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v4';
 // const POST_CACHE_MS = 5 * 60 * 1000;
 
 
@@ -109,9 +109,9 @@ async function fetchLiveData(soopId){
   return await response.json();
 }
 
-async function fetchPostData(soopId){
+async function fetchPostData(soopId, force = false){
   const response = await fetch(
-    `${SOOP_PROXY_BASE_URL}/?type=posts&id=${encodeURIComponent(soopId)}`
+    `${SOOP_PROXY_BASE_URL}/?type=posts&id=${encodeURIComponent(soopId)}${force ? '&force=1' : ''}`
   );
 
   if(!response.ok) throw new Error(`POST HTTP ${response.status}`);
@@ -570,12 +570,12 @@ function normalizeSoopPost(channel, post){
 }
 function sortPostsByRecent(list){ return list.sort((a,b) => (Date.parse(String(b.time || b.date || '').replace(' ', 'T')) || 0) - (Date.parse(String(a.time || a.date || '').replace(' ', 'T')) || 0)); }
 
-async function refreshPostsFromSoop(){
+async function refreshPostsFromSoop(force = false){
   const jobs = members
     .filter(m => m.soopId)
     .map(async m => {
       try{
-        const data = await fetchPostData(m.soopId.trim());
+        const data = await fetchPostData(m.soopId.trim(), force);
 
         const rawPosts =
           Array.isArray(data?.posts) ? data.posts :
@@ -589,15 +589,8 @@ async function refreshPostsFromSoop(){
 
         return rawPosts
           .map(post => normalizeSoopPost(m, post))
-   .filter(post => {
-  const postUserId = String(post.userId || '').toLowerCase();
-  const memberSoopId = String(m.soopId || '').toLowerCase();
-
-  if(!postUserId){
-    return post.title?.trim()?.length > 0;
-  }
-
-  return postUserId === memberSoopId;
+.filter(post => {
+  return post.title?.trim()?.length > 0;
 });
 
       }catch(error){
