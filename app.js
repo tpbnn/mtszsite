@@ -21,8 +21,8 @@ const firebaseTools = { collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 // let visiblePostCount = 20;
 // let autoRefreshTimerId = null;
 
-// const POST_CACHE_KEY = 'calm_posts_cache_v1';
-// const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v1';
+// const POST_CACHE_KEY = 'calm_posts_cache_v3';
+// const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v3';
 // const POST_CACHE_MS = 5 * 60 * 1000;
 
 
