@@ -15,11 +15,30 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const firebaseTools = { collection, addDoc, getDocs, deleteDoc, doc, updateDoc };
 
+// let members = [];
+// let tierMembers = [];
+// let posts = [];
+// let visiblePostCount = 20;
+// let autoRefreshTimerId = null;
+
+// const POST_CACHE_KEY = 'calm_posts_cache_v1';
+// const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v1';
+// const POST_CACHE_MS = 5 * 60 * 1000;
+
+
 let members = [];
 let tierMembers = [];
 let posts = [];
 let visiblePostCount = 20;
 let autoRefreshTimerId = null;
+
+const LIVE_CACHE_KEY = 'calm_live_cache_v1';
+const LIVE_CACHE_TIME_KEY = 'calm_live_cache_time_v1';
+const LIVE_CACHE_MS = 60 * 1000;
+
+const TIER_LIVE_CACHE_KEY = 'calm_tier_live_cache_v1';
+const TIER_LIVE_CACHE_TIME_KEY = 'calm_tier_live_cache_time_v1';
+const TIER_LIVE_CACHE_MS = 60 * 1000;
 
 const POST_CACHE_KEY = 'calm_posts_cache_v1';
 const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v1';
@@ -127,8 +146,8 @@ async function loadTierExcel(){
     live: false
   })).filter(m => m.name).sort((a,b) => a.order - b.order);
   setupSelects();
-  renderTierCards();
-  await refreshTierLiveStatus();
+renderTierCards();
+await loadTierLiveWithCache();
 }
 
 function setupSelects(){
@@ -235,6 +254,86 @@ async function loadPostsWithCache(){
     await refreshPostsFromSoop();
   }
 }
+function isCacheExpired(timeKey, maxAge){
+  const savedAt = Number(localStorage.getItem(timeKey) || 0);
+  return !savedAt || Date.now() - savedAt > maxAge;
+}
+
+function saveLiveCache(key, timeKey, list){
+  localStorage.setItem(key, JSON.stringify(list));
+  localStorage.setItem(timeKey, String(Date.now()));
+}
+
+function applyLiveCache(key, targetList){
+  try{
+    const cached = JSON.parse(localStorage.getItem(key) || '[]');
+    if(!cached.length) return false;
+
+    cached.forEach(cachedMember => {
+      const target = targetList.find(m => m.soopId === cachedMember.soopId);
+      if(target){
+        Object.assign(target, cachedMember);
+      }
+    });
+
+    return true;
+  }catch(error){
+    console.warn('라이브 캐시 불러오기 실패', error);
+    return false;
+  }
+}
+
+async function loadLiveWithCache(){
+  const hasCache = applyLiveCache(LIVE_CACHE_KEY, members);
+
+  if(hasCache && !isCacheExpired(LIVE_CACHE_TIME_KEY, LIVE_CACHE_MS)){
+    renderHome();
+    renderMembers?.();
+    return;
+  }
+
+  await refreshLiveStatus();
+
+  saveLiveCache(
+    LIVE_CACHE_KEY,
+    LIVE_CACHE_TIME_KEY,
+    members.map(m => ({
+      soopId:m.soopId,
+      live:m.live,
+      liveUrl:m.liveUrl,
+      liveTitle:m.liveTitle,
+      liveThumbnail:m.liveThumbnail,
+      viewerCount:m.viewerCount,
+      profileImage:m.profileImage
+    }))
+  );
+}
+
+async function loadTierLiveWithCache(){
+  const hasCache = applyLiveCache(TIER_LIVE_CACHE_KEY, tierMembers);
+
+  if(hasCache && !isCacheExpired(TIER_LIVE_CACHE_TIME_KEY, TIER_LIVE_CACHE_MS)){
+    renderTierCards();
+    return;
+  }
+
+  await refreshTierLiveStatus();
+
+  saveLiveCache(
+    TIER_LIVE_CACHE_KEY,
+    TIER_LIVE_CACHE_TIME_KEY,
+    tierMembers.map(m => ({
+      soopId:m.soopId,
+      live:m.live,
+      liveUrl:m.liveUrl,
+      liveTitle:m.liveTitle,
+      liveThumbnail:m.liveThumbnail,
+      viewerCount:m.viewerCount,
+      profileImage:m.profileImage
+    }))
+  );
+}
+
 
 
 function renderHome(){
@@ -331,6 +430,20 @@ async function refreshLiveStatus(){
     });
 
   await Promise.all(jobs);
+
+    saveLiveCache(
+    LIVE_CACHE_KEY,
+    LIVE_CACHE_TIME_KEY,
+    members.map(m => ({
+      soopId:m.soopId,
+      live:m.live,
+      liveUrl:m.liveUrl,
+      liveTitle:m.liveTitle,
+      liveThumbnail:m.liveThumbnail,
+      viewerCount:m.viewerCount,
+      profileImage:m.profileImage
+    }))
+  );
 
   renderHome();
   renderMembers?.();
@@ -529,14 +642,22 @@ async function editMemberFromFirebase(id){
 
 function startAutoRefresh(){
   if(autoRefreshTimerId) clearInterval(autoRefreshTimerId);
+
   autoRefreshTimerId = setInterval(async () => {
     const page = pageName();
-    // if(page === 'home'){ await refreshLiveStatus(); await refreshPostsFromSoop(); }
+
     if(page === 'home'){
-  await refreshLiveStatus();
-}
-    if(page === 'members'){ await refreshLiveStatus(); }
-    if(page === 'tiers'){ await refreshTierLiveStatus(); }
+      await loadLiveWithCache();
+    }
+
+    if(page === 'members'){
+      await loadLiveWithCache();
+    }
+
+    if(page === 'tiers'){
+      await loadTierLiveWithCache();
+    }
+
   }, AUTO_REFRESH_INTERVAL_MS);
 }
 
@@ -572,14 +693,19 @@ async function init(){
       await loadMembersFromFirebase();
     }
 
-    if(page === 'home'){
-      await refreshLiveStatus();
-      await loadPostsWithCache();
-    }
+    // if(page === 'home'){
+    //   await refreshLiveStatus();
+    //   await loadPostsWithCache();
+    // }
 
-    if(page === 'members'){
-      await refreshLiveStatus();
-    }
+if(page === 'home'){
+  await loadLiveWithCache();
+  await loadPostsWithCache();
+}
+
+if(page === 'members'){
+  await loadLiveWithCache();
+}
 
     if(page === 'tiers'){
       await loadTierExcel();
