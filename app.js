@@ -40,8 +40,8 @@ const TIER_LIVE_CACHE_KEY = 'calm_tier_live_cache_v1';
 const TIER_LIVE_CACHE_TIME_KEY = 'calm_tier_live_cache_time_v1';
 const TIER_LIVE_CACHE_MS = 60 * 1000;
 
-const POST_CACHE_KEY = 'calm_posts_cache_v1';
-const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v1';
+const POST_CACHE_KEY = 'calm_posts_cache_v2';
+const POST_CACHE_TIME_KEY = 'calm_posts_cache_time_v2';
 const POST_CACHE_MS = 5 * 60 * 1000;
 
 const SOOP_PROXY_BASE_URL = 'https://fancalmmstz.hyungjoonjoo.workers.dev';
