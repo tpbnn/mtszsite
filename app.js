@@ -649,7 +649,14 @@ console.log(m.name, m.soopId, data, rawPosts.length);
         return rawPosts
           .map(post => normalizeSoopPost(m, post))
 .filter(post => {
-  return post.title?.trim()?.length > 0;
+  const postUserId = String(post.userId || '').trim().toLowerCase();
+  const memberSoopId = String(m.soopId || '').trim().toLowerCase();
+
+  return (
+    post.title?.trim()?.length > 0 &&
+    postUserId &&
+    postUserId === memberSoopId
+  );
 });
 
       }catch(error){
