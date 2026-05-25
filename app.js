@@ -660,11 +660,20 @@ console.log(m.name, m.soopId, data, rawPosts.length);
     .trim()
     .toLowerCase();
 
+  const postName = String(post.name || '')
+    .trim();
+
+  const memberName = String(m.name || '')
+    .trim();
+
   return (
     post.title?.trim()?.length > 0 &&
-    postUserId === memberSoopId
+    (
+      postUserId === memberSoopId ||
+      postName === memberName
+    )
   );
-});
+})
 
       }catch(error){
         console.error(`${m.name} 게시글 확인 실패`, error);
