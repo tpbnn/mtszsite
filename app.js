@@ -481,29 +481,42 @@ async function refreshTierLiveStatus(){
 function extractSoopPostList(data){
   if(Array.isArray(data)) return data;
 
-  const candidates = [
-    data?.posts,
-    data?.data,
-    data?.items,
-    data?.list,
-    data?.result,
-    data?.data?.data,
-    data?.data?.items,
-    data?.data?.list,
-    data?.result?.data,
-    data?.result?.items,
-    data?.result?.list,
-    data?.board,
-    data?.board?.list,
-    data?.bbs,
-    data?.bbs?.list
-  ];
+  const found = [];
 
-  for(const item of candidates){
-    if(Array.isArray(item)) return item;
+  function walk(value){
+    if(!value) return;
+
+    if(Array.isArray(value)){
+      const looksLikePosts = value.some(item =>
+        item &&
+        typeof item === 'object' &&
+        (
+          item.title ||
+          item.title_name ||
+          item.titleName ||
+          item.subject ||
+          item.board_title ||
+          item.contents ||
+          item.content
+        )
+      );
+
+      if(looksLikePosts){
+        found.push(value);
+      }
+
+      value.forEach(walk);
+      return;
+    }
+
+    if(typeof value === 'object'){
+      Object.values(value).forEach(walk);
+    }
   }
 
-  return [];
+  walk(data);
+
+  return found[0] || [];
 }
 
 
@@ -533,6 +546,10 @@ function normalizeSoopPost(channel, post){
     post?.boardNo ??
     post?.board_no ??
     post?.no ??
+    post?.idx ??
+post?.seq ??
+post?.post_id ??
+post?.titleNo ??
     ''
   );
 
@@ -542,6 +559,8 @@ function normalizeSoopPost(channel, post){
     post?.title ??
     post?.subject ??
     post?.board_title ??
+    post?.bbs_title ??
+post?.boardTitle ??
     ''
   );
 
@@ -573,6 +592,9 @@ function normalizeSoopPost(channel, post){
     post?.date ??
     post?.reg_datetime ??
     post?.regDt ??
+    post?.reg_date_text ??
+post?.write_datetime ??
+post?.created_date ??
     ''
   );
 
@@ -585,6 +607,9 @@ function normalizeSoopPost(channel, post){
     post?.nickname ??
     channel.name ??
     channel.soopId ??
+    post?.writer_nickname ??
+post?.userName ??
+post?.user_name ??
     ''
   );
 
