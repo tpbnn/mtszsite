@@ -613,18 +613,21 @@ post?.user_name ??
     ''
   );
 
-  return {
-    id: `${channel.soopId}-${titleNo || title}`,
-    userId,
-    title,
-    content,
-    date: regDate ? regDate.slice(0, 10) : '',
-    time: regDate,
-    name: userName,
-    profileImage: channel.profileImage || channel.liveThumbnail || '',
-    url: post?.url || (titleNo ? `https://www.sooplive.com/station/${channel.soopId}/post/${titleNo}` : channel.station)
-  };
+return {
+  id: `${channel.soopId}-${titleNo || title}`,
+  userId,
+  title,
+  content,
+  date: regDate ? regDate.slice(0, 10) : '',
+  time: regDate,
+  name: userName,
+  profileImage: post?.profile_image || channel.profileImage || channel.liveThumbnail || '',
+  url: post?.url || (titleNo ? `https://www.sooplive.com/station/${channel.soopId}/post/${titleNo}` : channel.station)
+};
 }
+
+
+
 function sortPostsByRecent(list){ return list.sort((a,b) => (Date.parse(String(b.time || b.date || '').replace(' ', 'T')) || 0) - (Date.parse(String(a.time || a.date || '').replace(' ', 'T')) || 0)); }
 
 async function refreshPostsFromSoop(force = false){
@@ -649,12 +652,16 @@ console.log(m.name, m.soopId, data, rawPosts.length);
         return rawPosts
           .map(post => normalizeSoopPost(m, post))
 .filter(post => {
-  const postUserId = String(post.userId || '').trim().toLowerCase();
-  const memberSoopId = String(m.soopId || '').trim().toLowerCase();
+  const postUserId = String(post.userId || '')
+    .trim()
+    .toLowerCase();
+
+  const memberSoopId = String(m.soopId || '')
+    .trim()
+    .toLowerCase();
 
   return (
     post.title?.trim()?.length > 0 &&
-    postUserId &&
     postUserId === memberSoopId
   );
 });
