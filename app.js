@@ -509,11 +509,16 @@ async function refreshPostsFromSoop(){
 
         return rawPosts
           .map(post => normalizeSoopPost(m, post))
-          .filter(post => {
-            const postUserId = String(post.userId || '').toLowerCase();
-            const memberSoopId = String(m.soopId || '').toLowerCase();
-            return postUserId === memberSoopId;
-          });
+   .filter(post => {
+  const postUserId = String(post.userId || '').toLowerCase();
+  const memberSoopId = String(m.soopId || '').toLowerCase();
+
+  if(!postUserId){
+    return post.title?.trim()?.length > 0;
+  }
+
+  return postUserId === memberSoopId;
+});
 
       }catch(error){
         console.error(`${m.name} 게시글 확인 실패`, error);
