@@ -478,6 +478,38 @@ async function refreshTierLiveStatus(){
   renderTierCards?.();
 }
 
+function extractSoopPostList(data){
+  if(Array.isArray(data)) return data;
+
+  const candidates = [
+    data?.posts,
+    data?.data,
+    data?.items,
+    data?.list,
+    data?.result,
+    data?.data?.data,
+    data?.data?.items,
+    data?.data?.list,
+    data?.result?.data,
+    data?.result?.items,
+    data?.result?.list,
+    data?.board,
+    data?.board?.list,
+    data?.bbs,
+    data?.bbs?.list
+  ];
+
+  for(const item of candidates){
+    if(Array.isArray(item)) return item;
+  }
+
+  return [];
+}
+
+
+
+
+
 function normalizeSoopPost(channel, post){
   const userId = String(
     post?.userId ??
@@ -577,15 +609,17 @@ async function refreshPostsFromSoop(force = false){
       try{
         const data = await fetchPostData(m.soopId.trim(), force);
 
-        const rawPosts =
-          Array.isArray(data?.posts) ? data.posts :
-          Array.isArray(data?.data) ? data.data :
-          Array.isArray(data?.items) ? data.items :
-          Array.isArray(data?.list) ? data.list :
-          Array.isArray(data?.result) ? data.result :
-          Array.isArray(data?.data?.data) ? data.data.data :
-          Array.isArray(data?.data?.items) ? data.data.items :
-          [];
+        const rawPosts = extractSoopPostList(data);
+console.log(m.name, m.soopId, data, rawPosts.length);
+        // const rawPosts =
+        //   Array.isArray(data?.posts) ? data.posts :
+        //   Array.isArray(data?.data) ? data.data :
+        //   Array.isArray(data?.items) ? data.items :
+        //   Array.isArray(data?.list) ? data.list :
+        //   Array.isArray(data?.result) ? data.result :
+        //   Array.isArray(data?.data?.data) ? data.data.data :
+        //   Array.isArray(data?.data?.items) ? data.data.items :
+        //   [];
 
         return rawPosts
           .map(post => normalizeSoopPost(m, post))
@@ -845,3 +879,5 @@ if(scrollTopBtn){
   // 초기 숨김
   scrollTopBtn.style.display = "none";
 }
+
+
