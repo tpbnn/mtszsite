@@ -1256,8 +1256,8 @@ body.light-mode #scrollTopBtn{
 /* 왼쪽 플로팅 배너 */
 .floating-banner{
   position:fixed;
-  left:50px;
-  top:90px;
+  left:40px;
+  top:40px;
   z-index:9998;
 
   display:flex;
