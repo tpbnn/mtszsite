@@ -178,15 +178,15 @@ function initMatchFilters(){
       .map(row => row[2])
   )].sort((a,b) => order.indexOf(a) - order.indexOf(b));
 
-  selectedMatchTypes = new Set(types);
+selectedMatchTypes = new Set();
 
-  typeBox.innerHTML = types.map(type => `
-    <button class="type-chip active"
-            data-type="${type}"
-            type="button">
-      ${type}
-    </button>
-  `).join("");
+typeBox.innerHTML = types.map(type => `
+  <button class="type-chip"
+          data-type="${type}"
+          type="button">
+    ${type}
+  </button>
+`).join("");
 
   typeBox.querySelectorAll(".type-chip").forEach(btn => {
 
