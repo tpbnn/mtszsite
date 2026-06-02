@@ -3,122 +3,1718 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>매치 관리 — 캄몬스타즈</title>
+  <title>상대전적 — 캄몬스타즈</title>
   <link rel="icon" href="./favicon.png" type="image/png" />
-
-<link rel="stylesheet" href="common.css" />
-  
+  <link rel="stylesheet" href="common_matches.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body data-page="matches">
 
-
 <div class="floating-banner">
-  <a href="http://calm-hoxy.vercel.app/" target="_blank">
-    <img src="./banner/banner1.png" alt="배너1">
-  </a>
-  <a href="https://fmcalm.vercel.app/" target="_blank">
-    <img src="./banner/banner2.png" alt="배너2">
-  </a>
-  <a href="https://calm-mstz.vercel.app/" target="_blank">
-    <img src="./banner/banner3.png" alt="배너3">
-  </a>
-  <a href="https://www.fmkorea.com/starcraft/" target="_blank">
-    <img src="./banner/banner4.png" alt="배너4">
-  </a>
-  <a href="https://www.youtube.com//" target="_blank">
-    <img src="./banner/banner5.png" alt="배너5">
-  </a>
-  <a href="https://www.naver.com/" target="_blank">
-    <img src="./banner/banner6.png" alt="배너6">
-  </a>
-  <a href="https://www.sooplive.com/" target="_blank">
-    <img src="./banner/banner0.png" alt="배너7">
-  </a>
-  <a href="https://www.youtube.com/playlist?list=PLaB279zqSXOLQMatpnBpl4wAFkfAwcWgO" target="_blank">
-    <img src="./banner/banner7.png" alt="배너8">
-  </a>
-  <a href="https://lazygyu.github.io/roulette/" target="_blank">
-    <img src="./banner/banner8.png" alt="배너9">
-  </a>
-  <a href="https://910map.tistory.com/" target="_blank">
-    <img src="./banner/banner9.png" alt="배너10">
-  </a>
-  <a href="https://www.youtube.com/playlist?list=PLaB279zqSXOLxY7et5_CMfD-sGBCGg3az" target="_blank">
-    <img src="./banner/banner10.png" alt="배너11">
-  </a>
+  <a href="https://calm-hoxy.vercel.app/" target="_blank"><img src="./banner/banner1.png" alt="배너1"></a>
+  <a href="https://fmcalm.vercel.app/" target="_blank"><img src="./banner/banner2.png" alt="배너2"></a>
+  <a href="https://calm-mstz.vercel.app/" target="_blank"><img src="./banner/banner3.png" alt="배너3"></a>
+  <a href="https://www.fmkorea.com/starcraft/" target="_blank"><img src="./banner/banner4.png" alt="배너4"></a>
+  <a href="https://www.youtube.com//" target="_blank"><img src="./banner/banner5.png" alt="배너5"></a>
+  <a href="https://www.naver.com/" target="_blank"><img src="./banner/banner6.png" alt="배너6"></a>
+  <a href="https://www.sooplive.com/" target="_blank"><img src="./banner/banner0.png" alt="배너7"></a>
+  <a href="https://www.youtube.com/playlist?list=PLaB279zqSXOLQMatpnBpl4wAFkfAwcWgO" target="_blank"><img src="./banner/banner7.png" alt="배너8"></a>
+  <a href="https://lazygyu.github.io/roulette/" target="_blank"><img src="./banner/banner8.png" alt="배너9"></a>
+  <a href="https://910map.tistory.com/" target="_blank"><img src="./banner/banner9.png" alt="배너10"></a>
+  <a href="https://www.youtube.com/playlist?list=PLaB279zqSXOLxY7et5_CMfD-sGBCGg3az" target="_blank"><img src="./banner/banner10.png" alt="배너11"></a>
 </div>
 
+<div class="app">
+  <header class="topbar">
+    <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
+    <nav class="nav">
+      <a data-page="home" href="index.html">홈</a>
+      <a data-page="members" href="members.html">멤버 정보</a>
+      <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+      <a data-page="tiers" href="tier.html">티어표</a>
+      <a data-page="records" href="records.html">개인전적</a>
+      <a data-page="matches" href="matches.html" class="active">상대전적</a>
+      <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+    </nav>
+  </header>
+
+  <main id="page-matches" class="page">
+    <section class="matches-page-wrap">
+      <section class="matches-search-card">
+
+  <div class="matches-top-guide">
+    ELOBOARD 연동으로 데이터 로딩이 다소 느릴 수 있습니다.
+  </div>
 
 
+  <div class="matches-search-grid new-select-ui">
 
-
-
-
-  <div class="app">
     
-<header class="topbar">
-  <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
-  <nav class="nav">
-<a data-page="home" href="index.html">홈</a>
-    <a data-page="members" href="members.html">멤버 정보</a>
-    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
-    <a data-page="tiers" href="tier.html">티어표</a>
-    <a data-page="records" href="records.html">개인전적</a>
-    <a data-page="matches" href="matches.html">상대전적</a>
-    <button class="theme-button" onclick="toggleTheme()">
-  🌙 모드
+
+    <div class="matches-side-select">
+      <div class="matches-side-title">선수 A 선택</div>
+
+      <div class="matches-filter-row new-filter-row">
+   <div class="matches-search-box">
+  <input id="playerSearchA" class="matches-input" type="search" placeholder="선수 검색 또는 대학을 선택하세요" autocomplete="off" />
+  <div id="playerSuggestA" class="matches-suggest-list"></div>
+</div>
+        <select id="univSelectA" class="matches-select" aria-label="대학 선택 A"></select>
+        <button class="matches-ghost-btn mini" id="resetAButton">초기화</button>
+      </div>
+
+      <div id="playerPoolA" class="matches-selected-box"></div>
+    </div>
+
+    <div class="matches-side-select">
+      <div class="matches-side-title">선수 B 선택</div>
+
+
+
+
+      <div class="matches-filter-row new-filter-row">
+   <div class="matches-search-box">
+  <input id="playerSearchB" class="matches-input" type="search" placeholder="선수 검색 또는 대학을 선택하세요" autocomplete="off" />
+  <div id="playerSuggestB" class="matches-suggest-list"></div>
+</div>
+        <select id="univSelectB" class="matches-select" aria-label="대학 선택 B"></select>
+        <button class="matches-ghost-btn mini" id="resetBButton">초기화</button>
+      </div>
+
+      <div id="playerPoolB" class="matches-selected-box"></div>
+    </div>
+
+    <div class="matches-action-panel only-view">
+
+
+<button class="matches-main-btn" id="addMatchButton">
+  선택선수<br>전적조회
 </button>
 
-  </nav>
-</header>
+      
+      <button class="matches-main-btn" id="viewMatchButton">티어별<br>자동매칭</button>
+    </div>
 
-    
-<main id="page-matches" class="page">
-  <br><br><br><br><br>
-<div style="text-align : center;"><img src="https://j-meeshop.com/morenvyimg/jmee_preparing.png">
+  </div>
+</section>
+
+      <section class="matches-result-layout">
+        <section class="matches-list-panel">
+          <div class="matches-panel-head">
+            <div>
+              <h2>선수별 상대전적</h2>
+              <!-- <span id="tierSummaryText">선수를 선택하면 같은 티어 매치업이 표시됩니다.</span> -->
+            </div>
+          </div>
+          <div id="matchesList" class="matches-versus-list"></div>
+        </section>
+
+        <section class="matches-detail-panel">
+          <div class="matches-panel-head">
+            <h3>상세 전적 정보</h3>
+            
+          </div>
+          <div id="matchDetail"></div>
+        </section>
+      </section>
+    </section>
+
+
+
+
+
+<div id="tierMatchModal" class="tier-match-modal hidden">
+  <div class="tier-match-box">
+    <div class="tier-match-head">
+      <strong>매칭할 티어 선택</strong>
+      <button type="button" id="tierModalClose">×</button>
+    </div>
+    <div id="tierMatchOptions" class="tier-match-options"></div>
+    <button type="button" id="tierMatchApply" class="tier-match-apply">선택한 티어 보기</button>
+  </div>
 </div>
-<br><br>
-<div style="text-align : center;">공사중입니다 ;ㅅ;</div>
-  
-</main>
-  
-  <script type="module" src="app.js"></script>
 
 
-<script type="module" src="app.js"></script>
-<script src="./theme.js?v=3"></script>
-</body>
+  </main>
+</div>
+
 <footer class="footer">
-
-  <div class="footer-copy">
-    © 2026 주니.킨콘. All Rights Reserved.
-  </div>
-
+  <div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div>
   <div class="footer-links">
-
-    <a
-      href="https://www.sooplive.com/station/joony86"
-      target="_blank"
-      class="footer-icon"
-    >
-      <img
-  src="icons/soop-logo.png"
-  alt="SOOP"
-/>
-    </a>
-
-    <a
-      href="https://www.youtube.com/@kinkonvv"
-      target="_blank"
-      class="footer-icon"
-    >
-      <img
-  src="icons/youtube-logo.png"
-  alt="YouTube"
-/>
-    </a>
-
+    <a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon"><img src="icons/soop-logo.png" alt="SOOP" /></a>
+    <a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon"><img src="icons/youtube-logo.png" alt="YouTube" /></a>
   </div>
-
 </footer>
+
+<script src="./theme.js?v=3"></script>
+<script>
+
+
+let PLAYERS = [];
+let pickedA = '';
+let pickedB = '';
+let pickedTiers = [];
+let DISPLAYED_MATCHES = [];
+let LOADING_MATCH_KEYS = new Set();
+
+const selectedPlayers = {
+  A: [],
+  B: []
+};
+
+async function loadTierExcel(){
+  if(!window.XLSX){
+    console.error('XLSX 라이브러리가 로드되지 않았습니다.');
+    alert('엑셀 라이브러리 로딩 실패');
+    return;
+  }
+
+  const res = await fetch('./tier.xlsx');
+
+  if(!res.ok){
+    console.error('tier.xlsx 로딩 실패:', res.status, res.statusText);
+    alert('tier.xlsx 파일을 불러오지 못했습니다. matches.html과 같은 폴더에 tier.xlsx가 있는지 확인해주세요.');
+    return;
+  }
+
+  const buffer = await res.arrayBuffer();
+  const workbook = XLSX.read(buffer, { type:'array' });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(sheet, { defval:'' });
+
+  console.log('tier.xlsx rows:', rows);
+  console.log('tier.xlsx columns:', rows[0] ? Object.keys(rows[0]) : []);
+
+const range = XLSX.utils.decode_range(sheet['!ref']);
+
+UNIVERSITY_LIST = [];
+
+for(let r = 1; r <= range.e.r; r++){
+  const cell = sheet[XLSX.utils.encode_cell({ r, c: 14 })];
+  // c:15 = P열
+
+  const value = String(cell?.v || '').trim();
+
+  if(value && !UNIVERSITY_LIST.includes(value)){
+    UNIVERSITY_LIST.push(value);
+  }
+}
+
+console.log('O/P열 기준 UNIVERSITY_LIST', UNIVERSITY_LIST);
+
+
+  PLAYERS = rows.map((row, index) => {
+    const name =
+      row['이름'] ||
+      row['선수명'] ||
+      row['선수 이름'] ||
+      row.name ||
+      row.Name ||
+      row.playerName ||
+      '';
+
+const university =
+  row['소속'] ||
+  row['대학'] ||
+  row['팀'] ||
+  '';
+
+    const raceRaw =
+      row['종족'] ||
+      row.race ||
+      row.Race ||
+      '';
+
+    const tierRaw =
+      row['티어'] ||
+      row.tier ||
+      row.Tier ||
+      '';
+
+    const raceCode = normalizeRaceCode(raceRaw);
+    const tier = normalizeTierNumber(tierRaw);
+
+    return {
+      id: safePlayerId(name, index),
+      name: String(name).trim(),
+      race: raceKo(raceCode),
+      raceCode,
+      tier,
+      university: String(university).trim()
+    };
+  }).filter(p => p.name);
+
+  console.log('PLAYERS 로딩 완료:', PLAYERS.length, PLAYERS);
+}
+
+function normalizeRaceCode(value){
+  const v = String(value || '').trim().toLowerCase();
+
+  if(v === 'p' || v === 'protoss' || v === '프로토스') return 'P';
+  if(v === 'z' || v === 'zerg' || v === '저그') return 'Z';
+  if(v === 't' || v === 'terran' || v === '테란') return 'T';
+
+  return 'R';
+}
+
+function normalizeTierNumber(value){
+  const raw = String(value || '').trim();
+  const lower = raw.toLowerCase();
+
+  const specialTiers = ['god', 'king', 'jack', 'joker', 'jocker', 'spade', 'baby'];
+
+  if(specialTiers.includes(lower)){
+    return raw;
+  }
+
+  const n = raw.replace(/[^0-9]/g, '');
+  return n ? Number(n) : 0;
+}
+
+function safePlayerId(name, index){
+  const base = String(name || `player-${index}`)
+    .trim()
+    .replace(/\s+/g, '_')
+    .replace(/[^\w가-힣♡♥★☆_-]/g, '');
+
+  return base || `player-${index}`;
+}
+
+function fillPlayerDatalists(){
+  ['playerListA','playerListB'].forEach(id => {
+    const el = $(id);
+    if(!el) return;
+
+    el.innerHTML = PLAYERS.map(p => `
+      <option value="${esc(p.name)}">${esc(p.university)} / ${p.tier}${raceShort(p.raceCode)}</option>
+    `).join('');
+  });
+}
+
+
+let GAME_RESULTS = [];
+const RECORD_CACHE = new Map();
+
+async function fetchPlayerRecords(playerName){
+  const key = String(playerName || '').trim();
+
+  if(RECORD_CACHE.has(key)){
+    return RECORD_CACHE.get(key);
+  }
+
+  const url =
+    `https://mstz-elo-sync.hyungjoonjoo.workers.dev/proxy-records?name=${encodeURIComponent(key)}&secret=calm2026sync`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if(!data.ok){
+    console.error('전적 조회 실패:', key, data);
+    return [];
+  }
+
+  const matches = data.matches || [];
+  RECORD_CACHE.set(key, matches);
+
+  return matches;
+}
+
+async function getHeadToHeadMatchup(playerAId, playerBId){
+  const a = player(playerAId);
+  const b = player(playerBId);
+
+  if(!a || !b) return null;
+
+  const aRecords = await fetchPlayerRecords(a.name);
+  const bRecords = await fetchPlayerRecords(b.name);
+
+  const gamesFromA = aRecords
+    .filter(m => sameName(getOpponentName(m), b.name))
+    .map(m => normalizeRealGame(m, a, b, 'A'));
+
+  const gamesFromB = bRecords
+    .filter(m => sameName(getOpponentName(m), a.name))
+    .map(m => normalizeRealGame(m, a, b, 'B'));
+
+  const merged = dedupeGames([...gamesFromA, ...gamesFromB]);
+
+  let aWin = 0;
+  let bWin = 0;
+  const maps = {};
+
+  merged.forEach(g => {
+    if(g.winner === a.id) aWin++;
+    if(g.winner === b.id) bWin++;
+
+    const mapName = g.map || '-';
+    if(!maps[mapName]) maps[mapName] = [0, 0];
+
+    if(g.winner === a.id) maps[mapName][0]++;
+    if(g.winner === b.id) maps[mapName][1]++;
+  });
+
+  return {
+    a: a.id,
+    b: b.id,
+    aWin,
+    bWin,
+    games: sortByDateDesc(merged),
+    maps,
+    race: {},
+    recent: merged.slice(0, 10).map(g => g.winner === a.id ? '승' : '패')
+  };
+}
+
+
+function getOpponentName(m){
+  return (
+    m.opponent ||
+    m.opponentName ||
+    m.enemy ||
+    m.enemyName ||
+    m.target ||
+    m.rival ||
+    ''
+  );
+}
+
+function cleanName(name){
+  return String(name || '')
+    .trim()
+    .replaceAll('_', '')
+    .replace(/\s+/g, '')
+    .toLowerCase();
+}
+
+function sameName(a, b){
+  const ca = cleanName(a);
+  const cb = cleanName(b);
+
+  return ca === cb || ca.includes(cb) || cb.includes(ca);
+}
+
+function normalizeRealGame(m, a, b, source){
+  const result = m.result || m.winLose || m.status || '';
+  const sourceWin = isWinResult(result);
+
+  let winner;
+
+  if(source === 'A'){
+    winner = sourceWin ? a.id : b.id;
+  }else{
+    winner = sourceWin ? b.id : a.id;
+  }
+
+  return {
+    date: m.playedAt || m.date || m.createdAt || '',
+    type: '실제전적',
+    playerA: a.id,
+    playerB: b.id,
+    winner,
+    map: m.map || m.mapName || '-',
+    score: m.score || '',
+    raw: m
+  };
+}
+
+function dedupeGames(games){
+  const seen = new Set();
+
+  return games.filter(g => {
+    const key = [
+      g.date,
+      g.playerA,
+      g.playerB,
+      g.winner,
+      g.map
+    ].join('|');
+
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function isWinResult(result){
+  const r = String(result || '').toUpperCase();
+  return ['WIN', 'W', '승', 'TRUE', '1'].includes(r);
+}
+
+
+
+
+const $ = (id) => document.getElementById(id);
+let selectedA = '';
+let selectedB = '';
+let activeKey = '';
+let recordRange = '3m';
+let UNIVERSITY_LIST = [];
+
+function player(id){ return PLAYERS.find(p => p.id === id); }
+function pairKey(a,b){ return [a,b].sort().join('-'); }
+function percent(w,l){ const total = w + l; return total ? Math.round((w / total) * 1000) / 10 : 0; }
+function raceClass(code){ return code === 'Z' ? 'race-Z' : code === 'T' ? 'race-T' : code === 'P' ? 'race-P' : 'race-R'; }
+function esc(v){ return String(v ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+function sortByDateDesc(list){ return [...list].sort((a,b)=> String(b.date).localeCompare(String(a.date))); }
+
+function filterGamesByRange(games){
+  if(recordRange === 'all') return games;
+
+  if(recordRange === '2026'){
+    return games.filter(g => String(g.date).startsWith('2026'));
+  }
+
+  return games.filter(g => g.type === '최근 3개월');
+}
+
+function buildMatchups(){
+  const map = new Map();
+  const allowedGames = filterGamesByRange(GAME_RESULTS).filter(g => {
+    const pa = player(g.playerA);
+    const pb = player(g.playerB);
+    return pa && pb && pa.tier === pb.tier;
+  });
+
+  allowedGames.forEach(g => {
+    const key = pairKey(g.playerA, g.playerB);
+    const [a,b] = key.split('-');
+    if(!map.has(key)){
+      map.set(key, { a, b, aWin:0, bWin:0, recent:[], maps:{}, race:{}, games:[] });
+    }
+    const m = map.get(key);
+    const winnerIsA = g.winner === m.a;
+    if(winnerIsA) m.aWin += 1;
+    else m.bWin += 1;
+
+    if(!m.maps[g.map]) m.maps[g.map] = [0,0];
+    if(winnerIsA) m.maps[g.map][0] += 1;
+    else m.maps[g.map][1] += 1;
+
+    const opponentRace = player(m.b)?.race || '상대';
+    const raceLabel = `Vs ${opponentRace === 'Protoss' ? '프로토스' : opponentRace === 'Zerg' ? '저그' : opponentRace === 'Terran' ? '테란' : opponentRace}`;
+    if(!m.race[raceLabel]) m.race[raceLabel] = [0,0];
+    if(winnerIsA) m.race[raceLabel][0] += 1;
+    else m.race[raceLabel][1] += 1;
+
+    m.games.push(g);
+  });
+
+  return Array.from(map.values()).map(m => {
+    m.games = sortByDateDesc(m.games);
+    m.recent = m.games.slice(0,10).map(g => g.winner === m.a ? '승' : '패');
+    return m;
+  });
+}
+
+let MATCHUPS = buildMatchups();
+
+function findMatchup(a,b){ return MATCHUPS.find(m => pairKey(m.a,m.b) === pairKey(a,b)); }
+
+function fillUniversitySelects(){
+  const univs = ['소속 선택', ...UNIVERSITY_LIST];
+
+  ['univSelectA','univSelectB'].forEach(id => {
+    const el = $(id);
+    if(!el) return;
+
+    el.innerHTML = univs
+      .map(u => `<option value="${esc(u)}">${esc(u)}</option>`)
+      .join('');
+  });
+}
+
+function filteredPlayers(side){
+  const q = $(side === 'A' ? 'playerSearchA' : 'playerSearchB').value.trim().toLowerCase();
+  const u = $(side === 'A' ? 'univSelectA' : 'univSelectB').value;
+  return PLAYERS.filter(p => {
+    const keywordOk = !q || p.name.toLowerCase().includes(q) || p.race.toLowerCase().includes(q) || String(p.tier).includes(q);
+    const univOk = !u || u === '소속 선택' || u === '전체 대학' || p.university === u;
+    return keywordOk && univOk;
+  }).slice(0, 6);
+}
+
+function addPlayerToSide(side, playerId){
+  const p = player(playerId);
+  if(!p) return;
+
+  const exists = selectedPlayers[side].some(item => item.id === p.id);
+  if(!exists) selectedPlayers[side].push(p);
+
+  if(side === 'A') selectedA = selectedPlayers.A[0]?.id || p.id;
+  if(side === 'B') selectedB = selectedPlayers.B[0]?.id || p.id;
+
+  renderAll(true);
+}
+
+function setUniversityPlayers(side, university){
+  if(!university || university === '소속 선택'){
+    selectedPlayers[side] = [];
+  }else{
+    selectedPlayers[side] = PLAYERS.filter(p => {
+      const tierNum = Number(p.tier);
+      return p.university === university && tierNum >= 2 && tierNum <= 8;
+    });
+  }
+
+  if(side === 'A') selectedA = selectedPlayers.A[0]?.id || '';
+  if(side === 'B') selectedB = selectedPlayers.B[0]?.id || '';
+
+  renderAll(true);
+}
+
+function renderPlayerPools(){
+  const render = (side) => {
+    const box = $(side === 'A' ? 'playerPoolA' : 'playerPoolB');
+    const list = selectedPlayers[side];
+
+    box.innerHTML = list.map(p => `
+  <button
+    class="matches-player-chip ${side === 'A'
+      ? 'is-selected-a'
+      : 'is-selected-b'}"
+    data-side="${side}"
+    data-player="${p.id}">
+
+    <span class="chip-name">${esc(p.name)}</span>
+
+    <span class="chip-tier">
+       ${displayTier(p.tier)}
+    </span>
+
+    <span class="chip-race">
+      ${raceShort(p.raceCode)}
+    </span>
+
+    <span class="chip-remove">×</span>
+
+  </button>
+  
+`).join('');
+
+
+  };
+
+  render('A');
+  render('B');
+
+  document.querySelectorAll('.matches-player-chip .chip-remove').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const chip = btn.closest('.matches-player-chip');
+    const side = chip.dataset.side;
+    const playerId = chip.dataset.player;
+
+    selectedPlayers[side] = selectedPlayers[side].filter(p => p.id !== playerId);
+
+    if(side === 'A' && selectedA === playerId) selectedA = selectedPlayers.A[0]?.id || '';
+    if(side === 'B' && selectedB === playerId) selectedB = selectedPlayers.B[0]?.id || '';
+
+    if(side === 'A' && pickedA === playerId) pickedA = '';
+    if(side === 'B' && pickedB === playerId) pickedB = '';
+
+    renderPlayerPools();
+    renderMatchesList();
+    renderDetail();
+  });
+});
+
+
+
+document.querySelectorAll('.matches-player-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+
+    const side = chip.dataset.side;
+    const playerId = chip.dataset.player;
+
+    if(side === 'A') pickedA = playerId;
+    if(side === 'B') pickedB = playerId;
+
+    document.querySelectorAll(
+      `.matches-player-chip[data-side="${side}"]`
+    ).forEach(el => el.classList.remove('picked'));
+
+    chip.classList.add('picked');
+  });
+});
+
+}
+
+async function renderPickedMatch(){
+  if(!pickedA || !pickedB) return;
+
+
+console.log('pickedA=', pickedA);
+console.log('pickedB=', pickedB);
+  
+  const a = player(pickedA);
+  const b = player(pickedB);
+
+  if(!a || !b) return;
+
+  const key = pairKey(a.id, b.id);
+
+  LOADING_MATCH_KEYS.add(key);
+  renderDisplayedMatches();
+
+  const matchup = await getHeadToHeadMatchup(a.id, b.id);
+
+LOADING_MATCH_KEYS.delete(key);
+
+if(!matchup){
+  renderDisplayedMatches();
+  return;
+}
+
+addDisplayedMatch(matchup);
+  activeKey = key;
+
+  renderDisplayedMatches();
+  renderRealDetail(matchup);
+
+pickedA = '';
+pickedB = '';
+
+
+}
+
+
+
+
+
+
+
+function addDisplayedMatch(match){
+  const key = pairKey(match.a, match.b);
+
+  DISPLAYED_MATCHES = DISPLAYED_MATCHES.filter(
+    m => pairKey(m.a, m.b) !== key
+  );
+
+  DISPLAYED_MATCHES.push(match);
+
+  activeKey = key;
+  renderDisplayedMatches();
+  renderRealDetail(match);
+}
+
+function renderDisplayedMatches(){
+  const box = $('matchesList');
+
+  const loadingRows = [...LOADING_MATCH_KEYS].map(key => {
+    const [aId, bId] = key.split('-');
+    const a = player(aId);
+    const b = player(bId);
+
+return `
+  <article class="matches-row-card match-grid-row loading-row" data-key="${key}">
+    <div class="matches-loading-inline">
+      <span class="loading-spinner"></span>
+      <span>로딩 중...</span>
+    </div>
+  </article>
+`;
+  }).join('');
+
+  let prevLeftPlayerId = '';
+
+const matchRows = DISPLAYED_MATCHES.map(m => {
+  const currentLeftPlayerId = m.a;
+
+  const groupStart =
+    prevLeftPlayerId !== '' &&
+    prevLeftPlayerId !== currentLeftPlayerId;
+
+  prevLeftPlayerId = currentLeftPlayerId;
+
+  return renderMatchRow(m, {
+    active: pairKey(m.a, m.b) === activeKey,
+    withDelete: true,
+    groupStart
+  });
+}).join('');
+
+  box.innerHTML = matchRows + loadingRows;
+
+  document.querySelectorAll('.matches-row-card:not(.loading-row)').forEach(card => {
+    card.addEventListener('click', () => {
+      const key = card.dataset.key;
+      const match = DISPLAYED_MATCHES.find(m => pairKey(m.a, m.b) === key);
+      if(!match) return;
+
+      activeKey = key;
+      renderDisplayedMatches();
+      renderRealDetail(match);
+    });
+  });
+
+  
+}
+
+
+function renderRealDetail(match){
+  const pa = player(match.a);
+  const pb = player(match.b);
+
+  if(!pa || !pb){
+    $('matchDetail').innerHTML = '';
+    return;
+  }
+
+  $('matchDetail').innerHTML = `
+    ${renderDetailSummary(match, pa, pb)}
+    ${renderPeriodStats(match)}
+    ${renderRaceStatsSection(pa, pb)}
+    ${renderTopMapStats(match)}
+    ${renderRecentHeadToHeadRows(match, pa, pb)}
+  `;
+}
+
+function scoreText(win, lose){
+  return `
+    <span class="blue">${win}</span>
+    <span class="colon">:</span>
+    <span class="red">${lose}</span>
+  `;
+}
+
+function getScoreFromGames(games, aId, bId){
+  let aWin = 0;
+  let bWin = 0;
+
+  games.forEach(g => {
+    if(g.winner === aId) aWin++;
+    if(g.winner === bId) bWin++;
+  });
+
+  return { aWin, bWin };
+}
+
+function getGameDate(g){
+  const d = String(g.date || '').slice(0, 10);
+  return d;
+}
+
+function toDate(value){
+  const d = new Date(String(value || '').slice(0, 10));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function filterLast30Days(games){
+  const dates = games.map(g => toDate(g.date)).filter(Boolean);
+  if(!dates.length) return [];
+
+  const latest = new Date(Math.max(...dates.map(d => d.getTime())));
+  const start = new Date(latest);
+  start.setDate(start.getDate() - 30);
+
+  return games.filter(g => {
+    const d = toDate(g.date);
+    return d && d >= start && d <= latest;
+  });
+}
+
+function renderDetailSummary(match, pa, pb){
+  const total = match.aWin + match.bWin;
+
+  return `
+    <div class="matches-detail-hero">
+      <div class="detail-player-card left">
+        ${raceIconHtml(pa.raceCode)}
+        <strong>${esc(pa.name)}</strong>
+        <span>${esc(pa.university)}</span>
+        <span>${esc(pa.race)}</span>
+        <span>${displayTier(pa.tier)}</span>
+      </div>
+
+      <div class="detail-main-score">
+        <div class="detail-label">총 전적</div>
+        <div class="matches-big-score">
+          ${scoreText(match.aWin, match.bWin)}
+        </div>
+        <div class="matches-summary-text">총 ${total}경기</div>
+      </div>
+
+      <div class="detail-player-card right">
+        ${raceIconHtml(pb.raceCode)}
+        <strong>${esc(pb.name)}</strong>
+        <span>${esc(pb.university)}</span>
+        <span>${esc(pb.race)}</span>
+        <span>${displayTier(pb.tier)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderPeriodStats(match){
+  const games = match.games || [];
+  const recent10 = games.slice(0, 10);
+  const last30 = filterLast30Days(games);
+  const y2026 = games.filter(g => String(g.date || '').startsWith('2026'));
+
+  const s10 = getScoreFromGames(recent10, match.a, match.b);
+  const s30 = getScoreFromGames(last30, match.a, match.b);
+  const s26 = getScoreFromGames(y2026, match.a, match.b);
+  // 주석 : 2026년 전적 조회 
+
+  return `
+    <div class="detail-period-grid">
+      <div>
+        <h4>최근 10경기</h4>
+        <div class="period-score">${scoreText(s10.aWin, s10.bWin)}</div>
+      </div>
+      <div>
+        <h4>최근 30일</h4>
+        <div class="period-score">${scoreText(s30.aWin, s30.bWin)}</div>
+      </div>
+      <div>
+        <h4>2026년 전적</h4>
+        <div class="period-score">${scoreText(s26.aWin, s26.bWin)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function rawRaceStats(playerName){
+  const records = RECORD_CACHE.get(String(playerName || '').trim()) || [];
+
+  const stat = {
+    total:{ win:0, lose:0 },
+    P:{ win:0, lose:0 },
+    Z:{ win:0, lose:0 },
+    T:{ win:0, lose:0 }
+  };
+
+  records.forEach(r => {
+    const race = normalizeRaceCode(r.opponentRace || r.race_vs || r.raceVs || '');
+    const win = isWinResult(r.result || r.win_loss || r.winLose);
+
+    if(win) stat.total.win++;
+    else stat.total.lose++;
+
+    if(stat[race]){
+      if(win) stat[race].win++;
+      else stat[race].lose++;
+    }
+  });
+
+  return stat;
+}
+
+function statLine(label, s){
+  const total = s.win + s.lose;
+  const rate = total ? Math.round((s.win / total) * 1000) / 10 : 0;
+
+  return `
+    <div class="race-stat-row">
+      <span>${label}</span>
+      <strong>${s.win}승 ${s.lose}패 · ${rate}%</strong>
+    </div>
+  `;
+}
+
+function renderRaceStatsBox(p, side){
+  const s = rawRaceStats(p.name);
+
+  return `
+    <div class="race-stat-box ${side}">
+      ${statLine('전체', s.total)}
+      ${statLine('vs 프로토스', s.P)}
+      ${statLine('vs 저그', s.Z)}
+      ${statLine('vs 테란', s.T)}
+    </div>
+  `;
+}
+
+function renderRaceStatsSection(pa, pb){
+  return `
+    <div class="detail-section-title">종족별 전적</div>
+    <div class="race-stat-grid">
+      ${renderRaceStatsBox(pa, 'a')}
+      ${renderRaceStatsBox(pb, 'b')}
+    </div>
+  `;
+}
+
+function renderTopMapStats(match){
+  const rows = Object.entries(match.maps || {})
+    .map(([map, score]) => ({
+      map,
+      aWin:score[0],
+      bWin:score[1],
+      total:score[0] + score[1]
+    }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
+
+  if(!rows.length){
+    return `<div class="matches-empty">맵별 전적이 없습니다.</div>`;
+  }
+
+  return `
+    <div class="detail-section-title">맵별 전적</div>
+    <div class="map-stat-table">
+      ${rows.map(r => `
+        <div class="map-stat-row">
+          <span>${r.aWin}승 ${r.bWin}패</span>
+          <strong>${esc(r.map)}</strong>
+          <span>${r.bWin}승 ${r.aWin}패</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderRecentHeadToHeadRows(match, pa, pb){
+  const rows = (match.games || []).slice(0, 10).map((g, index) => {
+    const aResult = g.winner === pa.id ? '승' : '패';
+    const bResult = g.winner === pb.id ? '승' : '패';
+    const tone = index % 2 === 0 ? 'blue' : 'red';
+
+    return `
+      <div class="recent-h2h-row ${tone}">
+        <div>${esc(getGameDate(g) || '-')}</div>
+        <div>${esc(pa.name)}</div>
+        <div><span class="matches-result-badge ${aResult === '승' ? 'win' : 'lose'}">${aResult}</span></div>
+        <div>${esc(pb.name)}</div>
+        <div><span class="matches-result-badge ${bResult === '승' ? 'win' : 'lose'}">${bResult}</span></div>
+        <div>${esc(g.map || '-')}</div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="detail-section-title">최근 상대전적</div>
+    <div class="recent-h2h-box">
+      <div class="recent-h2h-head">
+        <div>날짜</div>
+        <div>선수 A</div>
+        <div></div>
+        <div>선수 B</div>
+        <div></div>
+        <div>맵</div>
+      </div>
+      ${rows || `<div class="matches-empty">최근 상대전적이 없습니다.</div>`}
+    </div>
+  `;
+}
+
+
+function renderRealMapStats(match){
+  const mapRows = Object.entries(match.maps || {});
+
+  if(!mapRows.length){
+    return `<div class="matches-empty">맵별 상대전적이 없습니다.</div>`;
+  }
+
+  return `
+    <div class="matches-compare-table">
+      ${mapRows.map(([map, score]) => `
+        <div class="matches-compare-row">
+          <div>${score[0]}승 ${score[1]}패</div>
+          <div>${esc(map)}</div>
+          <div>${score[1]}승 ${score[0]}패</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+
+function renderHeadToHeadTable(match, pa, pb){
+  const rows = match.games.slice(0, 20).map(g => {
+    const resultA = g.winner === pa.id ? '승' : '패';
+
+    return `
+      <tr>
+        <td>${esc(g.date || '-')}</td>
+        <td>
+          <span class="matches-result-badge ${resultA === '승' ? 'win' : 'lose'}">
+            ${resultA}
+          </span>
+        </td>
+        <td>${esc(pa.name)}</td>
+        <td>${esc(pb.name)}</td>
+        <td>${esc(g.map || '-')}</td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <div class="matches-full-recent a-side">
+      <div class="matches-table-title">최근 상대전적</div>
+      <div class="matches-table-wrap">
+        <table class="matches-table matches-full-recent-table">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>${esc(pa.name)} 기준</th>
+              <th>선수 A</th>
+              <th>선수 B</th>
+              <th>맵</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows || `<tr><td colspan="5">상대전적이 없습니다.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+
+
+function displayTier(tier){
+  const t = String(tier).trim();
+  const lower = t.toLowerCase();
+
+  const specialTiers = ['god', 'king', 'jack', 'joker', 'jocker', 'spade', 'baby'];
+
+  if(specialTiers.includes(lower)){
+    return t;
+  }
+
+  return `${t}티어`;
+}
+
+
+function raceShort(code){
+  return code === 'Z' ? 'Z' : code === 'T' ? 'T' : code === 'P' ? 'P' : 'R';
+}
+
+function raceKo(code){
+  return code === 'Z' ? 'Zerg' : code === 'T' ? 'Terran' : code === 'P' ? 'Protoss' : 'Random';
+}
+
+function raceIcon(code){
+  if(code === 'P') return './icons/p.png';
+  if(code === 'Z') return './icons/z.png';
+  if(code === 'T') return './icons/t.png';
+  return '';
+}
+
+function playerLabel(p){
+  if(!p) return '-';
+  return `${esc(p.name)}`;
+}
+
+function raceIconHtml(code, extraClass = ''){
+  const src = raceIcon(code);
+  return src
+  ? `<img class="race-icon ${extraClass}" src="${src}" alt="${raceShort(code)}" width="30" height="30">`
+  : '';
+}
+
+function sameTierMatches(){
+  const base = player(selectedA);
+  if(!base) return [];
+
+  return MATCHUPS.filter(m => {
+    const pa = player(m.a), pb = player(m.b);
+    return pa && pb && pa.tier === pb.tier && pa.tier === base.tier;
+  });
+}
+
+function scoreFor(match, leftId){
+  if(match.a === leftId) return {left:match.aWin, right:match.bWin};
+  return {left:match.bWin, right:match.aWin};
+}
+
+function renderMatchesList(){
+  const list = sameTierMatches();
+
+  if(!list.length){
+    $('matchesList').innerHTML = '';
+    return;
+  }
+
+  let prevLeftId = '';
+
+const matchRows = DISPLAYED_MATCHES.map(m => {
+  const currentLeftId = m.a;
+
+  const divider = prevLeftId && prevLeftId !== currentLeftId
+    ? `<div class="matches-group-divider"></div>`
+    : '';
+
+  prevLeftId = currentLeftId;
+
+  return divider + renderMatchRow(m, {
+    active: pairKey(m.a, m.b) === activeKey,
+    withDelete: true
+  });
+}).join('');
+
+  $('matchesList').innerHTML = matchRows;
+
+  document.querySelectorAll('.matches-row-card').forEach(card => {
+    card.addEventListener('click', () => {
+      activeKey = card.dataset.key;
+      const [a,b] = activeKey.split('-');
+      selectedA = a;
+      selectedB = b;
+      renderAll(false);
+    });
+  });
+}
+
+function playerRecentGames(playerId, limit = 10){
+  return sortByDateDesc(
+    filterGamesByRange(GAME_RESULTS).filter(g => g.playerA === playerId || g.playerB === playerId)
+  ).slice(0, limit);
+}
+
+
+
+function renderDetail(){
+  const match = MATCHUPS.find(m => pairKey(m.a,m.b) === activeKey);
+
+  if(!match){
+    $('matchDetail').innerHTML = `<div class="matches-empty">상대전적 데이터가 없습니다.</div>`;
+    return;
+  }
+
+  const pa = player(match.a);
+  const pb = player(match.b);
+  if(!pa || !pb){
+    $('matchDetail').innerHTML = `<div class="matches-empty">선수 정보를 찾을 수 없습니다.</div>`;
+    return;
+  }
+
+  const total = match.aWin + match.bWin;
+  const advantage =
+    match.aWin > match.bWin ? `${pa.name} 우세` :
+    match.aWin < match.bWin ? `${pb.name} 우세` :
+    '동률';
+
+  $('matchDetail').innerHTML = `
+    <div class="matches-detail-top simple">
+      ${renderPlayerProfileCard(pa, 'a')}
+
+      <div class="matches-center-score compact">
+        <div class="matches-vs-label">${rangeLabel()} 전적</div>
+        <div class="matches-big-score">
+          <span class="blue">${match.aWin}</span>
+          <span class="colon">:</span>
+          <span class="red">${match.bWin}</span>
+        </div>
+        <div class="matches-summary-text">${advantage} · 총 ${total}경기</div>
+      </div>
+
+      ${renderPlayerProfileCard(pb, 'b')}
+    </div>
+
+    ${renderPlayerCompareStats(pa, pb)}
+
+    <div class="matches-recent-table-section">
+      ${renderFullRecentTable(pa, 'a')}
+      ${renderFullRecentTable(pb, 'b')}
+    </div>
+  `;
+}
+
+function rangeLabel(){
+  if(recordRange === 'all') return '전체';
+  if(recordRange === '2026') return '2026년';
+  return '최근 3개월';
+}
+
+function renderPlayerProfileCard(p, side){
+  return `
+    <div class="matches-player-profile ${side === 'a' ? 'a-side' : 'b-side'}">
+      <div class="matches-profile-name">
+        ${raceIconHtml(p.raceCode)}
+        <strong>${esc(p.name)}</strong>
+        <small>${p.tier}${raceShort(p.raceCode)}</small>
+      </div>
+      <span>${esc(p.university)}</span>
+      <span>${esc(p.race)}</span>
+      <span>${p.tier}티어</span>
+    </div>
+  `;
+}
+
+function getPlayerTotalStats(playerId){
+  const stat = {
+    total: { win:0, lose:0 },
+    P: { win:0, lose:0 },
+    Z: { win:0, lose:0 },
+    T: { win:0, lose:0 }
+  };
+
+  filterGamesByRange(GAME_RESULTS).forEach(g => {
+    if(g.playerA !== playerId && g.playerB !== playerId) return;
+
+    const opponentId = g.playerA === playerId ? g.playerB : g.playerA;
+    const opponent = player(opponentId);
+    if(!opponent) return;
+
+    const isWin = g.winner === playerId;
+    const raceCode = opponent.raceCode;
+
+    if(isWin){
+      stat.total.win += 1;
+      if(stat[raceCode]) stat[raceCode].win += 1;
+    }else{
+      stat.total.lose += 1;
+      if(stat[raceCode]) stat[raceCode].lose += 1;
+    }
+  });
+
+  return stat;
+}
+
+function renderPlayerCompareStats(pa, pb){
+  const a = getPlayerTotalStats(pa.id);
+  const b = getPlayerTotalStats(pb.id);
+
+  const rows = [
+    { label:'총 전적', code:null, left:a.total, right:b.total },
+    { label:'vs Protoss', code:'P', left:a.P, right:b.P },
+    { label:'vs Zerg', code:'Z', left:a.Z, right:b.Z },
+    { label:'vs Terran', code:'T', left:a.T, right:b.T }
+  ];
+
+  return `
+    <div class="matches-compare-table">
+      ${rows.map(row => `
+        <div class="matches-compare-row">
+          <div>${row.left.win}승 ${row.left.lose}패</div>
+          <div>
+            ${row.code ? raceIconHtml(row.code, 'stat') : ''}
+            <span>${row.label}</span>
+          </div>
+          <div>${row.right.win}승 ${row.right.lose}패</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderFullRecentTable(p, side){
+  const rows = playerRecentGames(p.id, 10).map(g => {
+    const opponentId = g.playerA === p.id ? g.playerB : g.playerA;
+    const opponent = player(opponentId);
+    const result = g.winner === p.id ? '승' : '패';
+
+    return `
+      <tr>
+        <td>${esc(g.date)}</td>
+        <td><span class="matches-result-badge ${result === '승' ? 'win' : 'lose'}">${result}</span></td>
+        <td>${playerLabel(opponent)}</td>
+        <td>${esc(opponent?.university || '-')}</td>
+        <td>${raceIconHtml(opponent?.raceCode || '')}<span>${raceShort(opponent?.raceCode || '')}</span></td>
+        <td>${opponent?.tier || '-'}티어</td>
+        <td>${esc(g.map)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <div class="matches-full-recent ${side === 'a' ? 'a-side' : 'b-side'}">
+      <div class="matches-table-title">${esc(p.name)} 최근 전적</div>
+      <div class="matches-table-wrap">
+        <table class="matches-table matches-full-recent-table">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>승패</th>
+              <th>상대</th>
+              <th>소속</th>
+              <th>종족</th>
+              <th>티어</th>
+              <th>맵</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows || `<tr><td colspan="7">최근 전적이 없습니다.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderAll(syncPools = true){
+  if(syncPools) renderPlayerPools();
+
+  renderDisplayedMatches();
+
+  if(activeKey){
+    const current = DISPLAYED_MATCHES.find(m => pairKey(m.a, m.b) === activeKey);
+    if(current) renderRealDetail(current);
+  }
+}
+
+
+function bindSearchInput(inputId, side){
+  const input = $(inputId);
+  const suggest = $(side === 'A' ? 'playerSuggestA' : 'playerSuggestB');
+
+  function closeSuggest(){
+    suggest.innerHTML = '';
+    suggest.style.display = 'none';
+  }
+
+  function selectPlayer(playerId){
+    addPlayerToSide(side, playerId);
+    input.value = '';
+    closeSuggest();
+  }
+
+  function renderSuggest(){
+    const keyword = input.value.trim().toLowerCase();
+
+    if(!keyword){
+      closeSuggest();
+      return;
+    }
+
+    const list = PLAYERS
+      .filter(p => String(p.name || '').toLowerCase().includes(keyword))
+      .slice(0, 8);
+
+    if(!list.length){
+      closeSuggest();
+      return;
+    }
+
+    suggest.style.display = 'block';
+    suggest.innerHTML = list.map(p => `
+      <button type="button" class="matches-suggest-item" data-player="${esc(p.id)}">
+        ${esc(p.name)}
+      </button>
+    `).join('');
+
+    suggest.querySelectorAll('.matches-suggest-item').forEach(btn => {
+      btn.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        selectPlayer(btn.dataset.player);
+      });
+    });
+  }
+
+  input.addEventListener('input', renderSuggest);
+
+  input.addEventListener('keydown', (e) => {
+    if(e.key !== 'Enter') return;
+
+    const first = suggest.querySelector('.matches-suggest-item');
+    if(first){
+      e.preventDefault();
+      selectPlayer(first.dataset.player);
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    setTimeout(closeSuggest, 150);
+  });
+
+  closeSuggest();
+}
+
+
+
+function getMatchedTiers(){
+  const tiersA = new Set(selectedPlayers.A.map(p => String(p.tier)));
+  const tiersB = new Set(selectedPlayers.B.map(p => String(p.tier)));
+
+  return [...tiersA].filter(t => tiersB.has(t));
+}
+
+function openTierMatchModal(){
+  const tiers = getMatchedTiers();
+  const wrap = $('tierMatchOptions');
+
+  pickedTiers = [];
+
+  if(!tiers.length){
+    wrap.innerHTML = `<div class="matches-empty">매칭 가능한 티어가 없습니다.</div>`;
+  }else{
+    wrap.innerHTML = tiers.map(t => `
+      <button type="button" class="tier-match-option" data-tier="${esc(t)}">
+        ${displayTier(t)}
+      </button>
+    `).join('');
+  }
+
+  wrap.querySelectorAll('.tier-match-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      pickedTiers = [...wrap.querySelectorAll('.tier-match-option.active')]
+        .map(el => el.dataset.tier);
+    });
+  });
+
+  $('tierMatchModal').classList.remove('hidden');
+}
+
+function closeTierMatchModal(){
+  $('tierMatchModal').classList.add('hidden');
+}
+
+
+
+$('addMatchButton').addEventListener(
+  'click',
+  renderPickedMatch
+);
+
+
+
+
+function bindEvents(){
+
+$('viewMatchButton').addEventListener('click', openTierMatchModal);
+$('tierModalClose').addEventListener('click', closeTierMatchModal);
+$('tierMatchApply').addEventListener('click', applyTierMatches);
+
+
+  bindSearchInput('playerSearchA','A');
+  bindSearchInput('playerSearchB','B');
+
+  $('univSelectA').addEventListener('change', () => {
+    setUniversityPlayers('A', $('univSelectA').value);
+  });
+
+  $('univSelectB').addEventListener('change', () => {
+    setUniversityPlayers('B', $('univSelectB').value);
+  });
+
+$('resetAButton').addEventListener('click', () => {
+  $('playerSearchA').value = '';
+  $('univSelectA').value = '소속 선택';
+  $('playerSuggestA').innerHTML = '';
+  $('playerSuggestA').style.display = 'none';
+  clearSidePlayers('A');
+});
+
+$('resetBButton').addEventListener('click', () => {
+  $('playerSearchB').value = '';
+  $('univSelectB').value = '소속 선택';
+  $('playerSuggestB').innerHTML = '';
+  $('playerSuggestB').style.display = 'none';
+  clearSidePlayers('B');
+});
+
+
+  function clearSidePlayers(side){
+  selectedPlayers[side] = [];
+
+  if(side === 'A') selectedA = '';
+  if(side === 'B') selectedB = '';
+
+  renderAll(true);
+}
+
+
+ 
+  const rangeSelect = $('recordRangeSelect');
+
+  if(rangeSelect){
+    rangeSelect.addEventListener('change', () => {
+      recordRange = rangeSelect.value;
+      renderAll(false);
+    });
+  }
+}
+
+
+async function applyTierMatches(){
+  closeTierMatchModal();
+
+  const box = $('matchesList');
+  const selectedSet = new Set(pickedTiers.map(String));
+
+  box.innerHTML = `
+  <div class="matches-empty matches-loading">
+    선택한 티어 상대전적 불러오는 중...
+  </div>
+`;
+
+$('matchDetail').innerHTML = `
+  <div class="matches-empty matches-loading">
+    상세 전적 불러오는 중...
+  </div>
+`;
+
+  const pairTargets = [];
+
+  selectedPlayers.A.forEach(a => {
+    selectedPlayers.B.forEach(b => {
+      if(String(a.tier) !== String(b.tier)) return;
+      if(!selectedSet.has(String(a.tier))) return;
+
+      pairTargets.push([a.id, b.id]);
+    });
+  });
+
+  if(!pairTargets.length){
+    box.innerHTML = '';
+    $('matchDetail').innerHTML = '';
+    activeKey = '';
+    return;
+  }
+
+  const pairs = await Promise.all(
+    pairTargets.map(([aId, bId]) => getHeadToHeadMatchup(aId, bId))
+  );
+
+const validPairs = pairs.filter(Boolean);
+
+if(!validPairs.length){
+  box.innerHTML = '';
+  $('matchDetail').innerHTML = '';
+  activeKey = '';
+  return;
+}
+
+DISPLAYED_MATCHES = validPairs;
+activeKey = pairKey(validPairs[0].a, validPairs[0].b);
+
+renderDisplayedMatches();
+renderRealDetail(validPairs[0]);
+
+  activeKey = pairKey(validPairs[0].a, validPairs[0].b);
+  renderRealDetail(validPairs[0]);
+
+  document.querySelectorAll('.matches-row-card').forEach((card, index) => {
+    card.addEventListener('click', () => {
+      const match = validPairs[index];
+      activeKey = pairKey(match.a, match.b);
+
+      document.querySelectorAll('.matches-row-card')
+        .forEach(el => el.classList.remove('active'));
+
+      card.classList.add('active');
+
+      renderRealDetail(match);
+    });
+  });
+}
+
+
+function renderMatchRow(m, options = {}){
+  const a = player(m.a);
+  const b = player(m.b);
+  if(!a || !b) return '';
+
+  const key = pairKey(m.a, m.b);
+  const total = m.aWin + m.bWin;
+  const aRate = total ? (m.aWin / total) * 100 : 0;
+  const bRate = total ? (m.bWin / total) * 100 : 0;
+  const diff = Math.abs(aRate - bRate);
+
+const aAdv = diff >= 20 && aRate > bRate
+  ? `<span class="matches-advantage left">우세</span>`
+  : '';
+
+const bAdv = diff >= 20 && bRate > aRate
+  ? `<span class="matches-advantage right">우세</span>`
+  : '';
+
+ const deleteButton = options.withDelete
+  ? `<button class="matches-delete-btn" type="button" data-delete-key="${key}">×</button>`
+  : '';
+
+  return `
+<article
+  class="matches-row-card match-grid-row
+  ${options.active ? 'active' : ''}
+  ${options.groupStart ? 'group-start' : ''}"
+  data-key="${key}">
+
+    <div class="match-player match-player-a">
+      <strong class="match-name">${esc(a.name)}</strong>
+      <span class="match-tier">${displayTier(a.tier)} ${raceShort(a.raceCode)}</span>
+    </div>
+
+    <div class="match-adv-cell match-adv-a">
+      ${aAdv}
+    </div>
+
+    <div class="matches-score">
+      <span class="blue">${m.aWin}</span>
+      <span class="colon">:</span>
+      <span class="red">${m.bWin}</span>
+    </div>
+
+    <div class="match-adv-cell match-adv-b">
+      ${bAdv}
+    </div>
+
+    <div class="match-player match-player-b">
+      <span class="match-tier">${displayTier(b.tier)} ${raceShort(b.raceCode)}</span>
+      <strong class="match-name">${esc(b.name)}</strong>
+    </div>
+
+    <div class="match-delete-cell">
+      ${deleteButton}
+    </div>
+
+  </article>
+`;
+}
+
+async function initMatchesPage(){
+  try{
+    await loadTierExcel();
+    fillUniversitySelects();
+    bindEvents();
+    renderPlayerPools();
+    renderMatchesList();
+    renderDetail();
+  }catch(err){
+    console.error('상대전적 페이지 초기화 실패:', err);
+    const message = err && err.message ? err.message : String(err);
+    const listBox = $('matchesList');
+    const detailBox = $('matchDetail');
+
+    if(listBox){
+      listBox.innerHTML = `<div class="matches-empty">선수 목록을 불러오지 못했습니다.<br>${esc(message)}</div>`;
+    }
+
+    if(detailBox){
+      detailBox.innerHTML = `<div class="matches-empty">상세 전적 데이터가 없습니다.</div>`;
+    }
+  }
+}
+
+window.addEventListener('DOMContentLoaded', initMatchesPage);
+
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.matches-delete-btn');
+  if(!btn) return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  const key = btn.dataset.deleteKey;
+  if(!key) return;
+
+  DISPLAYED_MATCHES = DISPLAYED_MATCHES.filter(m => pairKey(m.a, m.b) !== key);
+  LOADING_MATCH_KEYS.delete(key);
+
+  const row = btn.closest('.matches-row-card');
+  if(row) row.remove();
+
+  if(activeKey === key){
+    activeKey = DISPLAYED_MATCHES[0]
+      ? pairKey(DISPLAYED_MATCHES[0].a, DISPLAYED_MATCHES[0].b)
+      : '';
+
+    if(DISPLAYED_MATCHES[0]){
+      renderRealDetail(DISPLAYED_MATCHES[0]);
+    }else{
+      $('matchDetail').innerHTML = `<div class="matches-empty">상대전적 데이터가 없습니다.</div>`;
+    }
+  }
+});
+
+
+</script>
+</body>
 </html>
