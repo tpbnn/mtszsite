@@ -145,7 +145,13 @@ async function loadTierExcel(){
     station: `https://ch.sooplive.co.kr/${String(row['방송국ID'] || '').trim()}`,
     live: false
   })).filter(m => m.name).sort((a,b) => a.order - b.order);
-  setupSelects();
+setupSelects();
+
+const liveFilter = document.getElementById('liveFilter');
+if(liveFilter){
+  liveFilter.value = 'live';
+}
+
 renderTierCards();
 await loadTierLiveWithCache();
 }
@@ -845,6 +851,8 @@ function startAutoRefresh(){
 async function init(){
   setActiveNav();
 
+
+  
   const page = pageName();
 
   try{
@@ -868,8 +876,15 @@ if(page === 'members'){
 }
 
     if(page === 'tiers'){
-      await loadTierExcel();
-    }
+  await loadTierExcel();
+
+  const liveFilter = document.getElementById('liveFilter');
+
+  if(liveFilter){
+    liveFilter.value = 'live';
+    renderTierCards();
+  }
+}
 
     if(page === 'records'){
       renderHeadToHead();
