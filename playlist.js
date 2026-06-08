@@ -869,3 +869,13 @@ window.importJsonTextToFirebase = async function(){
 
   await reloadAll();
 };
+
+function setActiveNav(){
+  const page = document.body.dataset.page || "";
+
+  document.querySelectorAll(".nav a").forEach(a => {
+    a.classList.toggle("active", a.dataset.page === page);
+  });
+}
+
+window.addEventListener("load", setActiveNav);
