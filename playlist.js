@@ -797,7 +797,14 @@ async function initPlaylist(){
 window.addEventListener("load", initPlaylist);
 
 window.importJsonTextToFirebase = async function(){
-  const text = document.getElementById("importJsonText").value.trim();
+  const textarea = document.getElementById("importJsonText");
+
+  if(!textarea){
+    alert("JSON 입력칸을 찾을 수 없습니다.");
+    return;
+  }
+
+  const text = textarea.value.trim();
 
   if(!text){
     alert("JSON 텍스트를 붙여넣어 주세요.");
@@ -847,7 +854,8 @@ window.importJsonTextToFirebase = async function(){
   }
 
   alert("Firebase 이전이 완료되었습니다.");
-  document.getElementById("importJsonText").value = "";
+
+  textarea.value = "";
 
   await reloadAll();
 };
