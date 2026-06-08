@@ -804,12 +804,22 @@ window.importJsonTextToFirebase = async function(){
     return;
   }
 
-  const text = textarea.value.trim();
+  let text = textarea.value.trim();
 
   if(!text){
     alert("JSON 텍스트를 붙여넣어 주세요.");
     return;
   }
+
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+
+  if(start === -1 || end === -1 || end <= start){
+    alert("JSON 본문을 찾을 수 없습니다.");
+    return;
+  }
+
+  text = text.slice(start, end + 1);
 
   let localData;
 
@@ -830,10 +840,10 @@ window.importJsonTextToFirebase = async function(){
     return;
   }
 
-  for(const playlist of localData.playlists){
+  for(const [playlistIndex, playlist] of localData.playlists.entries()){
     const playlistRef = await addDoc(collection(db, "playlists"), {
       name: playlist.name || "이름 없는 재생목록",
-      order: Number(playlist.order || 1),
+      order: Number(playlist.order || localData.playlists.length - playlistIndex),
       public: playlist.public !== false,
       createdAt: new Date().toISOString()
     });
