@@ -796,21 +796,34 @@ async function initPlaylist(){
 
 window.addEventListener("load", initPlaylist);
 
-window.importLocalStorageToFirebase = async function(){
-  const raw = localStorage.getItem("calm-playlist-data-v1");
+window.importJsonTextToFirebase = async function(){
+  const text = document.getElementById("importJsonText").value.trim();
 
-  if(!raw){
-    alert("localStorage에 저장된 플레이리스트 데이터가 없습니다.");
+  if(!text){
+    alert("JSON 텍스트를 붙여넣어 주세요.");
     return;
   }
 
-  if(!confirm("기존 localStorage 데이터를 Firebase로 옮길까요? 중복 저장될 수 있습니다.")){
+  let localData;
+
+  try{
+    localData = JSON.parse(text);
+  }catch(error){
+    alert("JSON 형식이 올바르지 않습니다.");
+    console.error(error);
     return;
   }
 
-  const localData = JSON.parse(raw);
+  if(!localData.playlists || !Array.isArray(localData.playlists)){
+    alert("playlists 배열이 없습니다.");
+    return;
+  }
 
-  for(const playlist of localData.playlists || []){
+  if(!confirm("붙여넣은 JSON 데이터를 Firebase로 옮길까요? 중복 저장될 수 있습니다.")){
+    return;
+  }
+
+  for(const playlist of localData.playlists){
     const playlistRef = await addDoc(collection(db, "playlists"), {
       name: playlist.name || "이름 없는 재생목록",
       order: Number(playlist.order || 1),
@@ -834,5 +847,7 @@ window.importLocalStorageToFirebase = async function(){
   }
 
   alert("Firebase 이전이 완료되었습니다.");
+  document.getElementById("importJsonText").value = "";
+
   await reloadAll();
 };

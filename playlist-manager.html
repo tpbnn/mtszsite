@@ -148,8 +148,17 @@
   </main>
 </div>
 
-<button class="manager-btn" onclick="importLocalStorageToFirebase()">
-  기존 localStorage 데이터 Firebase로 옮기기
+<div class="form-row">
+  <label for="importJsonText">localStorage JSON 붙여넣기</label>
+  <textarea
+    id="importJsonText"
+    rows="8"
+    placeholder='{"playlists":[...]}'
+  ></textarea>
+</div>
+
+<button class="manager-btn" onclick="importJsonTextToFirebase()">
+  붙여넣은 JSON Firebase로 옮기기
 </button>
 
 <footer class="footer">
