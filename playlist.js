@@ -795,3 +795,44 @@ async function initPlaylist(){
 }
 
 window.addEventListener("load", initPlaylist);
+
+window.importLocalStorageToFirebase = async function(){
+  const raw = localStorage.getItem("calm-playlist-data-v1");
+
+  if(!raw){
+    alert("localStorage에 저장된 플레이리스트 데이터가 없습니다.");
+    return;
+  }
+
+  if(!confirm("기존 localStorage 데이터를 Firebase로 옮길까요? 중복 저장될 수 있습니다.")){
+    return;
+  }
+
+  const localData = JSON.parse(raw);
+
+  for(const playlist of localData.playlists || []){
+    const playlistRef = await addDoc(collection(db, "playlists"), {
+      name: playlist.name || "이름 없는 재생목록",
+      order: Number(playlist.order || 1),
+      public: playlist.public !== false,
+      createdAt: new Date().toISOString()
+    });
+
+    for(const video of playlist.videos || []){
+      await addDoc(collection(db, "playlistVideos"), {
+        title: video.title || "제목 없는 영상",
+        platform: video.platform || "youtube",
+        url: video.url || "",
+        thumb: video.thumb || "",
+        playlistId: playlistRef.id,
+        priority: Number(video.priority || 1),
+        public: video.public !== false,
+        videoId: video.videoId || getVideoIdByPlatform(video.platform || "youtube", video.url || ""),
+        createdAt: new Date().toISOString()
+      });
+    }
+  }
+
+  alert("Firebase 이전이 완료되었습니다.");
+  await reloadAll();
+};
