@@ -789,7 +789,38 @@ async function loadAdminMembers(){
   const el = document.getElementById('adminMemberList'); if(!el) return;
   const querySnapshot = await getDocs(collection(db, 'members'));
   const list = []; querySnapshot.forEach(docSnap => list.push({id:docSnap.id, ...docSnap.data()}));
-  el.innerHTML = list.sort((a,b)=>Number(a.order||999)-Number(b.order||999)).map(m => `<div class="member-card"><div class="top"><div><div class="name">${Number(m.order || 999)}. ${escapeHtml(m.name)}</div><div class="meta">SOOP ID: ${escapeHtml(m.soopId || '')}</div><div class="meta">종족: ${escapeHtml(raceName[normalizeRace(m.race)] || m.race || '')}</div></div></div><p class="meta" style="line-height:1.6;margin-top:12px;">${escapeHtml(m.intro || '소개 없음')}</p><button class="ghost" style="margin-top:12px;width:100%;" onclick="editMemberFromFirebase('${m.id}')">수정</button><button class="ghost" style="margin-top:8px;width:100%;" onclick="deleteMemberFromFirebase('${m.id}')">삭제</button></div>`).join('');
+  el.innerHTML = list.sort((a,b)=>Number(a.order||999)-Number(b.order||999)).map(m => `<div class="member-card"><div class="top"><div><div class="name">${Number(m.order || 999)}. ${escapeHtml(m.name)}</div><div class="meta">SOOP ID: ${escapeHtml(m.soopId || '')}</div><div class="meta">종족: ${escapeHtml(raceName[normalizeRace(m.race)] || m.race || '')}</div></div></div><p class="meta" style="line-height:1.6;margin-top:12px;">${escapeHtml(m.intro || '소개 없음')}</p>
+  
+  
+  
+  
+  
+  
+  
+ <button class="ghost"
+onclick="editMemberFromFirebase('${m.id}')">
+수정
+</button>
+
+<button
+  class="${m.multiviewRecommend ? 'primary' : 'ghost'}"
+  style="margin-top:8px;width:100%;"
+  onclick="toggleMultiviewRecommend('${m.id}')"
+>
+  ${m.multiviewRecommend ? '⭐ 추천중' : '멀티뷰 추천'}
+</button>
+
+<button class="ghost"
+style="margin-top:8px;width:100%;"
+onclick="deleteMemberFromFirebase('${m.id}')">
+삭제
+</button>
+  
+  
+  
+  
+  
+  </div>`).join('');
 }
 async function deleteMemberFromFirebase(id){
   if(!confirm('이 멤버를 삭제할까요?')) return;
@@ -804,6 +835,20 @@ async function editMemberFromFirebase(id){
   const intro = prompt('멤버 소개', target.intro || ''); if(intro === null) return;
   await updateDoc(doc(db, 'members', id), { name:name.trim(), soopId:soopId.trim(), order, intro:intro.trim(), station:`https://ch.sooplive.co.kr/${soopId.trim()}` });
   alert('수정되었습니다.'); await loadMembersFromFirebase(); loadAdminMembers();
+}
+
+async function toggleMultiviewRecommend(id){
+
+  const target = members.find(m => m.id === id);
+
+  if(!target) return;
+
+  await updateDoc(doc(db, 'members', id), {
+    multiviewRecommend: !target.multiviewRecommend
+  });
+
+  await loadMembersFromFirebase();
+  loadAdminMembers();
 }
 
 function startAutoRefresh(){
@@ -912,7 +957,22 @@ if(page === 'members'){
 document.addEventListener('change', e => { if(['matchA','matchB','matchMap'].includes(e.target.id)) renderPredictionBox(); });
 window.addEventListener('load', init);
 
-Object.assign(window, { toggleTheme, renderTierCards, refreshLiveStatus, refreshPostsFromSoop, loadMorePosts, addSchedule, addComment, renderHeadToHead, addMatchResult, saveMemberToFirebase, loadAdminMembers, deleteMemberFromFirebase, editMemberFromFirebase });
+Object.assign(window,{
+  toggleTheme,
+  renderTierCards,
+  refreshLiveStatus,
+  refreshPostsFromSoop,
+  loadMorePosts,
+  addSchedule,
+  addComment,
+  renderHeadToHead,
+  addMatchResult,
+  saveMemberToFirebase,
+  loadAdminMembers,
+  deleteMemberFromFirebase,
+  editMemberFromFirebase,
+  toggleMultiviewRecommend
+});
 
 
 

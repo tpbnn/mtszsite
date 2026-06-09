@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>멀티뷰 플레이어</title>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #streams {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      align-content: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+
+    #streams iframe {
+      flex-grow: 0;
+      border: 0;
+      background: #000;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="streams"></div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const ids = (params.get("ids") || "")
+      .split(",")
+      .map(id => id.trim())
+      .filter(Boolean)
+      .slice(0, 4);
+
+    const streams = document.getElementById("streams");
+
+    streams.innerHTML = ids.map(id => `
+      <iframe
+        src="https://play.sooplive.com/${id}/direct?fromApi=1"
+        name="${id}"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen
+        allow="autoplay; fullscreen; encrypted-media; local-network-access; loopback-network"
+      ></iframe>
+    `).join("");
+
+    const iframes = streams.querySelectorAll("iframe");
+    const n = iframes.length;
+
+    function adjustLayout() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      let bestWidth = 0;
+      let bestHeight = 0;
+
+      for (let cols = 1; cols <= n; cols++) {
+        const rows = Math.ceil(n / cols);
+
+        let maxWidth = Math.floor(width / cols);
+        let maxHeight = Math.floor(height / rows);
+
+        if ((maxWidth * 9) / 16 < maxHeight) {
+          maxHeight = Math.floor((maxWidth * 9) / 16);
+        } else {
+          maxWidth = Math.floor((maxHeight * 16) / 9);
+        }
+
+        if (maxWidth > bestWidth) {
+          bestWidth = maxWidth;
+          bestHeight = maxHeight;
+        }
+      }
+
+      iframes.forEach((iframe) => {
+        iframe.style.width = `${bestWidth}px`;
+        iframe.style.height = `${bestHeight}px`;
+      });
+    }
+
+    adjustLayout();
+    window.addEventListener("resize", adjustLayout);
+
+    window.addEventListener("message", (e) => {
+      if (e.origin !== "https://play.sooplive.com") return;
+
+      const idx = Array.prototype.findIndex.call(
+        iframes,
+        f => e.source === f.contentWindow
+      );
+
+      if (idx < 0) return;
+
+      if (e.data.cmd === "PonReady") {
+        e.source.postMessage({
+          cmd: "Pload",
+          id: iframes[idx].name,
+          mutePlay: false,
+          showChat: false,
+          autoPlay: true,
+          isAdShow: true,
+          showQualityBox: true,
+          fromApi: "1"
+        }, "https://play.sooplive.com");
+
+        setTimeout(adjustLayout, 300);
+      }
+    });
+  </script>
+</body>
+</html>
