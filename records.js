@@ -33,12 +33,14 @@ window.searchPlayer = searchPlayer;
 
 async function loadMembers(){
 
-  const response = await fetch("tier.xlsx");
-  const arrayBuffer = await response.arrayBuffer();
+  const TIER_SHEET_URL = "https://docs.google.com/spreadsheets/d/1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo/gviz/tq?tqx=out:csv&sheet=tier";
 
-  const workbook = XLSX.read(arrayBuffer, {
-    type: "array"
-  });
+const response = await fetch(TIER_SHEET_URL);
+const csvText = await response.text();
+
+const workbook = XLSX.read(csvText, {
+  type: "string"
+});
 
   const sheet =
     workbook.Sheets[workbook.SheetNames[0]];

@@ -129,9 +129,11 @@ async function loadMembersFromFirebase(){
 
 async function loadTierExcel(){
   if(!window.XLSX){ console.error('XLSX 라이브러리가 로드되지 않았습니다.'); return; }
-  const response = await fetch('./tier.xlsx');
-  const arrayBuffer = await response.arrayBuffer();
-  const workbook = XLSX.read(arrayBuffer, { type:'array' });
+  const TIER_SHEET_URL = "https://docs.google.com/spreadsheets/d/1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo/gviz/tq?tqx=out:csv&sheet=tier";
+
+const response = await fetch(TIER_SHEET_URL);
+const csvText = await response.text();
+const workbook = XLSX.read(csvText, { type: "string" });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(sheet);
   tierMembers = rows.map((row, index) => ({

@@ -196,16 +196,18 @@ async function loadTierExcel(){
     return;
   }
 
-  const res = await fetch('./tier.xlsx');
+const TIER_SHEET_URL = "https://docs.google.com/spreadsheets/d/1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo/gviz/tq?tqx=out:csv&sheet=tier";
 
-  if(!res.ok){
-    console.error('tier.xlsx 로딩 실패:', res.status, res.statusText);
-    alert('tier.xlsx 파일을 불러오지 못했습니다. matches.html과 같은 폴더에 tier.xlsx가 있는지 확인해주세요.');
-    return;
-  }
+const res = await fetch(TIER_SHEET_URL);
 
-  const buffer = await res.arrayBuffer();
-  const workbook = XLSX.read(buffer, { type:'array' });
+if(!res.ok){
+  console.error('구글 스프레드시트 tier 로딩 실패:', res.status, res.statusText);
+  alert('tier 시트를 불러오지 못했습니다.');
+  return;
+}
+
+const csvText = await res.text();
+const workbook = XLSX.read(csvText, { type:'string' });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(sheet, { defval:'' });
 
