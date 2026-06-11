@@ -5,26 +5,54 @@ let selectedResult = "all";
 
 async function loadMatchResult(){
 
-  const res = await fetch("match_result.xlsx");
-  const buf = await res.arrayBuffer();
+  const SHEET_URL = "https://docs.google.com/spreadsheets/d/1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo/gviz/tq?tqx=out:csv&sheet=match_result";
 
-  const workbook = XLSX.read(buf, { type:"array" });
+  const res = await fetch(SHEET_URL);
+  const csvText = await res.text();
 
+  const workbook = XLSX.read(csvText, { type: "string" });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
   matchRows = XLSX.utils.sheet_to_json(sheet, {
-    header:1,
-    defval:""
+    header: 1,
+    defval: ""
   });
 
-initMatchFilters();
+  initMatchFilters();
 
-renderTeamStatsSummary();
+  renderTeamStatsSummary();
   renderTeamResult();
-
 }
 
 loadMatchResult();
+
+
+
+
+function formatDate(value){
+  if(!value) return "";
+
+  // 구글시트/엑셀 날짜 숫자 처리
+  if(!isNaN(value) && Number(value) > 30000){
+    const date = new Date((Number(value) - 25569) * 86400 * 1000);
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  }
+
+  return String(value).trim();
+}
+
+function dateToTime(value){
+  return new Date(formatDate(value).replace(/\./g, "-")).getTime();
+}
+
+
+
+
+
+
 
 function setMatchTab(tab){
 
@@ -219,7 +247,7 @@ function renderTeamResult(){
     if(!row[0]) continue;
 
     const match = {
-      date: row[0],
+      date: formatDate(row[0]),
       opponent: row[1],
       type: row[2],
       result: row[3],
@@ -236,16 +264,17 @@ function renderTeamResult(){
 
       if(j !== i && r[0]) break;
 
-      if(r[9]){
-match.sets.push({
-  set: r[9],
-  player: r[10],
-  race: r[11],
-  result: r[12],
-  enemy: r[13],
-  url: String(r[14] || "").trim()
-});
-      }
+      if(r[10]){
+  match.sets.push({
+    no: Number(r[8]) || 9999,   // I열: 정렬용
+    set: r[9],                  // J열: 표시용
+    player: r[10],
+    race: r[11],
+    result: r[12],
+    enemy: r[13],
+    url: String(r[14] || "").trim()
+  });
+}
 
       j++;
     }
@@ -257,7 +286,7 @@ match.sets.push({
   matches
     .filter(m => selectedMatchTypes.size === 0 || selectedMatchTypes.has(m.type))
 .filter(m => selectedResult === "all" || m.result === selectedResult)
-    .sort((a,b) => new Date(String(b.date).replace(/\./g,"-")) - new Date(String(a.date).replace(/\./g,"-")))
+    .sort((a,b) => dateToTime(b.date) - dateToTime(a.date))
     .forEach(match => {
       const card = document.createElement("div");
       card.className = "team-match-card";
@@ -274,7 +303,9 @@ match.sets.push({
         </div>
 
         <div class="set-list collapsed">
-          ${match.sets.map(set => `
+          ${match.sets
+  .sort((a, b) => a.no - b.no)
+  .map(set => `
       <div class="set-row">
   <div class="set-no">${set.set}</div>
   <div class="set-player">${set.player}</div>
@@ -353,7 +384,7 @@ function renderPlayerResult(){
     if(!row[0]) continue;
     if(!["대학대전", "미니대전"].includes(row[2])) continue;
 
-    const date = row[0];
+    const date = formatDate(row[0]);
     const opponent = row[1];
     const type = row[2];
 
@@ -391,9 +422,7 @@ function renderPlayerResult(){
   };
 
 games.sort((a, b) => {
-  const dateA = new Date(String(a.date).replace(/\./g, "-"));
-  const dateB = new Date(String(b.date).replace(/\./g, "-"));
-  return dateB - dateA;
+  return dateToTime(b.date) - dateToTime(a.date);
 });
 
   const total = calc(games);
