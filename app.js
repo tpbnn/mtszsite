@@ -136,7 +136,7 @@ const csvText = await response.text();
 const workbook = XLSX.read(csvText, { type: "string" });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" })
-  .filter(row => String(row["소속"] || "").trim().toLowerCase() !== "iferror");
+  .filter(row => String(row["소속"] || "").trim().toLowerCase() !== "NONE");
   tierMembers = rows.map((row, index) => ({
     order: Number(row['순번'] || index + 1),
     name: String(row['이름'] || ''),
