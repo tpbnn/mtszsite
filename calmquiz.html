@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>캄몬스타즈 - 스타퀴즈쇼</title>
+<link rel="icon" href="./favicon.png" type="image/png" />
+<link rel="stylesheet" href="common.css" />
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+
+#page-calmquiz{
+  display:block;
+}
+
+.minigame-tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+  margin-bottom:20px;
+}
+
+.minigame-tab{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:48px;
+  padding:0 20px;
+  border-radius:14px;
+  text-decoration:none;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+  transition:.15s ease;
+}
+
+.minigame-tab:hover{
+  transform:translateY(-2px);
+  border-color:#00A2FF;
+}
+
+.minigame-tab.active{
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  border-color:transparent;
+  color:#fff;
+}
+
+body.light .minigame-tab{
+  background:#fff;
+  color:#0f172a;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+body.light .minigame-tab.active{
+  color:#fff;
+}
+
+.quiz-shell{
+  min-height:820px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 16px 36px rgba(0,0,0,.14);
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:26px;
+}
+
+body.light .quiz-shell{
+  background:#fff;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+.quiz-card{
+  width:min(1180px,100%);
+  min-height:320px;
+  /* background:rgba(255,255,255,.06); */
+  /* border:1px solid rgba(255,255,255,.12); */
+  border-radius:26px;
+  /* box-shadow:0 18px 44px rgba(0,0,0,.16); */
+  padding:54px 30px;
+  text-align:center;
+}
+
+body.light .quiz-card{
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+}
+
+.screen{display:none}
+.screen.active{display:block}
+
+.kicker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:38px;
+  padding:0 18px;
+  border-radius:999px;
+  background:rgba(0,162,255,.16);
+  color:#7dd3fc;
+  font-size:15px;
+  font-weight:1000;
+  margin-bottom:24px;
+}
+
+body.light .kicker{
+  background:#eef2ff;
+  color:#3730a3;
+}
+
+.intro-title{
+  font-size:42px;
+  line-height:1.25;
+  font-weight:1000;
+  letter-spacing:-.045em;
+  margin:0 0 18px;
+  color:#fff;
+}
+
+body.light .intro-title{
+  color:#0f172a;
+}
+
+.intro-desc{
+  font-size:18px;
+  font-weight:800;
+  color:rgba(255,255,255,.62);
+  line-height:1.7;
+  margin:0 auto 60px;
+  max-width:760px;
+}
+
+body.light .intro-desc{
+  color:#64748b;
+}
+
+.select-title{
+  font-size:30px;
+  font-weight:1000;
+  letter-spacing:-.035em;
+  margin:0 0 28px;
+  color:#fff;
+}
+
+body.light .select-title{
+  color:#0f172a;
+}
+
+.count-buttons{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.count-btn{
+  min-width:150px;
+  height:62px;
+  border:0;
+  border-radius:999px;
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  color:white;
+  font-size:28px;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 14px 26px rgba(0,162,255,.2);
+  transition:transform .15s ease, filter .15s ease;
+}
+
+.count-btn:hover{
+  filter:brightness(1.05);
+  transform:translateY(-2px);
+}
+
+.progress-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:44px;
+  padding:0 22px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  color:white;
+  font-size:18px;
+  font-weight:1000;
+  margin-bottom:34px;
+}
+
+.question{
+  font-size:38px;
+  line-height:1.35;
+  font-weight:1000;
+  letter-spacing:-.04em;
+  margin:0 auto 46px;
+  max-width:1050px;
+  word-break:keep-all;
+  color:#fff;
+}
+
+body.light .question{
+  color:#0f172a;
+}
+
+.choices{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin:0 auto 42px;
+  max-width:820px;
+  text-align:left;
+}
+
+.choice{
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px 20px;
+  border-radius:20px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
+  cursor:pointer;
+  transition:all .14s ease;
+  font-size:23px;
+  line-height:1.25;
+  font-weight:1000;
+  word-break:keep-all;
+}
+
+.choice:hover{
+  border-color:#00A2FF;
+  transform:translateY(-1px);
+  background:rgba(0,162,255,.12);
+}
+
+body.light .choice{
+  background:#fff;
+  border:1px solid #e2e8f0;
+  color:#0f172a;
+}
+
+.choice-no{
+  width:38px;
+  height:38px;
+  border-radius:999px;
+  background:rgba(0,162,255,.16);
+  color:#7dd3fc;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  font-size:20px;
+  font-weight:1000;
+}
+
+body.light .choice-no{
+  background:#eef2ff;
+  color:#3730a3;
+}
+
+.answer-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.answer-input{
+  width:min(760px,75vw);
+  height:66px;
+  border:2px solid #00A2FF;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  border-radius:18px;
+  font-size:28px;
+  font-weight:900;
+  padding:0 22px;
+  outline:none;
+  box-shadow:0 8px 22px rgba(0,162,255,.10);
+}
+
+.answer-input::placeholder{
+  color:rgba(255,255,255,.42);
+}
+
+body.light .answer-input{
+  background:#fff;
+  color:#0f172a;
+}
+
+body.light .answer-input::placeholder{
+  color:#94a3b8;
+}
+
+.next-btn{
+  width:66px;
+  height:66px;
+  border:0;
+  border-radius:18px;
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  color:white;
+  font-size:42px;
+  font-weight:1000;
+  padding:0 0 4px 3px;
+  cursor:pointer;
+  box-shadow:0 14px 26px rgba(0,162,255,.24);
+  margin-bottom: 0px;
+}
+
+.result-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:300px;
+  height:76px;
+  border-radius:999px;
+  font-size:36px;
+  font-weight:1000;
+  color:white;
+  margin:0 0 30px;
+  box-shadow:0 16px 28px rgba(15,23,42,.14);
+}
+
+.result-badge.correct{background:linear-gradient(135deg,#05b657,#16a34a)}
+.result-badge.wrong{background:linear-gradient(135deg,#ef4444,#dc2626)}
+
+.result-question{
+  font-size:24px;
+  font-weight:900;
+  color:rgba(255,255,255,.72);
+  line-height:1.45;
+  margin-bottom:18px;
+  word-break:keep-all;
+}
+
+body.light .result-question{
+  color:#334155;
+}
+
+.result-answer{
+  display:inline-block;
+  min-width:360px;
+  height:66px;
+  padding:13px 16px;
+  border-radius:22px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:28px;
+  font-weight:1000;
+  margin-bottom:42px;
+  color:#fff;
+}
+
+body.light .result-answer{
+  background:#fff;
+  border:1px solid #e2e8f0;
+  color:#111827;
+}
+
+.final-title{
+  font-size:42px;
+  font-weight:1000;
+  letter-spacing:-.04em;
+  margin:0 0 30px;
+  color:#fff;
+}
+
+body.light .final-title{
+  color:#0f172a;
+}
+
+.final-score{
+  display:inline-block;
+  padding:28px 44px;
+  border-radius:28px;
+  background:rgba(0,162,255,.14);
+  border:1px solid rgba(255,255,255,.12);
+  color:#fff;
+  font-size:42px;
+  font-weight:1000;
+  margin-bottom:26px;
+}
+
+body.light .final-score{
+  background:#eef2ff;
+  border:1px solid #dbe4ff;
+  color:#0f172a;
+}
+
+.final-sub{
+  font-size:24px;
+  font-weight:900;
+  color:rgba(255,255,255,.62);
+  margin-bottom:46px;
+}
+
+body.light .final-sub{
+  color:#64748b;
+}
+
+.restart-btn{
+  width:310px;
+  height:66px;
+  border-radius:999px;
+  border:0;
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  color:white;
+  font-size:28px;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 14px 26px rgba(0,162,255,.22);
+}
+
+.loading{
+  font-size:26px;
+  font-weight:1000;
+  color:rgba(255,255,255,.66);
+  line-height:1.7;
+}
+
+body.light .loading{
+  color:#64748b;
+}
+
+.quiz-report-box{
+  margin:90px auto 0;
+  width:min(620px,100%);
+  padding:20px 26px;
+  border-radius:24px;
+  /* background:rgba(255,255,255,.08); */
+  border:0px solid rgba(255,255,255,.12);
+  /* box-shadow:0 12px 30px rgba(0,0,0,.08); */
+  text-align:center;
+}
+
+body.light .quiz-report-box{
+  background:#fff;
+  border:1px solid #e2e8f0;
+}
+
+.quiz-report-title{
+  font-size:13px;
+  font-weight:1000;
+  color:#fff;
+  margin-bottom:8px;
+}
+
+body.light .quiz-report-title{
+  color:#111827;
+}
+
+.quiz-report-desc{
+  font-size:13px;
+  font-weight:800;
+  color:rgba(255,255,255,.62);
+  line-height:1.5;
+  margin-bottom:16px;
+}
+
+body.light .quiz-report-desc{
+  color:#64748b;
+}
+
+.quiz-report-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:44px;
+  padding:0 24px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#505050,#929292);
+  color:#FFF;
+  font-size:16px;
+  font-weight:1000;
+  text-decoration:none;
+}
+
+@media(max-width:900px){
+  .choices{grid-template-columns:1fr}
+}
+
+@media(max-width:768px){
+  .minigame-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .minigame-tab{
+    width:100%;
+    padding:0 10px;
+    font-size:14px;
+  }
+
+  .quiz-shell{
+    min-height:680px;
+    padding:16px 10px;
+  }
+
+  .quiz-card{
+    padding:34px 18px;
+    border-radius:24px;
+  }
+
+  .intro-title{font-size:30px}
+  .intro-desc{font-size:16px;margin-bottom:50px}
+  .select-title{font-size:28px}
+  .count-buttons{gap:14px}
+  .count-btn{min-width:130px;height:54px;font-size:26px}
+  .progress-pill{height:38px;font-size:16px;margin-bottom:24px}
+  .question{font-size:27px;margin-bottom:34px}
+  .choices{gap:12px;margin-bottom:34px}
+  .choice{min-height:58px;font-size:22px;padding:13px 14px;border-radius:16px}
+  .choice-no{width:32px;height:32px;font-size:17px}
+  .answer-input{height:58px;width:260px;font-size:22px;border-radius:14px}
+  .next-btn{height:58px;width:58px;font-size:28px;border-radius:14px;padding:0 0 2px 2px}
+  .result-badge{font-size:28px;min-width:220px;height:62px}
+  .result-answer{min-width:0;width:100%;font-size:24px}
+  .final-title,.final-score{font-size:30px}
+  .restart-btn{width:260px;height:60px;font-size:25px}
+}
+
+/* ==== STAR QUIZ LIGHT MODE FIX ==== */
+/* theme.js uses body.light-mode, so support both body.light and body.light-mode */
+
+body.light #page-calmquiz .section-title h2,
+body.light-mode #page-calmquiz .section-title h2{
+  color:#0f172a !important;
+}
+
+body.light #page-calmquiz .section-title span,
+body.light-mode #page-calmquiz .section-title span{
+  color:#334155 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+}
+
+body.light #page-calmquiz .minigame-tab,
+body.light-mode #page-calmquiz .minigame-tab{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border:1px solid rgba(15,23,42,.14) !important;
+  box-shadow:none !important;
+}
+
+body.light #page-calmquiz .minigame-tab:visited,
+body.light-mode #page-calmquiz .minigame-tab:visited{
+  color:#0f172a !important;
+}
+
+body.light #page-calmquiz .minigame-tab:hover,
+body.light-mode #page-calmquiz .minigame-tab:hover{
+  color:#0458ff !important;
+  border-color:#00A2FF !important;
+  box-shadow:0 12px 24px rgba(0,162,255,.14) !important;
+}
+
+body.light #page-calmquiz .minigame-tab.active,
+body.light-mode #page-calmquiz .minigame-tab.active,
+body.light #page-calmquiz .minigame-tab.active:visited,
+body.light-mode #page-calmquiz .minigame-tab.active:visited{
+  background:linear-gradient(135deg,#0458ff,#00a2ff) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+  box-shadow:0 12px 26px rgba(0,162,255,.22) !important;
+}
+
+body.light #page-calmquiz .quiz-shell,
+body.light-mode #page-calmquiz .quiz-shell{
+  background:#ffffff !important;
+  border:1px solid rgba(15,23,42,.12) !important;
+  box-shadow:0 16px 36px rgba(15,23,42,.08) !important;
+}
+
+body.light #page-calmquiz .quiz-card,
+body.light-mode #page-calmquiz .quiz-card{
+  background:#f8fafc !important;
+  border:1px solid #e2e8f0 !important;
+}
+
+body.light #page-calmquiz .kicker,
+body.light-mode #page-calmquiz .kicker{
+  background:#eef2ff !important;
+  color:#3730a3 !important;
+}
+
+body.light #page-calmquiz .intro-title,
+body.light-mode #page-calmquiz .intro-title,
+body.light #page-calmquiz .select-title,
+body.light-mode #page-calmquiz .select-title,
+body.light #page-calmquiz .question,
+body.light-mode #page-calmquiz .question,
+body.light #page-calmquiz .final-title,
+body.light-mode #page-calmquiz .final-title{
+  color:#0f172a !important;
+}
+
+body.light #page-calmquiz .intro-desc,
+body.light-mode #page-calmquiz .intro-desc,
+body.light #page-calmquiz .final-sub,
+body.light-mode #page-calmquiz .final-sub,
+body.light #page-calmquiz .loading,
+body.light-mode #page-calmquiz .loading{
+  color:#64748b !important;
+}
+
+body.light #page-calmquiz .choice,
+body.light-mode #page-calmquiz .choice{
+  background:#ffffff !important;
+  border:1px solid #e2e8f0 !important;
+  color:#0f172a !important;
+}
+
+body.light #page-calmquiz .choice:hover,
+body.light-mode #page-calmquiz .choice:hover{
+  background:#eff6ff !important;
+  border-color:#00A2FF !important;
+}
+
+body.light #page-calmquiz .choice-no,
+body.light-mode #page-calmquiz .choice-no{
+  background:#eef2ff !important;
+  color:#3730a3 !important;
+}
+
+body.light #page-calmquiz .answer-input,
+body.light-mode #page-calmquiz .answer-input{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border-color:#00A2FF !important;
+}
+
+body.light #page-calmquiz .answer-input::placeholder,
+body.light-mode #page-calmquiz .answer-input::placeholder{
+  color:#94a3b8 !important;
+}
+
+body.light #page-calmquiz .result-question,
+body.light-mode #page-calmquiz .result-question{
+  color:#334155 !important;
+}
+
+body.light #page-calmquiz .result-answer,
+body.light-mode #page-calmquiz .result-answer{
+  background:#ffffff !important;
+  border:1px solid #e2e8f0 !important;
+  color:#111827 !important;
+}
+
+body.light #page-calmquiz .final-score,
+body.light-mode #page-calmquiz .final-score{
+  background:#eef2ff !important;
+  border:1px solid #dbe4ff !important;
+  color:#0f172a !important;
+}
+
+body.light #page-calmquiz .quiz-report-box,
+body.light-mode #page-calmquiz .quiz-report-box{
+  background:#ffffff !important;
+  border:1px solid #e2e8f0 !important;
+}
+
+body.light #page-calmquiz .quiz-report-title,
+body.light-mode #page-calmquiz .quiz-report-title{
+  color:#111827 !important;
+}
+
+body.light #page-calmquiz .quiz-report-desc,
+body.light-mode #page-calmquiz .quiz-report-desc{
+  color:#64748b !important;
+}
+
+</style>
+</head>
+
+<body data-page="minigame">
+
+
+<div class="floating-banner">
+  <a href="https://calm-hoxy.vercel.app/" target="_blank"><img src="./banner/banner1.png" alt="배너1"></a>
+  <a href="https://fmcalm.vercel.app/" target="_blank"><img src="./banner/banner2.png" alt="배너2"></a>
+  <a href="https://calm-mstz.vercel.app/" target="_blank"><img src="./banner/banner3.png" alt="배너3"></a>
+  <a href="https://www.fmkorea.com/starcraft/" target="_blank"><img src="./banner/banner4.png" alt="배너4"></a>
+  <a href="https://www.youtube.com//" target="_blank"><img src="./banner/banner5.png" alt="배너5"></a>
+  <a href="https://www.naver.com/" target="_blank"><img src="./banner/banner6.png" alt="배너6"></a>
+  <a href="https://www.sooplive.com/" target="_blank"><img src="./banner/banner0.png" alt="배너7"></a>
+  <a href="https://lazygyu.github.io/roulette/" target="_blank"><img src="./banner/banner8.png" alt="배너9"></a>
+  <a href="https://910map.tistory.com/" target="_blank"><img src="./banner/banner9.png" alt="배너10"></a>
+  <a href="https://scintro.vercel.app/" target="_blank"><img src="./banner/banner11.png" alt="배너11"></a>
+</div>
+
+
+
+<div class="app">
+
+<header class="topbar">
+  <a class="logo" href="index.html">
+    <div>CALM MONSTARZ</div>
+  </a>
+
+  <nav class="nav">
+    <a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="playlist" href="playlist.html">영상 모음</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a>
+    <a data-page="multiview" href="multiview.html">멀티뷰</a>
+    <a data-page="minigame" href="minigame.html">미니게임</a>
+    <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+  </nav>
+</header>
+
+
+<main id="page-calmquiz" class="page">
+  <section class="card panel">
+    <div class="section-title">
+      <h2>스타퀴즈쇼</h2>
+      <span>스타크래프트 지식과 수치 문제를 풀어보세요</span>
+    </div>
+
+
+    <div class="minigame-tabs">
+      <a class="minigame-tab" href="./suttda.html">스타 게이머 섯다</a>
+      <a class="minigame-tab" href="./calm2048.html">캄몬 2048</a>
+      <a class="minigame-tab" href="./colormemory.html">컬러 기억력 테스트</a>
+      <a class="minigame-tab active" href="./calmquiz.html">스타퀴즈쇼</a>
+      <a class="minigame-tab" href="./calmcard.html">캄드게임배틀</a>
+    </div>
+
+
+<section class="quiz-shell">
+    <div class="quiz-card">
+
+      <div id="loadingScreen" class="screen active">
+        <div class="loading">퀴즈 데이터를 불러오는 중입니다...</div>
+      </div>
+
+      <div id="startScreen" class="screen">
+        <div class="kicker">STARCRAFT QUIZ SHOW</div>
+        <h2 class="intro-title">스타 지식으로 승부를 가려보세요</h2>
+   <p class="intro-desc">
+  객관식 보기 중 정답 번호(1~4)를 입력한 뒤 엔터를 누르면 제출됩니다.<br>
+  정답/오답 확인 후 다시 엔터를 누르면 다음 문제로 이동합니다.
+</p>
+
+        <div class="select-title">문제 수를 선택하세요</div>
+
+        <div class="count-buttons">
+          <button class="count-btn" onclick="startQuiz(10)">10개</button>
+          <button class="count-btn" onclick="startQuiz(20)">20개</button>
+          <button class="count-btn" onclick="startQuiz(50)">50개</button>
+          <button class="count-btn" onclick="startQuiz(100)">100개</button>
+        </div>
+
+        <!-- 주석 -->
+<div class="quiz-report-box">
+  <div class="quiz-report-title">문제 오류 신고 / 문제 제보</div>
+  <div class="quiz-report-desc">
+    잘못된 정답, 애매한 보기, 추가하고 싶은 스타 퀴즈가 있다면 알려주세요.
+  </div>
+  <a class="quiz-report-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdXwNw0ju2adOi1b51giIup_0Wx4dQoxT0BFPmru-b7wkzfBA/viewform?usp=publish-editor" target="_blank">
+    제보하기
+  </a>
+</div>
+
+
+
+      </div>
+
+      <div id="quizScreen" class="screen">
+        <div id="progressText" class="progress-pill">1 / 10</div>
+        <h2 id="questionText" class="question">문제 질문 문제 질문</h2>
+
+        <div id="choicesArea" class="choices"></div>
+
+        <div class="answer-row">
+          <input id="answerInput" class="answer-input" autocomplete="off" placeholder="보기 번호(1~4)를 입력하세요" />
+          <button id="submitBtn" class="next-btn" onclick="submitAnswer()">&gt;</button>
+        </div>
+      </div>
+
+      <div id="resultScreen" class="screen">
+        <div id="resultBadge" class="result-badge correct">정답!</div>
+        <div id="resultQuestion" class="result-question"></div>
+        <div id="answerText" class="result-answer"></div>
+        <button class="next-btn" onclick="nextQuestion()">&gt;</button>
+      </div>
+
+      <div id="finalScreen" class="screen">
+        <h2 class="final-title">퀴즈 완료!</h2>
+        <div id="finalScore" class="final-score">(n) 문제 맞히셨습니다!</div>
+        <div id="finalSub" class="final-sub"></div>
+        <button class="restart-btn" onclick="goStart()">다시 처음으로</button>
+      </div>
+
+    </div>
+  </section>
+
+
+  </section>
+</main>
+
+</div>
+
+
+<footer class="footer">
+  <div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div>
+  <div class="footer-links">
+    <a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon"><img src="./icons/soop-logo.png" alt="SOOP"/></a>
+    <a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon"><img src="./icons/youtube-logo.png" alt="YouTube"/></a>
+  </div>
+</footer>
+
+
+<script type="module" src="app.js"></script>
+<script src="./theme.js?v=3"></script>
+
+<script>
+const QUIZ_XLSX_PATH = "./quiz.xlsx";
+
+let allQuestions = [];
+let quizQuestions = [];
+let currentIndex = 0;
+let correctCount = 0;
+let answered = false;
+let currentCorrectChoiceNumber = null;
+let currentChoices = [];
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(el=>el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function normalizeAnswer(value){
+  return String(value ?? "")
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/[()]/g, "")
+    .toLowerCase();
+}
+
+function shuffle(array){
+  const arr = [...array];
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickRandom(array, count){
+  return shuffle(array).slice(0, count);
+}
+
+async function loadQuizData(){
+  try{
+    const response = await fetch(QUIZ_XLSX_PATH, { cache:"no-store" });
+    if(!response.ok) throw new Error("xlsx 파일을 찾을 수 없습니다.");
+
+    const buffer = await response.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type:"array" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header:1, defval:"" });
+
+    allQuestions = rows.slice(1)
+      .map(row=>{
+        const question = String(row[0] || "").trim();
+        const answer = String(row[1] || "").trim();
+
+        const wrongs = row.slice(2,10)
+          .map(v=>String(v || "").trim())
+          .filter(Boolean)
+          .filter(v=>normalizeAnswer(v) !== normalizeAnswer(answer));
+
+        const extraAnswers = row.slice(10)
+          .map(v=>String(v || "").trim())
+          .filter(Boolean);
+
+        return { question, answer, wrongs, extraAnswers };
+      })
+      .filter(q=>q.question && q.answer);
+
+    if(!allQuestions.length){
+      throw new Error("엑셀에서 문제를 읽지 못했습니다.");
+    }
+
+    showScreen("startScreen");
+  }catch(err){
+    document.getElementById("loadingScreen").innerHTML =
+      `<div class="loading">퀴즈 파일을 불러오지 못했습니다.<br><br>
+      같은 폴더에 <strong>quiz.xlsx</strong> 파일이 있는지 확인해주세요.<br>
+      <span style="font-size:18px;color:#ef4444">${err.message}</span></div>`;
+  }
+}
+
+function startQuiz(count){
+  if(!allQuestions.length) return;
+
+  const total = Math.min(count, allQuestions.length);
+  quizQuestions = pickRandom(allQuestions, total);
+  currentIndex = 0;
+  correctCount = 0;
+  answered = false;
+  showQuestion();
+}
+
+function showQuestion(){
+  answered = false;
+  showScreen("quizScreen");
+
+  const q = quizQuestions[currentIndex];
+
+  document.getElementById("progressText").textContent =
+    `${currentIndex + 1} / ${quizQuestions.length}`;
+
+  document.getElementById("questionText").textContent = q.question;
+
+  let wrongChoices = pickRandom(q.wrongs, 3);
+
+  // 오답이 3개보다 적을 경우, 전체 데이터의 정답을 후보로 보충
+  if(wrongChoices.length < 3){
+    const fallback = allQuestions
+      .map(item=>item.answer)
+      .filter(v=>normalizeAnswer(v) !== normalizeAnswer(q.answer))
+      .filter(v=>!wrongChoices.some(w=>normalizeAnswer(w) === normalizeAnswer(v)));
+
+    wrongChoices = [...wrongChoices, ...pickRandom(fallback, 3 - wrongChoices.length)];
+  }
+
+  currentChoices = shuffle([q.answer, ...wrongChoices]).slice(0,4);
+  currentCorrectChoiceNumber =
+    currentChoices.findIndex(v=>normalizeAnswer(v) === normalizeAnswer(q.answer)) + 1;
+
+  const choicesArea = document.getElementById("choicesArea");
+  choicesArea.innerHTML = currentChoices.map((choice, idx)=>`
+    <div class="choice" onclick="selectChoice(${idx + 1})">
+      <span class="choice-no">${idx + 1}</span>
+      <span>${escapeHTML(choice)}</span>
+    </div>
+  `).join("");
+
+  const input = document.getElementById("answerInput");
+  input.value = "";
+  setTimeout(()=>input.focus(), 50);
+}
+
+function selectChoice(num){
+  const input = document.getElementById("answerInput");
+  input.value = String(num);
+  input.focus();
+}
+
+function submitAnswer(){
+  if(answered) return;
+
+  const q = quizQuestions[currentIndex];
+  const inputValue = document.getElementById("answerInput").value.trim();
+
+  if(!inputValue){
+    return;
+  }
+
+const isChoiceNumberInput = /^[1-4]$/.test(inputValue);
+
+if(!isChoiceNumberInput){
+  alert("보기 번호 1~4 중 하나를 입력해주세요.");
+  return;
+}
+
+const isCorrect = Number(inputValue) === currentCorrectChoiceNumber;
+
+  if(isCorrect) correctCount++;
+
+  answered = true;
+
+  const badge = document.getElementById("resultBadge");
+  badge.textContent = isCorrect ? "정답!" : "오답!";
+  badge.className = `result-badge ${isCorrect ? "correct" : "wrong"}`;
+
+  document.getElementById("resultQuestion").textContent = q.question;
+  document.getElementById("answerText").textContent = `정답: ${q.answer}`;
+
+  showScreen("resultScreen");
+}
+
+function nextQuestion(){
+  currentIndex++;
+
+  if(currentIndex >= quizQuestions.length){
+    showFinal();
+  }else{
+    showQuestion();
+  }
+}
+
+function showFinal(){
+  document.getElementById("finalScore").textContent =
+    `${correctCount} / ${quizQuestions.length} 문제 맞히셨습니다!`;
+
+  const percent = Math.round((correctCount / quizQuestions.length) * 100);
+  document.getElementById("finalSub").textContent = `정답률 ${percent}%`;
+
+  showScreen("finalScreen");
+}
+
+function goStart(){
+  showScreen("startScreen");
+}
+window.goStart = goStart;
+
+document.addEventListener("keydown", e=>{
+  if(e.key !== "Enter") return;
+
+  if(document.getElementById("quizScreen").classList.contains("active")){
+    submitAnswer();
+    return;
+  }
+
+  if(document.getElementById("resultScreen").classList.contains("active")){
+    nextQuestion();
+    return;
+  }
+
+  if(document.getElementById("finalScreen").classList.contains("active")){
+    goStart();
+    return;
+  }
+});
+
+function escapeHTML(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
+}
+
+function toggleMobileMenu(){
+  document.getElementById("mobileMenu").classList.toggle("show");
+}
+window.toggleMobileMenu = toggleMobileMenu;
+
+window.startQuiz = startQuiz;
+window.submitAnswer = submitAnswer;
+window.nextQuestion = nextQuestion;
+window.selectChoice = selectChoice;
+
+loadQuizData();
+</script>
+</body>
+</html>

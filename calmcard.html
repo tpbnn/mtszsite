@@ -1,0 +1,8169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>캄몬스타즈 - 캄드게임배틀</title>
+
+  <link rel="icon" href="./favicon.png" type="image/png" />
+  <link rel="stylesheet" href="common.css" />
+
+  <style>
+* { box-sizing: border-box; }
+label {
+      display: block;
+      font-weight: 800;
+      margin: 14px 0 8px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 15px;
+      outline: none;
+      font-family: inherit;
+      background: white;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .btn-light {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .btn-full {
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .toolbar > * { flex: 1; }
+
+    .table-scroll { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 0;
+    }
+
+    .input-table {
+      table-layout: fixed;
+      min-width: 520px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+    }
+
+    td { overflow: hidden; }
+
+    .input-table td:nth-child(1) { width: 42%; }
+    .input-table td:nth-child(2) { width: 28%; }
+    .input-table td:nth-child(3) { width: 30%; }
+
+    .name-cell {
+      font-weight: 900;
+      word-break: break-all;
+    }
+
+    .score-input { width: 100%; }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ecfeff;
+      color: #155e75;
+      padding: 0 28px;
+      border-radius: 999px;
+      font-size: 24px;
+      font-weight: 900;
+      min-width: 120px;
+      height: 72px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .error {
+      color: var(--danger);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .ok {
+      color: var(--success);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 26px 0;
+      line-height: 1.6;
+    }
+
+    .special-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .special-box {
+      background: white;
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .special-box.first {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+
+    .special-box.last {
+      background: #fff7ed;
+      border-color: #fed7aa;
+    }
+
+    .special-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+
+    .special-name {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .special-score {
+      margin-top: 4px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .team-box {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .team-box h3 {
+      margin: 0 0 14px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+    }
+
+    .team-box .winner-label { margin-bottom: 10px; }
+
+    .team-box:not(.winner)::before {
+      content: "";
+      display: block;
+      height: 31px;
+      margin-bottom: 10px;
+    }
+
+    .winner {
+      border-color: #86efac;
+      box-shadow: 0 0 0 4px rgba(22,163,74,.12);
+    }
+
+    .winner-label {
+      display: inline-flex;
+      background: #dcfce7;
+      color: #166534;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .team-total {
+      font-size: 30px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .member-list {
+      line-height: 1.8;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .result-card {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 920px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 24px;
+      }
+
+      .hero-logo {
+        width: 48px;
+        height: 48px;
+      }
+
+      .result-grid,
+      .special-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+.cardgame-layout{
+  display:grid;
+  grid-template-columns:220px minmax(720px,1fr) 300px;
+  gap:20px;
+  align-items:start;
+}
+
+.cardgame-side{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.game-panel{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 10px 30px rgba(15,23,42,.05);
+}
+
+.hp-box strong{
+  display:block;
+  font-size:42px;
+  color:#2563eb;
+}
+
+.turn-box{
+  margin-top:18px;
+  background:#f1f5ff;
+  border-radius:16px;
+  padding:14px;
+  font-weight:900;
+}
+
+.turn-dots{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.turn-dots span{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#fff;
+  border:1px solid #bfdbfe;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#2563eb;
+  font-weight:900;
+}
+
+.turn-dots span.active{
+  background:#2563eb;
+  color:#fff;
+}
+
+.battle-board{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.field,
+.versus-area,
+.hand-area{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(15,23,42,.05);
+}
+
+.field-head,
+.hand-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.field-head h2,
+.hand-head h2{
+  margin:0;
+  font-size:18px;
+}
+
+.hp-mini{
+  font-size:18px;
+  font-weight:1000;
+}
+
+.hp-mini.red{ color:#ef476f; }
+.hp-mini.blue{ color:#2563eb; }
+
+.slot-row{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:18px;
+}
+
+.battle-slot{
+  position:relative;
+  min-height:160px;
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.battle-slot.current{
+  outline:5px solid #2563eb;
+  outline-offset:6px;
+}
+
+.slot-num{
+  position:absolute;
+  top:2px;
+  left:50%;
+  transform:translateX(-50%);
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:1000;
+  font-size:13px;
+  z-index:2;
+}
+
+.slot-num.red{ background:#ef476f; }
+.slot-num.blue{ background:#2563eb; }
+
+.card-back{
+width:82px;
+  height:115px;
+  border-radius:6px;
+  background-size:cover;
+  background-position:center;
+  box-shadow:0 8px 16px rgba(15,23,42,.18);
+}
+
+.card-back.attack{
+  background-image:url("./gamecards/mstz-gamecard-a.png");
+}
+
+.card-back.attack.blue{
+  background-image:url("./gamecards/mstz-gamecard-a.png");
+}
+
+.card-back.buff{
+  background-image:url("./gamecards/mstz-gamecard-b.png");
+}
+
+.empty-buff{
+  width:82px;
+  height:115px;
+}
+
+.versus-area{
+  position:relative;
+  background:linear-gradient(90deg,#fff5f5,#f8fbff);
+}
+
+.turn-ribbon{
+  position:absolute;
+  top:-1px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,#1d4ed8,#4f46e5);
+  color:white;
+  padding:10px 42px;
+  border-radius:0 0 14px 14px;
+  text-align:center;
+  font-weight:1000;
+}
+
+.turn-ribbon span{
+  display:block;
+  font-size:13px;
+  margin-top:4px;
+}
+
+.versus-card-wrap{
+  min-height:210px;
+  display:grid;
+  grid-template-columns:1fr 120px 1fr;
+  align-items:center;
+  gap:20px;
+  padding-top:34px;
+}
+
+.opened-card-group{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+}
+
+.battle-card{
+  width:92px;
+  height:130px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  box-shadow:0 8px 20px rgba(15,23,42,.08);
+}
+
+.buff-card{
+  border-color:#7c3aed;
+  background:#f5f3ff;
+  color:#5b21b6;
+}
+
+.attack-card{
+  border-color:#2563eb;
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+
+.vs-text{
+  text-align:center;
+  font-size:54px;
+  font-weight:1000;
+  color:#94a3b8;
+}
+
+.hand-area{
+  padding-bottom:18px;
+}
+
+.hand-row{
+  display:flex;
+  gap:6px;
+  align-items:flex-end;
+  overflow-x:auto;
+  padding:6px 4px 4px;
+}
+
+.hand-card{
+  width:64px;
+  height:90px;
+  object-fit:cover;
+  border-radius:4px;
+  cursor:pointer;
+  transition:.15s;
+  box-shadow:0 8px 16px rgba(15,23,42,.16);
+}
+
+.hand-card:hover{
+  transform:translateY(-12px) scale(1.08);
+}
+
+.buff-hand{
+  margin-left:4px;
+}
+
+.detail-panel{
+  min-height:auto;
+}
+
+.detail-card-img{
+  width:100%;
+  max-width:240px;
+  display:block;
+  margin:16px auto 20px;
+
+
+}
+
+
+.effect-box{
+  background:#F8FAFC;
+  color:#0D1930;
+}
+
+.effect-box h3{
+  color:#0458ff !important;
+  font-weight:900;
+}
+
+.effect-box p,
+.effect-box div,
+.effect-box span{
+  color:#334155 !important;
+}
+
+
+
+/* .effect-box{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+  min-height:190px;
+  background:#f8fafc;
+}
+
+.effect-box h3{
+  margin-top:0;
+  font-weight:1000;
+  color:#1d4ed8;
+}
+
+.effect-box p{
+  font-size:18px;
+  font-weight:900;
+  line-height:1.7;
+} */
+
+.action-buttons{
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.action-buttons button{
+  height:64px;
+  font-size:22px;
+}
+
+@media(max-width:1100px){
+  .cardgame-layout{
+    grid-template-columns:1fr;
+  }
+
+  .slot-row{
+    gap:8px;
+  }
+
+  .cardgame-side.right{
+    order:3;
+  }
+}
+
+.mobile-nav{
+  display:none;
+}
+
+
+
+.mobile-nav{
+  display:none;
+}
+
+.empty-buff{
+  width:82px;
+  height:115px;
+}
+
+.detail-panel{
+  min-height:auto;
+}
+
+.hand-card.selected{
+  outline:4px solid #2563eb;
+  outline-offset:3px;
+  transform:translateY(-12px) scale(1.08);
+}
+
+.placed-card{
+  width:82px;
+  height:115px;
+  object-fit:cover;
+  border-radius:6px;
+  box-shadow:0 8px 16px rgba(15,23,42,.18);
+}
+
+.battle-card-img{
+  width:92px;
+  height:130px;
+  object-fit:cover;
+  border-radius:8px;
+  box-shadow:0 8px 20px rgba(15,23,42,.12);
+  cursor:pointer;
+}
+
+.empty-battle-card{
+  background:#f8fafc;
+  color:#94a3b8;
+  font-size:13px;
+  text-align:center;
+  padding:10px;
+}
+
+
+
+.battle-log-panel{
+  max-height:320px;
+  overflow:auto;
+}
+
+.battle-log-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.battle-log-head h2{
+  margin:0;
+  font-size:18px;
+}
+
+.battle-log-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.battle-log-item{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  background:#f8fafc;
+  font-size:13px;
+  line-height:1.5;
+  white-space:pre-line;
+}
+
+.battle-log-item.win{
+  border-color:#93c5fd;
+  background:#eff6ff;
+}
+
+.battle-log-item.lose{
+  border-color:#fecaca;
+  background:#fff1f2;
+}
+
+.battle-log-item.draw{
+  border-color:#cbd5e1;
+  background:#f8fafc;
+}
+
+
+/* ==== CARD GAME TEST UI REVISION ==== */
+/* .cardgame-layout{
+  grid-template-columns:minmax(820px,1fr) 300px;
+} */
+
+
+
+.cardgame-side.left{
+  display:none;
+}
+.enemy-field{
+  display:none;
+}
+.battle-log-panel{
+  display:none;
+}
+.field-head .hp-mini{
+  display:none;
+}
+.versus-area{
+  min-height:360px;
+  overflow:hidden;
+}
+.battle-status-bar{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:18px;
+  margin-bottom:20px;
+}
+.status-hp{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  min-width:150px;
+  padding:12px 18px;
+  border-radius:12px;
+  background:#fff;
+  font-weight:1000;
+  box-shadow:0 8px 18px rgba(15,23,42,.06);
+}
+.status-hp.red{ color:#ef476f; }
+.status-hp.blue{ color:#2563eb; }
+.battle-status-bar .turn-ribbon{
+  position:static;
+  transform:none;
+  border-radius:0 0 14px 14px;
+}
+.versus-card-wrap{
+  min-height:260px;
+  grid-template-columns:1fr 110px 1fr;
+  padding-top:0;
+}
+.battle-card-img{
+  width:150px;
+  height:210px;
+}
+.battle-card{
+  width:150px;
+  height:210px;
+  font-size:10px;
+}
+.opened-card-group{
+  gap:18px;
+}
+.vs-text{
+  font-size:64px;
+}
+.global-buff-field .slot-row{
+  grid-template-columns:repeat(3, 110px);
+  justify-content:center;
+}
+.global-buff-field .battle-slot{
+  min-height:120px;
+  border:3px dashed #16a34a;
+}
+.global-buff-field .empty-global-buff{
+  width:78px;
+  height:100px;
+  border-radius:12px;
+  background:#f0fdf4;
+  border:2px dashed #16a34a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#15803d;
+  font-weight:900;
+  font-size:13px;
+}
+.my-field .battle-slot{
+  min-height:118px;
+  gap:5px;
+}
+.my-field .card-back,
+.my-field .placed-card,
+.my-field .empty-buff{
+  width:64px;
+  height:90px;
+}
+.hand-head .btn-primary{
+  display:none;
+}
+.hand-card{
+  width:98px;
+  height:138px;
+}
+.action-panel{
+  display:block;
+}
+.action-panel .btn-light{
+  display:none;
+}
+.action-panel .btn-primary{
+  width:100%;
+  height:88px;
+  font-size:28px;
+  line-height:1.25;
+}
+.stage-note{
+  text-align:center;
+  font-weight:1000;
+  color:#334155;
+  margin-top:10px;
+}
+@media(max-width:1100px){
+  .cardgame-layout{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* 내 필드: 빈 슬롯은 카드 뒷면이 아니라 배치 영역으로 표시 */
+.my-field .card-back.attack.blue{
+  background-image:none !important;
+  background:#fff !important;
+  border:6px dotted #2563eb;
+  box-shadow:none;
+  opacity:.9;
+}
+
+.my-field .card-back.buff{
+  background-image:none !important;
+  background:#fff !important;
+  border:6px dotted #7c3aed;
+  box-shadow:none;
+  opacity:.9;
+}
+
+/* 내 필드 빈 버프 칸도 영역처럼 보이게 */
+.my-field .empty-buff{
+  border:6px dotted #7c3aed;
+  border-radius:8px;
+  background:#fff;
+  opacity:.45;
+}
+
+/* 내 필드 슬롯 크기 줄이기 */
+.my-field .card-back,
+.my-field .empty-buff,
+.my-field .placed-card{
+  width:64px;
+  height:90px;
+}
+
+
+/* ==== POLISHED FIELD + STEP POPUP REVISION ==== */
+
+/* 하단 전체 버프 카드 목록 숨김 */
+.global-buff-field{
+  display:none !important;
+}
+
+/* 중앙 영역을 카드 배틀 보드처럼 정리 */
+.battle-board{
+  display:grid !important;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.versus-area{
+  grid-column:1 / -1;
+  order:0;
+  padding:14px 18px 18px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(37,99,235,.08), transparent 34%),
+    linear-gradient(90deg,#fff7f7,#f8fbff);
+}
+
+.my-field{
+  order:1;
+  grid-column:1 / 2;
+  background:
+    linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.92)),
+    radial-gradient(circle at 50% 50%, rgba(37,99,235,.16), transparent 42%);
+  border:1px solid #bfdbfe;
+}
+
+.enemy-field{
+  display:block !important;
+  order:2;
+  grid-column:2 / 3;
+  background:
+    linear-gradient(rgba(255,255,255,.90),rgba(255,255,255,.94)),
+    radial-gradient(circle at 50% 50%, rgba(239,71,111,.12), transparent 42%);
+  border:1px solid #fed7aa;
+}
+
+.hand-area{
+  order:3;
+  grid-column:1 / -1;
+}
+
+/* 필드 제목 */
+.my-field .field-head h2,
+.enemy-field .field-head h2{
+  width:100%;
+  text-align:center;
+  font-size:18px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(37,99,235,.16);
+}
+
+.enemy-field .field-head h2{
+  color:#dc2626;
+  border-bottom-color:rgba(220,38,38,.14);
+}
+
+.my-field .field-head h2{
+  color:#1d4ed8;
+}
+
+/* 카드 배치 슬롯 디자인 */
+.my-field .slot-row,
+.enemy-field .slot-row{
+  gap:14px;
+}
+
+.my-field .battle-slot,
+.enemy-field .battle-slot{
+  min-height:245px !important;
+  border-radius:18px;
+  padding:34px 8px 12px;
+  gap:8px;
+  background:rgba(255,255,255,.38);
+  border:1px solid rgba(148,163,184,.18);
+}
+
+.my-field .battle-slot.current{
+  outline:0;
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,.34),
+    inset 0 0 0 2px rgba(255,255,255,.8),
+    0 0 22px rgba(37,99,235,.20);
+}
+
+.enemy-field .battle-slot.current{
+  outline:0;
+  box-shadow:
+    0 0 0 3px rgba(239,68,68,.28),
+    inset 0 0 0 2px rgba(255,255,255,.8),
+    0 0 20px rgba(239,68,68,.14);
+}
+
+.slot-num{
+  top:10px;
+  width:28px;
+  height:28px;
+  border:2px solid #fff;
+  box-shadow:0 4px 10px rgba(15,23,42,.18);
+}
+
+/* 내 필드 빈칸: 유희왕식 보드 슬롯 느낌 */
+.my-field .card-back.attack.blue,
+.my-field .card-back.buff,
+.my-field .empty-buff{
+  width:78px !important;
+  height:108px !important;
+  border-radius:12px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.90),rgba(248,250,252,.76)) !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.92),
+    0 8px 18px rgba(15,23,42,.05) !important;
+  position:relative;
+  opacity:1 !important;
+}
+
+.my-field .card-back.attack.blue{
+  border:2px dashed rgba(37,99,235,.45) !important;
+}
+
+.my-field .card-back.buff,
+.my-field .empty-buff{
+  border:2px dashed rgba(124,58,237,.45) !important;
+}
+
+.my-field .card-back.attack.blue::before,
+.my-field .card-back.buff::before,
+.my-field .empty-buff::before{
+  content:"✧";
+  position:absolute;
+  top:30px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:30px;
+  color:rgba(37,99,235,.34);
+}
+
+.my-field .card-back.buff::before,
+.my-field .empty-buff::before{
+  color:rgba(124,58,237,.34);
+}
+
+.my-field .card-back.attack.blue::after{
+  content:"공격 카드";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:18px;
+  text-align:center;
+  color:#2563eb;
+  font-size:12px;
+  font-weight:900;
+}
+
+.my-field .card-back.buff::after,
+.my-field .empty-buff::after{
+  content:"버프 카드";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:18px;
+  text-align:center;
+  color:#6d28d9;
+  font-size:12px;
+  font-weight:900;
+}
+
+/* 배치된 카드는 실제 카드처럼 선명하게 */
+.my-field .placed-card,
+.enemy-field .placed-card{
+  width:78px !important;
+  height:108px !important;
+  border-radius:7px;
+  box-shadow:0 10px 20px rgba(15,23,42,.18);
+}
+
+/* 상대 필드는 카드 뒷면 유지 */
+.enemy-field .card-back{
+  width:78px;
+  height:108px;
+  border-radius:7px;
+  border:2px solid rgba(212,175,55,.55);
+  box-shadow:0 9px 18px rgba(15,23,42,.18);
+}
+
+/* VS 공개 카드 크기 */
+.versus-area .battle-card-img,
+.versus-area .battle-card,
+.versus-area .card-back{
+  width:145px !important;
+  height:203px !important;
+}
+
+.versus-area .opened-card-group{
+  min-height:220px;
+}
+
+/* 우측 버튼: 정사각형 스타일 */
+.action-panel{
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  padding:0;
+}
+
+.action-panel .btn-primary{
+  width:250px !important;
+  height:130px !important;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-radius:22px;
+  border:3px solid #0f2f80;
+  background:
+    linear-gradient(180deg,#174be6,#06348d);
+  color:#fff;
+  font-size:20px !important;
+  line-height:1.22;
+  box-shadow:
+    0 16px 30px rgba(15,23,42,.25),
+    inset 0 0 0 2px rgba(255,255,255,.16);
+}
+
+/* 손패 카드 확대 및 정렬 */
+.hand-card{
+  width:112px !important;
+  height:158px !important;
+  margin-right:8px;
+}
+
+.hand-row{
+  gap:10px;
+  min-height:185px;
+}
+
+/* 진행 팝업 */
+.turn-modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.20);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  pointer-events:none;
+}
+
+.turn-modal-backdrop.show{
+  display:flex;
+}
+
+.turn-modal{
+  width:min(920px, calc(100vw - 420px));
+  min-width:620px;
+  background:rgba(255,255,255,.96);
+  border:8px solid #2554d8;
+  border-radius:6px;
+  box-shadow:0 24px 70px rgba(15,23,42,.32);
+  padding:34px 42px 26px;
+  pointer-events:auto;
+}
+
+.turn-modal-title{
+  text-align:center;
+  font-size:26px;
+  font-weight:1000;
+  color:#1e3a8a;
+  margin-bottom:24px;
+}
+
+.turn-modal-body{
+  display:grid;
+  grid-template-columns:1fr 110px 1fr;
+  align-items:center;
+  gap:28px;
+}
+
+.turn-modal-side{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  min-height:240px;
+}
+
+.turn-modal-vs{
+  text-align:center;
+  font-size:72px;
+  color:#94a3b8;
+  font-weight:1000;
+}
+
+.turn-modal-message{
+  margin-top:24px;
+  text-align:center;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.6;
+  color:#334155;
+  white-space:pre-line;
+}
+
+.turn-modal-close{
+  position:absolute;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:#64748b;
+  color:white;
+  font-size:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  right:calc((100vw - min(920px, calc(100vw - 420px))) / 2 - 12px);
+  top:calc(50vh - 210px);
+}
+
+.turn-modal .battle-card-img,
+.turn-modal .card-back,
+.turn-modal .battle-card{
+  width:150px !important;
+  height:210px !important;
+}
+
+@media(max-width:1300px){
+  .turn-modal{
+    width:min(900px, calc(100vw - 80px));
+    min-width:0;
+  }
+  .turn-modal-close{
+    right:44px;
+  }
+}
+
+
+
+/* ==== USER REQUEST FIX 2026-06-04 ==== */
+/* 1) 필드 위치: 왼쪽 상대 필드 / 오른쪽 내 필드 */
+.enemy-field{
+  display:block !important;
+  order:1 !important;
+  grid-column:1 / 2 !important;
+}
+.my-field{
+  order:2 !important;
+  grid-column:2 / 3 !important;
+}
+.hand-area{
+  order:3 !important;
+  grid-column:1 / -1 !important;
+}
+
+/* HP 표시와 필드 제목 방향 일치 */
+.enemy-field .field-head h2{
+  color:#ef476f !important;
+  text-align:center !important;
+}
+.my-field .field-head h2{
+  color:#2563eb !important;
+  text-align:center !important;
+}
+
+/* 2) 게임 시작 전 턴 표시 숨김: JS에서 .is-ready를 붙임 */
+body.is-ready .turn-ribbon{
+  display:none !important;
+}
+body.is-ready .battle-status-bar{
+  grid-template-columns:1fr 1fr !important;
+}
+body.is-ready .battle-status-bar .status-hp.red{
+  justify-self:start;
+}
+body.is-ready .battle-status-bar .status-hp.blue{
+  justify-self:end;
+}
+
+/* 3) 손패 가로 스크롤 제거 + 카드 겹쳐서 배치 */
+.hand-area{
+  overflow:hidden !important;
+}
+.hand-row{
+  overflow-x:hidden !important;
+  overflow-y:visible !important;
+  gap:0 !important;
+  padding:12px 18px 18px !important;
+  min-height:190px !important;
+  justify-content:center !important;
+}
+.hand-card{
+  flex:0 0 auto !important;
+  width:112px !important;
+  height:158px !important;
+  margin-right:-32px !important;
+  position:relative;
+}
+.hand-card:last-child{
+  margin-right:0 !important;
+}
+.hand-card:hover,
+.hand-card.selected{
+  z-index:20;
+}
+
+/* 4) 모든 필드 슬롯은 파란 공격카드가 위, 보라 버프카드가 아래 */
+.enemy-field .battle-slot,
+.my-field .battle-slot{
+  flex-direction:column !important;
+}
+.enemy-field .card-back.attack,
+.enemy-field .placed-card.attack-placed,
+.my-field .card-back.attack,
+.my-field .placed-card.attack-placed{
+  order:1 !important;
+}
+.enemy-field .card-back.buff,
+.enemy-field .empty-buff,
+.enemy-field .placed-card.buff-placed,
+.my-field .card-back.buff,
+.my-field .empty-buff,
+.my-field .placed-card.buff-placed{
+  order:2 !important;
+}
+
+/* 상대 필드는 뒷면 카드 표시: 공격 위 / 버프 아래 */
+.enemy-field .card-back.attack{
+  background-image:url("./gamecards/mstz-gamecard-a.png") !important;
+}
+.enemy-field .card-back.buff{
+  background-image:url("./gamecards/mstz-gamecard-b.png") !important;
+}
+
+/* 빈 버프가 있는 상대 슬롯도 아래 공간은 유지 */
+.enemy-field .empty-buff{
+  width:78px !important;
+  height:108px !important;
+  border-radius:7px;
+  border:2px dashed rgba(124,58,237,.18);
+  background:rgba(255,255,255,.35);
+  box-shadow:none;
+  opacity:1 !important;
+}
+
+/* 내 필드 빈칸: 공격 위 / 버프 아래 배치 영역 */
+.my-field .card-back.attack.blue,
+.my-field .card-back.buff,
+.my-field .empty-buff{
+  width:78px !important;
+  height:108px !important;
+}
+
+/* 슬롯 번호는 카드 위 중앙에 고정 */
+.enemy-field .slot-num,
+.my-field .slot-num{
+  order:0 !important;
+  top:8px !important;
+}
+
+/* 필드 전체 높이 안정화 */
+.enemy-field .battle-slot,
+.my-field .battle-slot{
+  min-height:260px !important;
+  justify-content:flex-start !important;
+  padding-top:44px !important;
+}
+
+
+/* ==== CLEAN READY / POPUP-ONLY BATTLE FIX ==== */
+
+/* 상단 VS 영역은 전투 카드를 중복 표시하지 않고 안내/상태 영역으로만 사용 */
+.versus-card-wrap{
+  display:none !important;
+}
+.versus-area{
+  min-height:150px !important;
+  padding:18px 22px !important;
+}
+.stage-note{
+  margin-top:12px !important;
+  font-size:16px;
+}
+
+/* 게임 시작 전에는 턴 리본 자체를 숨김 */
+body.is-ready .turn-ribbon{
+  display:none !important;
+}
+body.is-ready .battle-status-bar{
+  grid-template-columns:1fr 1fr !important;
+}
+body.is-ready .battle-status-bar .status-hp.red{
+  justify-self:start;
+}
+body.is-ready .battle-status-bar .status-hp.blue{
+  justify-self:end;
+}
+
+/* READY/배치 중에는 현재 턴 강조 제거 */
+body.is-ready .battle-slot.current,
+body.is-placement .battle-slot.current{
+  outline:0 !important;
+  box-shadow:none !important;
+}
+
+/* 빈 필드 슬롯 전용 디자인 */
+.slot-placeholder{
+  width:78px !important;
+  height:108px !important;
+  border-radius:12px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,250,252,.80)) !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.92),
+    0 8px 18px rgba(15,23,42,.05) !important;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:12px;
+  font-weight:900;
+}
+
+.attack-placeholder{
+  border:2px dashed rgba(37,99,235,.45) !important;
+  color:#2563eb;
+  order:1 !important;
+}
+.buff-placeholder{
+  border:2px dashed rgba(124,58,237,.45) !important;
+  color:#6d28d9;
+  order:2 !important;
+}
+.attack-placeholder::before,
+.buff-placeholder::before{
+  content:"✧";
+  position:absolute;
+  top:28px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:30px;
+  opacity:.35;
+}
+.attack-placeholder::after{
+  content:"공격 카드";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:18px;
+}
+.buff-placeholder::after{
+  content:"버프 카드";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:18px;
+}
+
+/* 카드 뒷면 순서 강제: 파란 공격 위 / 보라 버프 아래 */
+.enemy-field .card-back.attack,
+.my-field .card-back.attack,
+.enemy-field .placed-card.attack-placed,
+.my-field .placed-card.attack-placed{
+  order:1 !important;
+}
+.enemy-field .card-back.buff,
+.my-field .card-back.buff,
+.enemy-field .empty-buff,
+.my-field .empty-buff,
+.enemy-field .placed-card.buff-placed,
+.my-field .placed-card.buff-placed{
+  order:2 !important;
+}
+
+/* 상대 필드의 빈 버프칸은 카드가 놓인 것처럼 보이지 않게 */
+.enemy-field .empty-buff{
+  width:78px !important;
+  height:108px !important;
+  border-radius:12px;
+  border:2px dashed rgba(124,58,237,.22) !important;
+  background:rgba(255,255,255,.38) !important;
+  box-shadow:none !important;
+}
+
+/* 손패는 가로 스크롤 대신 겹침 배치 */
+.hand-area{
+  overflow:hidden !important;
+}
+.hand-row{
+  overflow-x:hidden !important;
+  overflow-y:visible !important;
+  gap:0 !important;
+  justify-content:center !important;
+  padding:14px 18px 22px !important;
+}
+.hand-card{
+  margin-right:-34px !important;
+}
+.hand-card:last-child{
+  margin-right:0 !important;
+}
+.hand-card:hover,
+.hand-card.selected{
+  z-index:30 !important;
+}
+
+/* 팝업이 카드 상세 정보 영역을 덜 가리도록 왼쪽 중심으로 배치 */
+.turn-modal-backdrop{
+  justify-content:flex-start !important;
+  padding-left:120px !important;
+  padding-right:360px !important;
+}
+.turn-modal{
+  width:min(900px, calc(100vw - 520px)) !important;
+  min-width:620px;
+}
+@media(max-width:1300px){
+  .turn-modal-backdrop{
+    padding-left:40px !important;
+    padding-right:40px !important;
+  }
+  .turn-modal{
+    width:min(900px, calc(100vw - 80px)) !important;
+    min-width:0;
+  }
+}
+
+
+
+/* ==== HAND AREA + FIXED MODAL + ROUND END FIX ==== */
+/* 1) 손패 위쪽 카드가 잘리지 않도록 영역 확장 */
+.hand-area{
+  overflow:visible !important;
+  padding-top:28px !important;
+}
+.hand-row{
+  overflow-x:hidden !important;
+  overflow-y:visible !important;
+  min-height:235px !important;
+  padding:10px 28px 40px !important;
+  align-items:flex-end !important;
+}
+.hand-card:hover,
+.hand-card.selected{
+  transform:translateY(-28px) scale(1.08) !important;
+  z-index:50 !important;
+}
+
+/* 2) 내 패 텍스트 제거 */
+.hand-head{
+  display:none !important;
+}
+
+/* 3) 게임 진행 팝업 높이 고정 */
+.turn-modal{
+  height:620px !important;
+  min-height:620px !important;
+  max-height:620px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+}
+.turn-modal-title{
+  flex:0 0 42px !important;
+  margin-bottom:18px !important;
+}
+.turn-modal-body{
+  flex:0 0 245px !important;
+  min-height:245px !important;
+  max-height:245px !important;
+}
+.turn-modal-side{
+  min-height:245px !important;
+  max-height:245px !important;
+}
+.turn-modal-message{
+  flex:1 1 auto !important;
+  min-height:200px !important;
+  max-height:200px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  margin-top:-20px !important;
+}
+
+/* 팝업 안 카드 크기 안정화 */
+.turn-modal .battle-card-img,
+.turn-modal .card-back,
+.turn-modal .battle-card{
+  width:150px !important;
+  height:210px !important;
+  flex:0 0 auto !important;
+}
+
+
+/* ==== CARD META + DETAIL CLICK FIX ==== */
+/* 전투 팝업 안 카드 아래 정보 라벨 */
+.battle-card-unit{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  min-width:150px;
+}
+
+.battle-card-unit .battle-card-img,
+.battle-card-unit .card-back,
+.battle-card-unit .battle-card{
+  flex:0 0 auto !important;
+}
+
+.battle-card-meta{
+  min-height:28px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(148,163,184,.28);
+  color:#1f2937;
+  font-size:14px;
+  line-height:1.25;
+  font-weight:1000;
+  text-align:center;
+  white-space:nowrap;
+  box-shadow:0 6px 12px rgba(15,23,42,.08);
+}
+
+.battle-card-meta.attack-meta{
+  color:#1d4ed8;
+  border-color:rgba(37,99,235,.28);
+  background:#eff6ff;
+}
+
+.battle-card-meta.buff-meta{
+  color:#6d28d9;
+  border-color:rgba(124,58,237,.24);
+  background:#f5f3ff;
+}
+
+.battle-card-img{
+  cursor:pointer !important;
+}
+
+.battle-card-img:hover{
+  transform:translateY(-4px) scale(1.03);
+  transition:.15s ease;
+  z-index:5;
+}
+
+/* 라벨이 생겨도 팝업 높이가 흔들리지 않도록 내부 높이 재고정 */
+.turn-modal-body{
+  flex:0 0 282px !important;
+  min-height:282px !important;
+  max-height:282px !important;
+}
+
+.turn-modal-side{
+  min-height:282px !important;
+  max-height:282px !important;
+  align-items:flex-start !important;
+  padding-top:4px;
+}
+
+.turn-modal-message{
+  min-height:200px !important;
+  max-height:200px !important;
+  margin-top:-20px !important;
+}
+
+/* 우측 상세 정보 카드 이미지를 조금 더 크게 */
+.detail-card-img{
+  max-width:270px !important;
+  cursor:pointer;
+}
+
+.effect-box p{
+  font-size:16px;
+  font-weight:900;
+  line-height:1.7;
+  white-space:pre-line;
+}
+
+.status-hp{
+  flex-direction:column;
+  gap:4px;
+  min-height:54px;
+}
+
+.active-buff-list{
+  font-size:12px;
+  line-height:1.35;
+  font-weight:900;
+  opacity:.9;
+}
+
+.turn-modal-title{
+  flex:0 0 92px !important;
+  margin-bottom:12px !important;
+}
+
+.modal-hp-row{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:start;
+  gap:18px;
+}
+
+.modal-title-text{
+  font-size:26px;
+  font-weight:1000;
+  color:#1e3a8a;
+  white-space:nowrap;
+  padding-top:12px;
+}
+
+.modal-hp-box{
+  min-height:64px;
+  border-radius:14px;
+  background:#fff;
+  padding:10px 14px;
+  font-size:14px;
+  line-height:1.35;
+  box-shadow:0 8px 18px rgba(15,23,42,.08);
+}
+
+.modal-hp-box strong{
+  display:block;
+  font-size:18px;
+  margin-bottom:4px;
+}
+
+.modal-hp-box span{
+  display:block;
+  font-size:12px;
+  font-weight:900;
+  color:#475569;
+}
+
+.modal-hp-box.red strong{ color:#ef476f; }
+.modal-hp-box.blue strong{ color:#2563eb; }
+
+
+.hand-card{
+  user-select:none;
+}
+
+.hand-card.dragging{
+  opacity:.45;
+  transform:scale(.95) !important;
+}
+
+.my-field .battle-slot.drag-over{
+  box-shadow:
+    0 0 0 4px rgba(37,99,235,.45),
+    0 0 28px rgba(37,99,235,.35) !important;
+}
+
+.hand-card{
+  touch-action:none;
+  user-select:none;
+}
+
+
+.drag-ghost-card{
+  position:fixed;
+  width:112px;
+  height:158px;
+  object-fit:cover;
+  border-radius:8px;
+  pointer-events:none;
+  z-index:99999;
+  opacity:.72;
+  transform:translate(-50%, -50%) rotate(-3deg);
+  box-shadow:0 18px 35px rgba(15,23,42,.35);
+}
+
+
+.field-reset-btn{
+  position:absolute;
+  top:18px;
+  right:18px;
+  background:#eef2ff;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:1000;
+}
+
+.my-field{
+  position:relative;
+}
+
+
+.status-hp{
+  flex-direction:column;
+  gap:4px;
+  min-height:64px;
+  line-height:1.25;
+}
+
+.active-buff-list{
+  font-size:12px;
+  font-weight:900;
+  color:#475569;
+  text-align:center;
+}
+
+.custom-alert-backdrop{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(15,23,42,.45);
+  z-index:100000;
+}
+
+.custom-alert-backdrop.show{
+  display:flex;
+}
+
+.custom-alert{
+  width:420px;
+  background:white;
+  border:6px solid #2554d8;
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 24px 70px rgba(15,23,42,.35);
+  text-align:center;
+}
+
+.custom-alert-title{
+  font-size:24px;
+  font-weight:1000;
+  color:#1e3a8a;
+  margin-bottom:18px;
+}
+
+.custom-alert-message{
+  font-size:18px;
+  font-weight:900;
+  line-height:1.6;
+  color:#334155;
+  white-space:pre-line;
+  margin-bottom:24px;
+}
+
+.custom-alert button{
+  width:160px;
+  height:54px;
+  background:#174be6;
+  color:white;
+  border-radius:14px;
+  font-size:18px;
+}
+
+
+.flip-card{
+  width:150px;
+  height:210px;
+  perspective:1000px;
+}
+
+.flip-card-inner{
+  width:100%;
+  height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .65s ease;
+}
+
+.flip-card.flipped .flip-card-inner{
+  transform:rotateY(180deg);
+}
+
+.flip-card-face{
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+}
+
+.flip-card-face img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+.flip-card-front{
+  transform:rotateY(180deg);
+}
+
+
+.mobile-nav{
+  display:none;
+}
+
+
+
+
+
+
+
+
+
+
+.detail-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:0px;
+}
+
+.detail-title-row h2{
+  margin:0;
+  line-height:30px;
+}
+
+.pc-help-btn{
+  width:100px;
+  height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:12px;
+  background:#eef2ff;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+
+  font-size:15px;
+  font-weight:1000;
+
+  padding:0;
+}
+
+.detail-title-row h2{
+  margin:0;
+}
+
+.pc-help-btn{
+  width:100px;
+  height:30px;
+  border-radius:15;
+  background:#eef2ff;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+  font-size:15px;
+  font-weight:1000;
+  text-align: center
+}
+
+.game-help-backdrop{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(15,23,42,.45);
+  z-index:100001;
+}
+
+.game-help-backdrop.show{
+  display:flex;
+}
+
+.game-help-modal{
+  position:relative;
+  width:min(800px, calc(100vw - 40px));
+  background:#fff;
+  border:6px solid #2554d8;
+  border-radius:22px;
+  padding:30px;
+  box-shadow:0 24px 70px rgba(15,23,42,.35);
+}
+
+.game-help-modal h2{
+  margin:0 0 22px;
+  color:#1e3a8a;
+  font-size:28px;
+  font-weight:1000;
+}
+
+.game-help-content{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.game-help-content section{
+  padding:16px;
+  border-radius:16px;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+}
+
+.game-help-content h3{
+  margin:0 0 8px;
+  color:#2563eb;
+  font-size:18px;
+}
+
+.game-help-content p{
+  margin:0;
+  color:#334155;
+  font-size:15px;
+  line-height:1.6;
+  font-weight:800;
+}
+
+.game-help-close{
+  position:absolute;
+  top:16px;
+  right:16px;
+
+  width:48px;
+  height:48px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+  background:#64748b;
+  color:#fff;
+
+  font-size:28px;
+  font-weight:900;
+
+  line-height:1;
+  padding:0;
+}
+
+
+@media(max-width:920px){
+
+.top-tabs,
+.mobile-nav,
+.hero,
+.cardgame-side.left,
+.enemy-field,
+.global-buff-field{
+  display:none !important;
+}
+
+.cardgame-side.right{
+  display:block !important;
+}
+
+.detail-panel,
+.battle-log-panel{
+  display:none !important;
+}
+
+  html,
+  body{
+    width:100%;
+    height:100%;
+    overflow:hidden !important;
+  }
+
+  .wrap{
+    width:100vw !important;
+    height:100vh !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+  }
+
+  .cardgame-layout{
+    display:block !important;
+    width:100%;
+    height:100%;
+  }
+
+.battle-board{
+  display:grid !important;
+  grid-template-rows:92px 250px 150px !important;
+  gap:0 !important;
+  width:100%;
+  height:auto !important;
+  min-height:0 !important;
+}
+
+  .versus-area{
+    grid-row:1 !important;
+    order:1 !important;
+    min-height: 100px !important;
+    height:78px !important;
+    padding:6px 8px !important;
+    border-radius:0 !important;
+  }
+
+  .battle-status-bar{
+    display:grid !important;
+    grid-template-columns:1fr auto 1fr !important;
+    align-items:center !important;
+    gap:6px !important;
+    margin:0 !important;
+    height:52px !important;
+  }
+
+  .status-hp{
+    min-width:0 !important;
+    min-height:44px !important;
+    height:44px !important;
+    padding:5px 8px !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+  }
+
+  .turn-ribbon{
+    display:block !important;
+    position:static !important;
+    transform:none !important;
+    padding:6px 14px !important;
+    border-radius:0 0 10px 10px !important;
+    font-size:13px !important;
+  }
+
+  .turn-ribbon span{
+    font-size:11px !important;
+  }
+
+  .stage-note{
+    margin-top:7px !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+  }
+
+.my-field{
+  grid-row:2 !important;
+  grid-column:1 / -1 !important;
+  order:2 !important;
+  display:block !important;
+  width:100% !important;
+  border-radius:0 !important;
+  padding:8px !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+
+  .my-field .field-head{
+    margin-bottom:4px !important;
+  }
+
+  .my-field .field-head h2{
+    font-size:16px !important;
+    padding-bottom:4px !important;
+  }
+
+  .field-reset-btn{
+    top:8px !important;
+    right:8px !important;
+    padding:6px 8px !important;
+    font-size:10px !important;
+  }
+
+  .my-field .slot-row{
+    grid-template-columns:repeat(5, 1fr) !important;
+    gap:5px !important;
+    height:calc(100% - 32px);
+  }
+
+  .my-field .battle-slot{
+    min-height:0 !important;
+    height:100% !important;
+    padding:28px 3px 5px !important;
+    gap:4px !important;
+    border-radius:12px !important;
+  }
+
+  .slot-num{
+    top:5px !important;
+    width:22px !important;
+    height:22px !important;
+    font-size:11px !important;
+  }
+
+  .my-field .card-back,
+  .my-field .placed-card,
+  .my-field .empty-buff,
+  .my-field .slot-placeholder{
+    width:52px !important;
+    height:72px !important;
+    border-radius:7px !important;
+  }
+
+  .my-field .card-back.attack.blue::before,
+  .my-field .card-back.buff::before,
+  .my-field .empty-buff::before{
+    top:17px !important;
+    font-size:22px !important;
+  }
+
+  .my-field .card-back.attack.blue::after,
+  .my-field .card-back.buff::after,
+  .my-field .empty-buff::after{
+    bottom:10px !important;
+    font-size:10px !important;
+  }
+
+    .hand-head{
+    display:none !important;
+  }
+
+
+.hand-area{
+  grid-row:3 !important;
+  order:3 !important;
+  display:block !important;
+  height:190px !important;
+  min-height:190px !important;
+  padding:46px 16px 8px 5px !important;
+  border-radius:0 !important;
+  overflow:visible !important;
+  background:#fff !important;
+}
+
+.hand-row{
+  height:100% !important;
+  min-height:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  overflow-x:visible !important;
+  overflow-y:visible !important;
+  gap:0 !important;
+}
+
+.hand-card{
+  width:85px !important;
+  height:124px !important;
+  margin-right:-52px !important;
+  flex:0 0 auto !important;
+  object-fit:cover !important;
+}
+
+.hand-card:last-child{
+  margin-right:0 !important;
+}
+
+.hand-card.selected{
+  transform:translateY(-20px) scale(1.08) !important;
+  z-index:50 !important;
+}
+
+.action-panel{
+  display:block !important;
+  position:fixed !important;
+  right:8px !important;
+  top:545px !important;
+  bottom:auto !important;
+  z-index:1000 !important;
+  width:116px !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+  .action-panel .btn-primary{
+    width:128px !important;
+    height:88px !important;
+    font-size:15px !important;
+    border-radius:16px !important;
+    position:fixed;
+    left:65%;
+  }
+}
+
+.mobile-card-detail-btn{
+  display:none;
+}
+
+@media(max-width:920px){
+.mobile-card-detail-btn.show{
+    display:block;
+    position:fixed;
+
+    left:auto;
+    right:170px;
+
+    top:560px;
+
+    transform:none;
+
+    z-index:2000;
+    width:140px;
+    height:88px;
+    border-radius:16px;
+    background: linear-gradient(180deg,#facc15,#ffc2af);
+    border:3px solid #fd8b7b;
+    color:#111827;
+    font-size:15px;
+    font-weight:1000;
+    box-shadow:0 8px 18px rgba(15,23,42,.25);
+}
+}
+
+@media(max-width:920px){
+  /* 카드 상세 정보 팝업 전용: 다른 알림 팝업에는 적용되지 않음 */
+  .custom-alert.mobile-alert-card-detail{
+    width:340px !important;
+    padding:14px !important;
+    border-width:5px !important;
+  }
+
+  .custom-alert.mobile-alert-card-detail .custom-alert-title{
+    font-size:22px !important;
+    line-height:1.1 !important;
+    margin:0 0 12px 0 !important;
+  }
+
+  .custom-alert.mobile-alert-card-detail .custom-alert-message{
+    white-space:normal !important;
+    display:block !important;
+    margin:0 !important;
+    line-height:1 !important;
+  }
+
+  .custom-alert.mobile-alert-card-detail .mobile-card-detail-content{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    line-height:1 !important;
+    text-align:center !important;
+  }
+
+  /* ① 카드 이미지 크기 / 이미지 아래 간격 */
+  .custom-alert.mobile-alert-card-detail .mobile-card-detail-img{
+    width:210px !important;
+    max-width:100% !important;
+    display:block !important;
+    border-radius:8px !important;
+    margin:0 0 12px 0 !important;
+  }
+
+  /* ② 카드명 아래 간격 */
+  .custom-alert.mobile-alert-card-detail .mobile-card-detail-name{
+    font-size:20px !important;
+    font-weight:1000 !important;
+    line-height:1.05 !important;
+    margin:0 0 12px 0 !important;
+  }
+
+  /* ③ 속성/공격력 아래 간격 */
+  .custom-alert.mobile-alert-card-detail .mobile-card-detail-stat{
+    font-size:15px !important;
+    font-weight:1000 !important;
+    color:#2563eb !important;
+    line-height:1.05 !important;
+    margin:0 0 12px 0 !important;
+  }
+
+  /* ④ 효과 설명 아래 간격 */
+  .custom-alert.mobile-alert-card-detail .mobile-card-detail-effect{
+    font-size:15px !important;
+    font-weight:900 !important;
+    line-height:1.15 !important;
+    margin:0 0 12px 0 !important;
+  }
+
+  .custom-alert.mobile-alert-card-detail button{
+    height:44px !important;
+    margin-top:6px !important;
+  }
+}
+
+@media(max-width:920px){
+
+  .turn-modal{
+    width:340px !important;
+    min-width:0 !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:16px 12px 14px !important;
+    border-width:6px !important;
+    border-radius:12px !important;
+  }
+
+  .turn-modal-title{
+    flex:0 0 auto !important;
+    margin:0 0 10px !important;
+  }
+
+  .modal-hp-row{
+    grid-template-columns:72px 1fr 72px !important;
+    gap:8px !important;
+    align-items:center !important;
+  }
+
+  .modal-title-text{
+    font-size:18px !important;
+    padding-top:0 !important;
+    text-align:center !important;
+  }
+
+  .modal-hp-box{
+    min-height:58px !important;
+    padding:6px 4px !important;
+    font-size:10px !important;
+    line-height:1.1 !important;
+    border-radius:12px !important;
+  }
+
+  .modal-hp-box strong{
+    font-size:9px !important;
+    margin-bottom:3px !important;
+  }
+
+  .modal-hp-box span{
+    font-size:8px !important;
+    line-height:1.1 !important;
+  }
+
+  .turn-modal-body{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    grid-template-rows:auto auto !important;
+    gap:8px 10px !important;
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    margin-top:6px !important;
+    align-items:start !important;
+  }
+
+  .turn-modal-vs{
+    display:none !important;
+  }
+
+  .turn-modal-side{
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    padding-top:0 !important;
+    gap:6px !important;
+    display:contents !important;
+  }
+
+  .battle-card-unit{
+    min-width:0 !important;
+    gap:3px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+  }
+
+  .turn-modal .battle-card-img,
+  .turn-modal .card-back,
+  .turn-modal .battle-card{
+    width:96px !important;
+    height:134px !important;
+  }
+
+  .battle-card-meta{
+    font-size:10px !important;
+    min-height:18px !important;
+    padding:2px 5px !important;
+  }
+
+  .turn-modal-message{
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    margin:10px 0 10px !important;
+    font-size:12px !important;
+    line-height:1.35 !important;
+    display:block !important;
+    overflow:visible !important;
+  }
+
+  .mobile-turn-next-btn{
+    display:flex !important;
+    width:100% !important;
+    height:52px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:14px !important;
+    background:#174be6 !important;
+    color:#fff !important;
+    font-size:18px !important;
+    font-weight:1000 !important;
+    margin-top:8px !important;
+  }
+}
+
+
+/* @media(max-width:920px){
+
+  .turn-modal{
+    width:340px !important;
+    min-width:0 !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:18px 12px 16px !important;
+    border-width:6px !important;
+    border-radius:12px !important;
+  }
+
+  .turn-modal-title{
+    flex:0 0 auto !important;
+    margin:0 0 12px !important;
+  }
+
+  .modal-hp-row{
+    grid-template-columns:74px 1fr 74px !important;
+    gap:8px !important;
+    align-items:center !important;
+  }
+
+  .modal-title-text{
+    font-size:18px !important;
+    padding-top:0 !important;
+    text-align:center !important;
+  }
+
+  .modal-hp-box{
+    min-height:66px !important;
+    padding:8px 4px !important;
+    font-size:11px !important;
+    line-height:1.15 !important;
+    border-radius:14px !important;
+  }
+
+  .modal-hp-box strong{
+    font-size:10px !important;
+    margin-bottom:5px !important;
+  }
+
+  .modal-hp-box span{
+    font-size:8px !important;
+    line-height:1.15 !important;
+  }
+
+  .turn-modal-body{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:14px !important;
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    margin-top:8px !important;
+  }
+
+  .turn-modal-vs{
+    display:none !important;
+  }
+
+  .turn-modal-side{
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    padding-top:0 !important;
+    gap:6px !important;
+  }
+
+  .turn-modal .battle-card-img,
+  .turn-modal .card-back,
+  .turn-modal .battle-card{
+    width:116px !important;
+    height:162px !important;
+  }
+
+  .battle-card-unit{
+    min-width:0 !important;
+    gap:4px !important;
+  }
+
+  .battle-card-meta{
+    font-size:11px !important;
+    min-height:22px !important;
+    padding:3px 6px !important;
+  }
+
+  .turn-modal-message{
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    margin:14px 0 0 !important;
+    font-size:14px !important;
+    line-height:1.4 !important;
+    display:block !important;
+    overflow:visible !important;
+  }
+} */
+
+
+
+
+.mobile-turn-next-btn{
+  display:none;
+}
+
+
+/* ==== MOBILE TURN MODAL 3x2 CELL POSITION FIX ==== */
+@media(max-width:920px){
+  .turn-modal{
+    width:340px !important;
+    min-width:0 !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:16px 12px 14px !important;
+    border-width:6px !important;
+    border-radius:12px !important;
+  }
+
+  .turn-modal-title{
+    flex:0 0 auto !important;
+    margin:0 0 10px !important;
+  }
+
+  .modal-hp-row{
+    grid-template-columns:72px 1fr 72px !important;
+    gap:8px !important;
+    align-items:center !important;
+  }
+
+  .modal-title-text{
+    font-size:18px !important;
+    padding-top:0 !important;
+    text-align:center !important;
+  }
+
+  .modal-hp-box{
+    min-height:58px !important;
+    padding:6px 4px !important;
+    font-size:10px !important;
+    line-height:1.1 !important;
+    border-radius:12px !important;
+  }
+
+  .modal-hp-box strong{
+    font-size:9px !important;
+    margin-bottom:3px !important;
+  }
+
+  .modal-hp-box span{
+    font-size:8px !important;
+    line-height:1.1 !important;
+  }
+
+  /* 3 columns x 2 rows:
+     1 enemy buff / 2 enemy attack / 3 empty
+     4 VS / 5 my attack / 6 my buff */
+  .turn-modal-body{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:repeat(3, 1fr) !important;
+    grid-template-rows:repeat(2, auto) !important;
+    gap:10px 10px !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    margin:6px 0 0 !important;
+    padding:0 4px !important;
+    align-items:start !important;
+    justify-items:center !important;
+  }
+
+  #turnModalEnemy,
+  #turnModalMy{
+    display:contents !important;
+  }
+
+  #turnModalEnemy > .battle-card-unit:nth-child(1){
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+
+  #turnModalEnemy > .battle-card-unit:nth-child(2){
+    grid-column:2 !important;
+    grid-row:1 !important;
+  }
+
+  .turn-modal-vs{
+    display:flex !important;
+    grid-column:1 !important;
+    grid-row:2 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:118px !important;
+    font-size:44px !important;
+    font-weight:1000 !important;
+    color:#94a3b8 !important;
+    line-height:1 !important;
+    text-align:center !important;
+  }
+
+  #turnModalMy > .battle-card-unit:nth-child(1){
+    grid-column:2 !important;
+    grid-row:2 !important;
+  }
+
+  #turnModalMy > .battle-card-unit:nth-child(2){
+    grid-column:3 !important;
+    grid-row:2 !important;
+  }
+
+  .battle-card-unit{
+    min-width:0 !important;
+    width:100% !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:3px !important;
+  }
+
+  .turn-modal .battle-card-img,
+  .turn-modal .card-back,
+  .turn-modal .battle-card{
+    width:86px !important;
+    height:120px !important;
+    flex:0 0 auto !important;
+  }
+
+  .battle-card-meta{
+    font-size:10px !important;
+    min-height:18px !important;
+    padding:2px 5px !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
+  }
+
+  .turn-modal-message{
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    margin:10px 0 8px !important;
+    font-size:12px !important;
+    line-height:1.35 !important;
+    display:block !important;
+    overflow:visible !important;
+    text-align:center !important;
+  }
+
+  .mobile-turn-next-btn{
+    display:flex !important;
+    width:100% !important;
+    height:52px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:14px !important;
+    background:#174be6 !important;
+    color:#fff !important;
+    font-size:18px !important;
+    font-weight:1000 !important;
+    margin-top:8px !important;
+  }
+}
+
+
+
+/* ==== FINAL MOBILE TURN MODAL 3x2 GRID + BUTTON FIX ==== */
+@media(max-width:920px){
+  .turn-modal{
+    width:340px !important;
+    min-width:0 !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    padding:16px 12px 14px !important;
+    border-width:6px !important;
+    border-radius:12px !important;
+  }
+
+  .turn-modal-title{
+    flex:0 0 auto !important;
+    margin:0 0 10px !important;
+  }
+
+  .turn-modal-body{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:repeat(3, 1fr) !important;
+    grid-template-rows:repeat(2, auto) !important;
+    gap:10px 10px !important;
+    width:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    margin:6px 0 0 !important;
+    padding:0 4px !important;
+    align-items:start !important;
+    justify-items:center !important;
+  }
+
+  #turnModalEnemy,
+  #turnModalMy{
+    display:contents !important;
+  }
+
+  /* 1번칸: 상대 버프 카드 */
+  #turnModalEnemy > .battle-card-unit:nth-child(1){
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+
+  /* 2번칸: 상대 공격 카드 */
+  #turnModalEnemy > .battle-card-unit:nth-child(2){
+    grid-column:2 !important;
+    grid-row:1 !important;
+  }
+
+  /* 3번칸은 의도적으로 비워둠 */
+
+  /* 4번칸: VS */
+  .turn-modal-vs{
+    display:flex !important;
+    grid-column:1 !important;
+    grid-row:2 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:120px !important;
+    font-size:44px !important;
+    font-weight:1000 !important;
+    line-height:1 !important;
+    color:#94a3b8 !important;
+    text-align:center !important;
+  }
+
+  /* 5번칸: 내 공격 카드 */
+  #turnModalMy > .battle-card-unit:nth-child(1){
+    grid-column:2 !important;
+    grid-row:2 !important;
+  }
+
+  /* 6번칸: 내 버프 카드 */
+  #turnModalMy > .battle-card-unit:nth-child(2){
+    grid-column:3 !important;
+    grid-row:2 !important;
+  }
+
+  .turn-modal .battle-card-unit{
+    min-width:0 !important;
+    width:100% !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:3px !important;
+  }
+
+  .turn-modal .battle-card-img,
+  .turn-modal .card-back,
+  .turn-modal .battle-card{
+    width:86px !important;
+    height:120px !important;
+    flex:0 0 auto !important;
+  }
+
+  .turn-modal .battle-card-meta{
+    font-size:10px !important;
+    min-height:18px !important;
+    padding:2px 5px !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
+  }
+
+  .turn-modal-message{
+    min-height:0 !important;
+    max-height:none !important;
+    height:auto !important;
+    margin:24px 0 8px !important;
+    font-size:12px !important;
+    line-height:1.35 !important;
+    display:block !important;
+    overflow:visible !important;
+    text-align:center !important;
+  }
+
+  .mobile-turn-next-btn{
+    display:flex !important;
+    width:100% !important;
+    height:52px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:14px !important;
+    background:#174be6 !important;
+    color:#fff !important;
+    font-size:18px !important;
+    font-weight:1000 !important;
+    margin-top:8px !important;
+  }
+}
+
+@media(max-width:920px){
+  .mobile-nav{
+    display:block !important;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:44px;
+    background:#fff;
+    z-index:50000;
+    border-bottom:1px solid #dbeafe;
+    padding:6px 10px;
+  }
+
+  .hamburger-btn{
+    height:32px;
+    padding:0 12px;
+    border-radius:10px;
+    background:#174be6;
+    color:#fff;
+    font-size:14px;
+    font-weight:1000;
+  }
+
+  .mobile-menu{
+    display:none;
+    position:absolute;
+    top:44px;
+    left:10px;
+    width:210px;
+    padding:10px;
+    border-radius:14px;
+    background:#fff;
+    box-shadow:0 14px 35px rgba(15,23,42,.25);
+    border:1px solid #dbeafe;
+  }
+
+  .mobile-menu.show{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .mobile-menu a{
+    padding:10px 12px;
+    border-radius:10px;
+    background:#f8fafc;
+    color:#111827;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:1000;
+  }
+
+  .mobile-menu a:last-child{
+    background:linear-gradient(135deg,#1d4ed8,#7c3aed);
+    color:#fff;
+  }
+
+  .wrap{
+    padding-top:44px !important;
+  }
+}
+
+@media(max-width:920px){
+
+  .mobile-nav{
+    display:block !important;
+    margin-bottom:14px !important;
+    position:relative !important;
+    z-index:60000 !important;
+  }
+
+  .hamburger-btn{
+    width:100% !important;
+    height:48px !important;
+    border-radius:14px !important;
+    background:linear-gradient(135deg,#1d4ed8,#7c3aed) !important;
+    color:white !important;
+    font-size:16px !important;
+    font-weight:1000 !important;
+  }
+
+  .mobile-menu{
+    display:none;
+    margin-top:8px;
+    background:white;
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(15,23,42,.12);
+  }
+
+  .mobile-menu.show{
+    display:block !important;
+  }
+
+  .mobile-menu a{
+    display:block;
+    padding:14px 16px;
+    color:var(--text);
+    text-decoration:none;
+    font-weight:900;
+    border-bottom:1px solid var(--line);
+  }
+
+  .mobile-menu a:last-child{
+    border-bottom:0;
+  }
+
+  .hero{
+    display:flex !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-height:120px !important;
+    padding:20px !important;
+    margin-bottom:14px !important;
+    border-radius:20px !important;
+    overflow:hidden !important;
+  }
+
+  .hero-title{
+    flex-wrap:wrap !important;
+  }
+
+  .hero h1{
+    font-size:22px !important;
+  }
+
+  .hero p{
+    font-size:14px !important;
+  }
+
+  .hero-side-image{
+    right:14px !important;
+    max-height:105px !important;
+    opacity:.9 !important;
+  }
+}
+
+
+
+
+
+/* ==== FINAL MOBILE HEADER/HERO MATCH INDEX STYLE ==== */
+@media(max-width:920px){
+  html,
+  body{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:100% !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    background:var(--bg) !important;
+  }
+
+  .wrap{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:100vh !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    padding:16px 12px 40px !important;
+    overflow:visible !important;
+  }
+
+  .top-tabs{
+    display:none !important;
+  }
+
+  .mobile-nav{
+    display:block !important;
+    position:relative !important;
+    top:auto !important;
+    left:auto !important;
+    right:auto !important;
+    height:auto !important;
+    padding:0 !important;
+    margin:0 0 14px !important;
+    background:transparent !important;
+    border-bottom:0 !important;
+    z-index:60000 !important;
+  }
+
+  .hamburger-btn{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    height:48px !important;
+    padding:0 12px !important;
+    border:0 !important;
+    border-radius:14px !important;
+    background:linear-gradient(135deg,#1d4ed8,#7c3aed) !important;
+    color:#fff !important;
+    font-size:16px !important;
+    font-weight:1000 !important;
+    box-shadow:none !important;
+  }
+
+  .mobile-menu{
+    display:none !important;
+    position:static !important;
+    width:100% !important;
+    margin-top:8px !important;
+    padding:0 !important;
+    background:#fff !important;
+    border:1px solid var(--line) !important;
+    border-radius:16px !important;
+    overflow:hidden !important;
+    box-shadow:0 10px 30px rgba(15,23,42,.12) !important;
+  }
+
+  .mobile-menu.show{
+    display:block !important;
+  }
+
+  .mobile-menu a{
+    display:block !important;
+    padding:14px 16px !important;
+    color:var(--text) !important;
+    text-decoration:none !important;
+    font-size:14px !important;
+    font-weight:900 !important;
+    border-bottom:1px solid var(--line) !important;
+    border-radius:0 !important;
+    background:#fff !important;
+  }
+
+  .mobile-menu a:last-child{
+    border-bottom:0 !important;
+  }
+
+  .mobile-menu a.active,
+  .mobile-menu a[href="./calmcard.html"]{
+    background:#f8fafc !important;
+    color:#1d4ed8 !important;
+  }
+
+  .hero{
+    display:flex !important;
+    position:relative !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-height:150px !important;
+    margin:0 0 20px !important;
+    padding:20px !important;
+    border-radius:24px !important;
+    overflow:hidden !important;
+    background:linear-gradient(135deg,#1d4ed8,#7c3aed) !important;
+    color:#fff !important;
+    box-shadow:0 18px 40px rgba(37,99,235,.22) !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+  }
+
+  .hero-content{
+    position:relative !important;
+    z-index:2 !important;
+    max-width:72% !important;
+  }
+
+  .hero-title{
+    display:flex !important;
+    align-items:center !important;
+    gap:12px !important;
+    margin-bottom:8px !important;
+    flex-wrap:nowrap !important;
+  }
+
+  .hero-logo{
+    width:48px !important;
+    height:48px !important;
+    object-fit:contain !important;
+    border-radius:14px !important;
+    flex:0 0 auto !important;
+  }
+
+  .hero h1{
+    margin:0 !important;
+    font-size:22px !important;
+    line-height:1.22 !important;
+    font-weight:1000 !important;
+    word-break:keep-all !important;
+  }
+
+  .hero p{
+    margin:0 !important;
+    font-size:14px !important;
+    line-height:1.65 !important;
+    opacity:.92 !important;
+    word-break:keep-all !important;
+  }
+
+  .hero-side-image{
+    display:block !important;
+    position:absolute !important;
+    right:14px !important;
+    bottom:5px !important;
+    height:100% !important;
+    max-height:130px !important;
+    max-width:34% !important;
+    object-fit:contain !important;
+    z-index:1 !important;
+    opacity:.95 !important;
+    pointer-events:none !important;
+  }
+
+  .cardgame-layout{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 !important;
+  }
+}
+
+
+
+/* ==== FINAL MOBILE SCROLL / ACTION BUTTON / FOOTER FIX ==== */
+@media(max-width:920px){
+  html,
+  body{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:100% !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+  }
+
+  body{
+    background:var(--bg) !important;
+  }
+
+  .wrap{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:16px 12px 0 !important;
+    overflow:visible !important;
+  }
+
+  .cardgame-layout{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    overflow:visible !important;
+  }
+
+  .battle-board{
+    height:auto !important;
+    min-height:0 !important;
+    overflow:visible !important;
+  }
+
+  .hand-area{
+    height:190px !important;
+    min-height:190px !important;
+    margin-bottom:0 !important;
+    overflow:visible !important;
+  }
+
+  .cardgame-side.right{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+  }
+
+  .action-panel{
+    display:flex !important;
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:auto !important;
+    z-index:10 !important;
+    width:166% !important;
+    height:auto !important;
+    margin:68px auto 0 !important;
+    padding:0 !important;
+    justify-content:center !important;
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
+  }
+
+  .action-panel .btn-primary{
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:auto !important;
+    width:128px !important;
+    height:88px !important;
+    margin:-156px auto !important;
+    font-size:15px !important;
+    line-height:1.25 !important;
+    border-radius:16px !important;
+  }
+
+  .footer{
+    display:block !important;
+    position:relative !important;
+    width:100% !important;
+    margin-top:47px !important;
+    padding:0 20px 72px !important;
+    text-align:center !important;
+    color:#94a3b8 !important;
+  }
+
+  .footer-copy{
+    font-size:13px !important;
+    margin-bottom:10px !important;
+  }
+
+  .footer-links{
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:18px !important;
+  }
+
+  .footer-icon img{
+    height:32px !important;
+    width:auto !important;
+    object-fit:contain !important;
+    display:block !important;
+  }
+
+  body::after{
+    content:"";
+    display:block;
+    height:120px;
+  }
+}
+
+/* ==== FINAL MOBILE DETAIL BUTTON BEHAVIOR FIX ==== */
+/* 노란색 카드 상세 버튼은 처음부터 보이게 하고, 스크롤/푸터와 분리된 고정 버튼 방식은 사용하지 않음 */
+@media(max-width:920px){
+  .mobile-card-detail-btn.show{
+    display:flex !important;
+    position:relative !important;
+
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+
+    z-index:20 !important;
+    width:140px !important;
+    height:88px !important;
+    margin:56px 0 0 124px !important;
+
+    align-items:center !important;
+    justify-content:center !important;
+    text-align:center !important;
+
+    border-radius:16px !important;
+    background:linear-gradient(180deg,#facc15,#ffc2af) !important;
+    border:3px solid #fd8b7b !important;
+    color:#111827 !important;
+    font-size:11px !important;
+    font-weight:1000 !important;
+    line-height:1.25 !important;
+    box-shadow:0 8px 18px rgba(15,23,42,.25) !important;
+  }
+}
+
+
+
+
+
+
+
+
+/* ==== MOBILE HELP BUTTON CONTROL ROW FINAL FIX ==== */
+.mobile-control-row,
+.mobile-help-btn{
+  display:none;
+}
+
+@media(max-width:920px){
+  .mobile-control-row{
+    display:grid !important;
+    grid-template-columns:24% 32% 24% !important;
+    gap:3% !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    margin:54px auto 120px !important;
+    padding:0 4% !important;
+    position:relative !important;
+    z-index:30 !important;
+  }
+
+  .mobile-help-btn{
+    display:flex !important;
+    width:100% !important;
+    height:88px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    text-align:center !important;
+    border-radius:16px !important;
+    background:linear-gradient(180deg,#eef2ff,#dbeafe) !important;
+    border:3px solid #93c5fd !important;
+    color:#1d4ed8 !important;
+    font-size:15px !important;
+    font-weight:1000 !important;
+    line-height:1.25 !important;
+    box-shadow:0 8px 18px rgba(15,23,42,.18) !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  body .mobile-control-row .mobile-card-detail-btn.show{
+    display:flex !important;
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    transform:none !important;
+    width:100% !important;
+    height:88px !important;
+    margin:0 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    text-align:center !important;
+    z-index:31 !important;
+  }
+
+  body .mobile-control-row .action-panel{
+    display:flex !important;
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    width:140px !important;
+    height:88px !important;
+    margin:0 !important;
+    padding:0 !important;
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
+    z-index:31 !important;
+  }
+
+  body .mobile-control-row .action-panel .btn-primary{
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    width:100% !important;
+    height:88px !important;
+    margin:0 !important;
+    border-radius:16px !important;
+    font-size:15px !important;
+    line-height:1.25 !important;
+  }
+
+  .footer{
+    margin-top:0 !important;
+  }
+}
+
+@media(max-width:460px){
+  .mobile-control-row{
+    display:grid !important;
+    grid-template-columns:1fr 1fr 1fr !important;
+    gap:12px !important;
+    padding:0 8px !important;
+  }
+
+.mobile-help-btn{
+  width:100% !important;
+  font-size:14px !important;
+}
+
+body .mobile-control-row .mobile-card-detail-btn.show{
+  width:100% !important;
+}
+
+body .mobile-control-row .action-panel,
+body .mobile-control-row .action-panel .btn-primary{
+  width:100% !important;
+}
+}
+
+
+/* ==== MOBILE HELP MODAL FINAL FIX ==== */
+@media(max-width:920px){
+
+  /* 도움말 팝업 배경: 모바일에서 스크롤 가능한 레이어로 분리 */
+  .game-help-backdrop{
+    position:fixed !important;
+    inset:0 !important;
+    display:none !important;
+    align-items:flex-start !important;
+    justify-content:center !important;
+    padding:18px 10px !important;
+    background:rgba(15,23,42,.55) !important;
+    z-index:100001 !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior:contain !important;
+    touch-action:pan-y !important;
+  }
+
+  .game-help-backdrop.show{
+    display:flex !important;
+  }
+
+  /* 모바일 도움말 팝업 크기 */
+  .game-help-modal{
+    width:calc(100vw - 24px) !important;
+    max-width:390px !important;
+    max-height:calc(100dvh - 36px) !important;
+    min-height:0 !important;
+
+    padding:16px 14px 18px !important;
+    border-width:5px !important;
+    border-radius:18px !important;
+
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior:contain !important;
+    touch-action:pan-y !important;
+
+    box-shadow:0 18px 45px rgba(15,23,42,.35) !important;
+  }
+
+  .game-help-modal h2{
+    position:sticky !important;
+    top:0 !important;
+    z-index:2 !important;
+
+    margin:0 0 10px !important;
+    padding:4px 44px 10px 0 !important;
+    background:#fff !important;
+
+    font-size:22px !important;
+    line-height:1.15 !important;
+    color:#1e3a8a !important;
+    font-weight:1000 !important;
+  }
+
+  .game-help-content{
+    gap:10px !important;
+  }
+
+  .game-help-content section{
+    padding:12px !important;
+    border-radius:14px !important;
+  }
+
+  .game-help-content h3{
+    margin:0 0 7px !important;
+    font-size:17px !important;
+    line-height:1.25 !important;
+  }
+
+  .game-help-content p{
+    margin:0 0 6px !important;
+    font-size:13px !important;
+    line-height:1.45 !important;
+    font-weight:850 !important;
+    word-break:keep-all !important;
+  }
+
+  .game-help-content p:last-child{
+    margin-bottom:0 !important;
+  }
+
+  .game-help-close{
+    position:sticky !important;
+    top:4px !important;
+    float:right !important;
+    z-index:5 !important;
+
+    width:34px !important;
+    height:34px !important;
+    min-width:34px !important;
+    min-height:34px !important;
+
+    margin:-2px 0 0 8px !important;
+    padding:0 !important;
+
+    font-size:22px !important;
+    line-height:1 !important;
+    border-radius:50% !important;
+  }
+}
+
+/* 작은 모바일에서 한 번 더 축소 */
+@media(max-width:380px){
+  .game-help-modal{
+    width:calc(100vw - 18px) !important;
+    padding:14px 12px 16px !important;
+  }
+
+  .game-help-modal h2{
+    font-size:20px !important;
+  }
+
+  .game-help-content h3{
+    font-size:16px !important;
+  }
+
+  .game-help-content p{
+    font-size:12.5px !important;
+    line-height:1.42 !important;
+  }
+}
+
+
+
+
+/* ==== CALM MONSTARZ MINIGAME DESIGN - FROM CALMQUIZ ==== */
+#page-calmcard{
+  display:block;
+}
+
+.minigame-tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+  margin-bottom:20px;
+}
+
+.minigame-tab{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:48px;
+  padding:0 20px;
+  border-radius:14px;
+  text-decoration:none;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+  transition:.15s ease;
+}
+
+.minigame-tab:hover{
+  transform:translateY(-2px);
+  border-color:#00A2FF;
+}
+
+.minigame-tab.active{
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  border-color:transparent;
+  color:#fff;
+}
+
+body.light .minigame-tab{
+  background:#fff;
+  color:#0f172a;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+body.light .minigame-tab.active{
+  color:#fff;
+}
+
+#page-calmcard .cardbattle-box{
+  /* min-height:820px; */
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 16px 36px rgba(0,0,0,.14);
+  border-radius:22px;
+  padding:1px;
+  overflow:visible;
+}
+
+body.light #page-calmcard .cardbattle-box{
+  background:#fff;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+#page-calmcard .cardgame-layout{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  grid-template-columns:minmax(0,1fr) 300px !important;
+  gap:18px !important;
+  align-items:start !important;
+}
+
+#page-calmcard .battle-board{
+  min-width:0 !important;
+}
+
+#page-calmcard .cardgame-side.right{
+  min-width:0 !important;
+  position:relative !important;
+  z-index:1 !important;
+}
+
+#page-calmcard .cardgame-side.right .game-panel{
+  width:100% !important;
+}
+
+@media(max-width:1100px){
+  #page-calmcard .cardgame-layout{
+    grid-template-columns:1fr !important;
+  }
+}
+
+@media(max-width:768px){
+  .minigame-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .minigame-tab{
+    width:100%;
+    padding:0 10px;
+    font-size:14px;
+  }
+
+  #page-calmcard .cardbattle-box{
+    padding:16px 10px;
+  }
+}
+
+
+
+/* ==== FINAL DESKTOP GRID RIGHT PANEL FIX ==== */
+@media(min-width:921px){
+  #page-calmcard .cardgame-layout{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 260px !important;
+    gap:16px !important;
+    align-items:start !important;
+    width:100% !important;
+    max-width:100% !important;
+    overflow:visible !important;
+  }
+
+  #page-calmcard .cardgame-side.left{
+    display:none !important;
+  }
+
+  #page-calmcard .cardgame-side.right{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:16px !important;
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:auto !important;
+    width:260px !important;
+    min-width:260px !important;
+    max-width:260px !important;
+    z-index:1 !important;
+  }
+
+  #page-calmcard .cardgame-side.right .game-panel,
+  #page-calmcard .detail-panel{
+    width:260px !important;
+    min-width:260px !important;
+    max-width:260px !important;
+    padding:14px !important;
+    overflow:hidden !important;
+  }
+
+  #page-calmcard .battle-board,
+  #page-calmcard .versus-area,
+  #page-calmcard .my-field,
+  #page-calmcard .enemy-field,
+  #page-calmcard .hand-area{
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+
+  #page-calmcard .slot-row{
+    min-width:0 !important;
+  }
+
+  #page-calmcard .detail-title-row{
+    align-items:center !important;
+    gap:8px !important;
+  }
+
+  #page-calmcard .detail-title-row h2{
+    font-size:17px !important;
+    line-height:1.2 !important;
+    white-space:nowrap !important;
+  }
+
+  #page-calmcard .pc-help-btn{
+    width:86px !important;
+    height:28px !important;
+    font-size:12px !important;
+    flex:0 0 auto !important;
+  }
+
+  #page-calmcard .detail-card-img{
+    width:100% !important;
+    max-width:210px !important;
+    margin:12px auto 14px !important;
+  }
+
+  #page-calmcard .effect-box{
+    min-height:150px !important;
+    padding:6px 14px 14px 14px !important;
+  }
+
+  #page-calmcard .effect-box h3{
+    font-size:16px !important;
+    margin-bottom:8px !important;
+  }
+
+  #page-calmcard .effect-box p{
+    font-size:12px !important;
+    line-height:1.55 !important;
+  }
+
+  #page-calmcard .action-panel{
+    display:block !important;
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:auto !important;
+    width:260px !important;
+    min-width:260px !important;
+    max-width:260px !important;
+    padding:0 !important;
+    margin:0 !important;
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
+    z-index:1 !important;
+  }
+
+  #page-calmcard .action-panel .btn-primary{
+    position:relative !important;
+    top:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:auto !important;
+    width:220px !important;
+    height:100px !important;
+    margin:0 auto !important;
+    font-size:18px !important;
+    line-height:1.2 !important;
+  }
+}
+
+.detail-panel h2,
+.detail-title{
+  color:#0458ff !important;
+}
+
+
+
+
+
+
+
+
+
+
+/* ==== CALM CARD LIGHT MODE FINAL FIX ==== */
+/* theme.js가 body.light-mode를 사용하므로 body.light와 함께 모두 대응 */
+body.light #page-calmcard,
+body.light-mode #page-calmcard{
+  color:#0f172a !important;
+}
+
+/* 상단 제목/설명 */
+body.light #page-calmcard .section-title h2,
+body.light-mode #page-calmcard .section-title h2{
+  color:#0f172a !important;
+}
+
+body.light #page-calmcard .section-title span,
+body.light-mode #page-calmcard .section-title span{
+  color:#334155 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+}
+
+/* 미니게임 탭 */
+body.light #page-calmcard .minigame-tab,
+body.light-mode #page-calmcard .minigame-tab{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border:1px solid rgba(15,23,42,.14) !important;
+  box-shadow:none !important;
+}
+
+body.light #page-calmcard .minigame-tab:visited,
+body.light-mode #page-calmcard .minigame-tab:visited{
+  color:#0f172a !important;
+}
+
+body.light #page-calmcard .minigame-tab:hover,
+body.light-mode #page-calmcard .minigame-tab:hover{
+  color:#0458ff !important;
+  border-color:#00A2FF !important;
+  box-shadow:0 12px 24px rgba(0,162,255,.14) !important;
+}
+
+body.light #page-calmcard .minigame-tab.active,
+body.light-mode #page-calmcard .minigame-tab.active,
+body.light #page-calmcard .minigame-tab.active:visited,
+body.light-mode #page-calmcard .minigame-tab.active:visited{
+  background:linear-gradient(135deg,#0458ff,#00a2ff) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+  box-shadow:0 12px 26px rgba(0,162,255,.22) !important;
+}
+
+/* 외곽/게임 박스 */
+body.light #page-calmcard .cardgame-shell,
+body.light-mode #page-calmcard .cardgame-shell,
+body.light #page-calmcard .game-panel,
+body.light-mode #page-calmcard .game-panel,
+body.light #page-calmcard .field,
+body.light-mode #page-calmcard .field,
+body.light #page-calmcard .hand-area,
+body.light-mode #page-calmcard .hand-area{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border-color:rgba(15,23,42,.12) !important;
+  box-shadow:0 16px 36px rgba(15,23,42,.08) !important;
+}
+
+body.light #page-calmcard .versus-area,
+body.light-mode #page-calmcard .versus-area{
+  color:#0f172a !important;
+  border-color:rgba(15,23,42,.12) !important;
+  background:linear-gradient(90deg,#fff7f7,#f8fbff) !important;
+  box-shadow:0 16px 36px rgba(15,23,42,.08) !important;
+}
+
+body.light #page-calmcard .my-field,
+body.light-mode #page-calmcard .my-field{
+  background:linear-gradient(rgba(255,255,255,.92),rgba(255,255,255,.96)),radial-gradient(circle at 50% 50%,rgba(37,99,235,.16),transparent 42%) !important;
+  border-color:#bfdbfe !important;
+}
+
+body.light #page-calmcard .enemy-field,
+body.light-mode #page-calmcard .enemy-field{
+  background:linear-gradient(rgba(255,255,255,.92),rgba(255,255,255,.96)),radial-gradient(circle at 50% 50%,rgba(239,71,111,.12),transparent 42%) !important;
+  border-color:#fed7aa !important;
+}
+
+/* 제목/상태 문구 */
+body.light #page-calmcard h2,
+body.light-mode #page-calmcard h2,
+body.light #page-calmcard h3,
+body.light-mode #page-calmcard h3,
+body.light #page-calmcard .stage-note,
+body.light-mode #page-calmcard .stage-note{
+  color:#0f172a !important;
+}
+
+body.light #page-calmcard .field-head h2,
+body.light-mode #page-calmcard .field-head h2{
+  color:inherit !important;
+}
+
+body.light #page-calmcard .enemy-field .field-head h2,
+body.light-mode #page-calmcard .enemy-field .field-head h2{
+  color:#ef476f !important;
+}
+
+body.light #page-calmcard .my-field .field-head h2,
+body.light-mode #page-calmcard .my-field .field-head h2{
+  color:#2563eb !important;
+}
+
+/* HP/상태 박스 */
+body.light #page-calmcard .status-hp,
+body.light-mode #page-calmcard .status-hp,
+body.light #page-calmcard .modal-hp-box,
+body.light-mode #page-calmcard .modal-hp-box{
+  background:#ffffff !important;
+  color:#334155 !important;
+  border:1px solid rgba(15,23,42,.10) !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.08) !important;
+}
+
+body.light #page-calmcard .status-hp.red,
+body.light-mode #page-calmcard .status-hp.red,
+body.light #page-calmcard .modal-hp-box.red strong,
+body.light-mode #page-calmcard .modal-hp-box.red strong{
+  color:#ef476f !important;
+}
+
+body.light #page-calmcard .status-hp.blue,
+body.light-mode #page-calmcard .status-hp.blue,
+body.light #page-calmcard .modal-hp-box.blue strong,
+body.light-mode #page-calmcard .modal-hp-box.blue strong{
+  color:#2563eb !important;
+}
+
+body.light #page-calmcard .active-buff-list,
+body.light-mode #page-calmcard .active-buff-list,
+body.light #page-calmcard .modal-hp-box span,
+body.light-mode #page-calmcard .modal-hp-box span{
+  color:#475569 !important;
+}
+
+/* 우측 카드 상세 정보 */
+body.light #page-calmcard .detail-panel,
+body.light-mode #page-calmcard .detail-panel,
+body.light #page-calmcard .cardgame-side.right .game-panel,
+body.light-mode #page-calmcard .cardgame-side.right .game-panel{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border-color:rgba(15,23,42,.12) !important;
+}
+
+body.light #page-calmcard .detail-title-row h2,
+body.light-mode #page-calmcard .detail-title-row h2,
+body.light #page-calmcard .detail-panel h2,
+body.light-mode #page-calmcard .detail-panel h2{
+  color:#0f172a !important;
+}
+
+body.light #page-calmcard .effect-box,
+body.light-mode #page-calmcard .effect-box{
+  background:#f8fafc !important;
+  border:1px solid #dbe3f0 !important;
+  color:#334155 !important;
+}
+
+body.light #page-calmcard .effect-box h3,
+body.light-mode #page-calmcard .effect-box h3{
+  color:#0458ff !important;
+}
+
+body.light #page-calmcard .effect-box p,
+body.light-mode #page-calmcard .effect-box p,
+body.light #page-calmcard .effect-box div,
+body.light-mode #page-calmcard .effect-box div,
+body.light #page-calmcard .effect-box span,
+body.light-mode #page-calmcard .effect-box span{
+  color:#334155 !important;
+}
+
+/* 카드 슬롯/빈칸 */
+body.light #page-calmcard .battle-slot,
+body.light-mode #page-calmcard .battle-slot{
+  background:rgba(248,250,252,.72) !important;
+  border-color:rgba(148,163,184,.28) !important;
+}
+
+body.light #page-calmcard .slot-placeholder,
+body.light-mode #page-calmcard .slot-placeholder,
+body.light #page-calmcard .my-field .card-back.attack.blue,
+body.light-mode #page-calmcard .my-field .card-back.attack.blue,
+body.light #page-calmcard .my-field .card-back.buff,
+body.light-mode #page-calmcard .my-field .card-back.buff,
+body.light #page-calmcard .my-field .empty-buff,
+body.light-mode #page-calmcard .my-field .empty-buff{
+  background:linear-gradient(180deg,#ffffff,#f8fafc) !important;
+}
+
+body.light #page-calmcard .attack-placeholder,
+body.light-mode #page-calmcard .attack-placeholder,
+body.light #page-calmcard .my-field .card-back.attack.blue::after,
+body.light-mode #page-calmcard .my-field .card-back.attack.blue::after{
+  color:#2563eb !important;
+}
+
+body.light #page-calmcard .buff-placeholder,
+body.light-mode #page-calmcard .buff-placeholder,
+body.light #page-calmcard .my-field .card-back.buff::after,
+body.light-mode #page-calmcard .my-field .card-back.buff::after,
+body.light #page-calmcard .my-field .empty-buff::after,
+body.light-mode #page-calmcard .my-field .empty-buff::after{
+  color:#6d28d9 !important;
+}
+
+/* 버튼/도움말 */
+body.light #page-calmcard .pc-help-btn,
+body.light-mode #page-calmcard .pc-help-btn,
+body.light #page-calmcard .field-reset-btn,
+body.light-mode #page-calmcard .field-reset-btn{
+  background:#eef2ff !important;
+  color:#1d4ed8 !important;
+  border-color:#bfdbfe !important;
+}
+
+/* 팝업/알림 */
+body.light #page-calmcard .turn-modal,
+body.light-mode #page-calmcard .turn-modal,
+body.light #page-calmcard .custom-alert,
+body.light-mode #page-calmcard .custom-alert,
+body.light #page-calmcard .game-help-modal,
+body.light-mode #page-calmcard .game-help-modal{
+  background:#ffffff !important;
+  color:#0f172a !important;
+}
+
+body.light #page-calmcard .turn-modal-message,
+body.light-mode #page-calmcard .turn-modal-message,
+body.light #page-calmcard .custom-alert-message,
+body.light-mode #page-calmcard .custom-alert-message,
+body.light #page-calmcard .game-help-content p,
+body.light-mode #page-calmcard .game-help-content p{
+  color:#334155 !important;
+}
+
+body.light #page-calmcard .modal-title-text,
+body.light-mode #page-calmcard .modal-title-text,
+body.light #page-calmcard .custom-alert-title,
+body.light-mode #page-calmcard .custom-alert-title,
+body.light #page-calmcard .game-help-modal h2,
+body.light-mode #page-calmcard .game-help-modal h2,
+body.light #page-calmcard .game-help-content h3,
+body.light-mode #page-calmcard .game-help-content h3{
+  color:#1e3a8a !important;
+}
+
+/* 라이트모드 모바일에서도 텍스트가 사라지지 않게 */
+@media(max-width:920px){
+  body.light #page-calmcard .hand-area,
+  body.light-mode #page-calmcard .hand-area,
+  body.light #page-calmcard .my-field,
+  body.light-mode #page-calmcard .my-field,
+  body.light #page-calmcard .versus-area,
+  body.light-mode #page-calmcard .versus-area{
+    background:#ffffff !important;
+    color:#0f172a !important;
+  }
+}
+
+</style>
+</head>
+
+<body data-page="minigame">
+
+<div class="floating-banner">
+  <a href="https://calm-hoxy.vercel.app/" target="_blank"><img src="./banner/banner1.png" alt="배너1"></a>
+  <a href="https://fmcalm.vercel.app/" target="_blank"><img src="./banner/banner2.png" alt="배너2"></a>
+  <a href="https://calm-mstz.vercel.app/" target="_blank"><img src="./banner/banner3.png" alt="배너3"></a>
+  <a href="https://www.fmkorea.com/starcraft/" target="_blank"><img src="./banner/banner4.png" alt="배너4"></a>
+  <a href="https://www.youtube.com//" target="_blank"><img src="./banner/banner5.png" alt="배너5"></a>
+  <a href="https://www.naver.com/" target="_blank"><img src="./banner/banner6.png" alt="배너6"></a>
+  <a href="https://www.sooplive.com/" target="_blank"><img src="./banner/banner0.png" alt="배너7"></a>
+  <a href="https://lazygyu.github.io/roulette/" target="_blank"><img src="./banner/banner8.png" alt="배너9"></a>
+  <a href="https://910map.tistory.com/" target="_blank"><img src="./banner/banner9.png" alt="배너10"></a>
+  <a href="https://scintro.vercel.app/" target="_blank"><img src="./banner/banner11.png" alt="배너11"></a>
+</div>
+
+<div class="app">
+<header class="topbar">
+  <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
+  <nav class="nav">
+    <a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="playlist" href="playlist.html">영상 모음</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a>
+    <a data-page="multiview" href="multiview.html">멀티뷰</a>
+    <a data-page="minigame" href="minigame.html">미니게임</a>
+    <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+  </nav>
+</header>
+
+<main id="page-calmcard" class="page">
+  <section class="card panel calmcard-panel">
+    <div class="section-title">
+      <h2>캄드게임배틀</h2>
+      <span>공격 카드와 버프 카드를 배치해서 승부하세요</span>
+    </div>
+
+    <div class="minigame-tabs">
+      <a class="minigame-tab" href="./suttda.html">스타 게이머 섯다</a>
+      <a class="minigame-tab" href="./calm2048.html">캄몬 2048</a>
+      <a class="minigame-tab" href="./colormemory.html">컬러 기억력 테스트</a>
+      <a class="minigame-tab" href="./calmquiz.html">스타퀴즈쇼</a>
+      <a class="minigame-tab active" href="./calmcard.html">캄드게임배틀</a>
+    </div>
+
+    <div class="cardbattle-box">
+<div class="cardgame-layout">
+
+  <!-- 좌측 정보 -->
+  <aside class="cardgame-side left">
+    <section class="game-panel">
+      <h2>내 정보</h2>
+      <div class="hp-box blue">
+        <span>HP</span>
+        <strong>100</strong>
+      </div>
+
+      <div class="turn-box">
+        <div>현재 턴</div>
+        <strong>TURN 2 / 5</strong>
+        <span>ROUND 1 / 3</span>
+
+        <div class="turn-dots">
+          <span>1</span>
+          <span class="active">2</span>
+          <span>3</span>
+          <span>4</span>
+          <span>5</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="game-panel help-panel">
+      <h2>도움말</h2>
+      <p>매 턴 1개의 슬롯이 공개되어 전투가 진행됩니다.</p>
+      <p>공격카드 5장과 버프카드 최대 3장을 배치하세요.</p>
+      <p>버프카드를 어디에 숨기느냐가 승부의 핵심입니다.</p>
+    </section>
+  </aside>
+
+  <!-- 중앙 필드 -->
+  <main class="battle-board">
+
+    <section class="field enemy-field">
+      <div class="field-head">
+        <h2>상대 필드</h2>
+        <div class="hp-mini red">상대 HP ♥ 100</div>
+      </div>
+
+      <div class="slot-row">
+        <div class="battle-slot active">
+          <span class="slot-num red">1</span>
+          <div class="card-back buff"></div>
+          <div class="card-back attack"></div>
+        </div>
+
+        <div class="battle-slot current">
+          <span class="slot-num red">2</span>
+          <div class="card-back buff"></div>
+          <div class="card-back attack"></div>
+        </div>
+
+        <div class="battle-slot">
+          <span class="slot-num red">3</span>
+          <div class="empty-buff"></div>
+          <div class="card-back attack"></div>
+        </div>
+
+        <div class="battle-slot">
+          <span class="slot-num red">4</span>
+          <div class="card-back buff"></div>
+          <div class="card-back attack"></div>
+        </div>
+
+        <div class="battle-slot">
+          <span class="slot-num red">5</span>
+          <div class="empty-buff"></div>
+          <div class="card-back attack"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="versus-area">
+      <div class="battle-status-bar">
+        <div class="status-hp red">상대 HP ♥ <span id="enemyHpStatus">100</span></div>
+        <div class="turn-ribbon">
+  <strong id="roundLabel">1 ROUND</strong>
+  <span id="turnLabel">TURN 1 / 5</span>
+</div>
+        <div class="status-hp blue">내 HP ♥ <span id="myHpStatus">100</span></div>
+      </div>
+
+      <div class="versus-card-wrap">
+        <div class="opened-card-group enemy-open-group">
+          <div class="battle-card buff-card">상대 버프</div>
+          <div class="battle-card attack-card">상대 카드</div>
+        </div>
+
+        <div class="vs-text">VS</div>
+
+        <div class="opened-card-group my-open-group">
+          <div class="battle-card attack-card">내 카드</div>
+          <div class="battle-card buff-card">내 버프</div>
+        </div>
+      </div>
+      <div id="stageNote" class="stage-note">게임 시작 버튼을 눌러주세요.</div>
+    </section>
+
+    <section class="field global-buff-field">
+      <div class="field-head">
+        <h2>전체 버프 카드</h2>
+      </div>
+      <div class="slot-row">
+        <div class="battle-slot global-buff-slot" data-theme="TERRAN">
+          <div class="empty-global-buff">테란<br>테마</div>
+        </div>
+        <div class="battle-slot global-buff-slot" data-theme="PROTOSS">
+          <div class="empty-global-buff">프로토스<br>테마</div>
+        </div>
+        <div class="battle-slot global-buff-slot" data-theme="ZERG">
+          <div class="empty-global-buff">저그<br>테마</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="field my-field">
+  <div class="field-head">
+    <h2>내 필드</h2>
+      <button class="field-reset-btn" onclick="resetMyPlacement()">배치 초기화</button>
+    <div class="hp-mini blue">내 HP ♥ 100</div>
+  </div>
+
+  <div class="slot-row">
+    <div class="battle-slot" onclick="placeSelectedCard(0)">
+      <span class="slot-num blue">1</span>
+      <div class="card-back attack blue"></div>
+      <div class="empty-buff"></div>
+    </div>
+
+    <div class="battle-slot current" onclick="placeSelectedCard(1)">
+      <span class="slot-num blue">2</span>
+      <div class="card-back attack blue"></div>
+      <div class="card-back buff"></div>
+    </div>
+
+    <div class="battle-slot" onclick="placeSelectedCard(2)">
+      <span class="slot-num blue">3</span>
+      <div class="card-back attack blue"></div>
+      <div class="empty-buff"></div>
+    </div>
+
+    <div class="battle-slot" onclick="placeSelectedCard(3)">
+      <span class="slot-num blue">4</span>
+      <div class="card-back attack blue"></div>
+      <div class="card-back buff"></div>
+    </div>
+
+    <div class="battle-slot" onclick="placeSelectedCard(4)">
+      <span class="slot-num blue">5</span>
+      <div class="card-back attack blue"></div>
+      <div class="card-back buff"></div>
+    </div>
+  </div>
+</section>
+
+    <section class="hand-area">
+      <div class="hand-head">
+        <h2>내 패</h2>
+        <button class="btn-primary" onclick="completePlacement()">카드 배치 완료</button>
+      </div>
+
+      <div class="hand-row" id="playerHand"></div>
+    </section>
+
+  </main>
+
+  <!-- 우측 카드 상세 -->
+  <aside class="cardgame-side right">
+    <section class="game-panel detail-panel">
+      <div class="detail-title-row">
+  <h2>카드상세정보</h2>
+  <button class="pc-help-btn" onclick="openGameHelpModal()">🔔게임방법🔔</button> <br>
+</div>
+
+     <img src="./gamecards/000.png"
+     class="detail-card-img" />
+
+      <div class="effect-box">
+        <h3>캄몬 카드 배틀</h3>
+        <p>///</p>
+      </div>
+
+      </section>
+
+<section class="game-panel action-panel">
+  <button id="mainActionBtn" class="btn-primary" onclick="handleMainAction()">게임 시작</button>
+</section>
+
+<section class="game-panel battle-log-panel">
+  <div class="battle-log-head">
+    <h2>전투 로그</h2>
+    <button class="btn-light" onclick="clearBattleLog()">초기화</button>
+  </div>
+  <div id="battleLogList" class="battle-log-list">
+    <div class="battle-log-item">아직 전투 기록이 없습니다.</div>
+  </div>
+</section>
+</aside>
+
+</div>
+
+
+
+<script type="module" src="app.js"></script>
+<script src="./theme.js?v=3"></script>
+<script>
+
+function toggleMobileMenu(){
+  document.getElementById("mobileMenu").classList.toggle("show");
+}
+window.toggleMobileMenu = toggleMobileMenu;
+
+
+let selectedCard = null;
+let draggedCardElement = null;
+
+let currentTurn = 0;
+let placementDone = false;
+
+let myHp = 100;
+let enemyHp = 100;
+
+let gameOver = false;
+
+let myNextBuffNullify = false;
+let enemyNextBuffNullify = false;
+
+let myDelayedDamage = 0;
+let enemyDelayedDamage = 0;
+
+let myNukeArmed = false;
+let enemyNukeArmed = false;
+
+let myNukeReadyDamage = 0;
+let enemyNukeReadyDamage = 0;
+
+let myNukeArmedTurnKey = null;
+let enemyNukeArmedTurnKey = null;
+
+
+let rpsReverseActive = false;
+
+let skipNextSlot = false;
+
+let rpsReverseOwner = null; // "MY" 또는 "ENEMY"
+let myActiveBuffs = [];
+let enemyActiveBuffs = [];
+
+
+let battleLogs = [];
+
+let gamePhase = "READY";
+let currentBattleResult = null;
+let currentMySlot = null;
+let currentEnemySlot = null;
+let revealedModalCards = new Set();
+
+let attackCards = [];
+let buffCards = [];
+
+
+
+
+let currentRound = 1;
+const maxRound = 3;
+
+
+
+
+let myField = [
+  { attack: null, buff: null },
+  { attack: null, buff: null },
+  { attack: null, buff: null },
+  { attack: null, buff: null },
+  { attack: null, buff: null }
+];
+
+function selectHandCard(img){
+  document
+    .querySelectorAll(".hand-card")
+    .forEach(card => card.classList.remove("selected"));
+
+  img.classList.add("selected");
+
+  
+selectedCard = {
+  element: img,
+  cardNo: img.dataset.cardNo,
+  type: img.dataset.cardType,
+  name: img.dataset.cardName,
+  rps: img.dataset.rps,
+  atk: Number(img.dataset.atk || 0),
+  effectCode: img.dataset.effectCode,
+  effect: img.dataset.cardEffect,
+  image: img.src,
+
+  value1: Number(img.dataset.value1 || 0),
+  value2: Number(img.dataset.value2 || 0)
+};
+
+  showCardDetail(selectedCard);
+
+const detailBtn = document.getElementById("mobileCardDetailBtn");
+if(detailBtn){
+  detailBtn.classList.add("show");
+}
+
+}
+
+function openSelectedCardDetail(){
+  if(!selectedCard){
+    document
+      .querySelector(".custom-alert")
+      ?.classList.remove("mobile-alert-card-detail");
+
+    showCustomAlert("카드를 먼저 선택해주세요.", null, "알림");
+    return;
+  }
+
+  const isMobile = window.matchMedia("(max-width:920px)").matches;
+
+  const name = selectedCard.name || "카드";
+  const effect = selectedCard.effect || selectedCard.description || "카드 효과 정보가 없습니다.";
+  const image = selectedCard.image || "";
+
+  const rps = selectedCard.rps || selectedCard.cardRps || "";
+  const atk = selectedCard.atk ?? selectedCard.attack ?? "";
+
+  if(isMobile){
+    showCustomAlert(`
+      <div class="mobile-card-detail-content">
+        <img class="mobile-card-detail-img" src="${image}">
+
+        <div class="mobile-card-detail-name">
+          ${name}
+        </div>
+
+        ${rps || atk ? `
+          <div class="mobile-card-detail-stat">
+            ${rpsToKor(rps)} ${atk ? ` / 공격력 ${atk}` : ""}
+          </div>
+        ` : ""}
+
+        <div class="mobile-card-detail-effect">
+          ${effect}
+        </div>
+      </div>
+    `, null, "카드 상세 정보");
+
+    document
+      .querySelector(".custom-alert")
+      ?.classList.add("mobile-alert-card-detail");
+
+    return;
+  }
+
+  showCustomAlert(`
+    <div style="text-align:center;">
+      <img src="${image}" style="width:180px;max-width:100%;border-radius:8px;margin:0 auto 16px;display:block;">
+      <div style="font-size:22px;font-weight:1000;margin:12px 0;">${name}</div>
+      <div style="font-size:16px;line-height:1.5;">${effect}</div>
+    </div>
+  `, null, "카드 상세 정보");
+}
+
+
+// function openSelectedCardDetail(){
+
+//   if(!selectedCard){
+//     showCustomAlert("카드를 먼저 선택해주세요.");
+//     return;
+//   }
+
+//   const cardName =
+//     selectedCard.name ||
+//     selectedCard.cardName ||
+//     "카드";
+
+//   const cardEffect =
+//     selectedCard.effectText ||
+//     selectedCard.effect ||
+//     "효과 정보가 없습니다.";
+
+//   const cardImage =
+//     selectedCard.image ||
+//     selectedCard.imageUrl ||
+//     selectedCard.img ||
+//     "";
+
+//   showCustomAlert(`
+//     <div style="text-align:center;">
+//       <img
+//         src="${cardImage}"
+//         style="
+//           width:180px;
+//           max-width:100%;
+//           border-radius:8px;
+//           margin-bottom:0px;
+//         "
+//       >
+
+//       <div style="
+//         font-size:16px;
+//         font-weight:900;
+//         margin:4px 0 0px;
+//       ">
+//         ${cardName}
+//       </div>
+
+//       <div style="
+//         font-size:16px;
+//   line-height:1.35;
+//   margin:0 0 0px;
+//       ">
+//         ${cardEffect}
+//       </div>
+//     </div>
+//   `, null, "카드 상세 정보");
+// }
+
+window.openSelectedCardDetail = openSelectedCardDetail;
+
+let enemyField = [
+  { attack: null, buff: null },
+  { attack: null, buff: null },
+  { attack: null, buff: null },
+  { attack: null, buff: null },
+  { attack: null, buff: null }
+];
+
+// 모바일 턴 팝업 안의 [진행] 버튼은 DOM 생성 순서와 관계없이 동작하도록 이벤트 위임으로 연결합니다.
+document.addEventListener("click", function(e){
+  const mobileTurnNextBtn = e.target.closest("#mobileTurnNextBtn");
+  if(!mobileTurnNextBtn) return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  if(typeof handleMainAction === "function"){
+    handleMainAction();
+    return;
+  }
+
+  const mainBtn =
+    document.getElementById("mainActionBtn") ||
+    document.querySelector(".action-panel .btn-primary");
+
+  if(mainBtn){
+    mainBtn.click();
+  }
+});
+
+
+
+function makeSelectedCardFromImg(img){
+  return {
+    element: img,
+    cardNo: img.dataset.cardNo,
+    type: img.dataset.cardType,
+    name: img.dataset.cardName,
+    rps: img.dataset.rps,
+    atk: Number(img.dataset.atk || 0),
+    effectCode: img.dataset.effectCode,
+    effect: img.dataset.cardEffect,
+    image: img.src,
+    value1: Number(img.dataset.value1 || 0),
+    value2: Number(img.dataset.value2 || 0)
+  };
+}
+
+function enableCustomDrag(img){
+  img.draggable = false;
+
+  img.addEventListener("pointerdown", function(e){
+    if(gamePhase !== "PLACEMENT") return;
+
+    e.preventDefault();
+
+    draggedCardElement = img;
+    selectedCard = makeSelectedCardFromImg(img);
+    showCardDetail(selectedCard);
+
+    img.classList.add("dragging");
+
+    const ghost = img.cloneNode(true);
+    ghost.className = "drag-ghost-card";
+    ghost.style.left = `${e.clientX}px`;
+    ghost.style.top = `${e.clientY}px`;
+    document.body.appendChild(ghost);
+
+    function onPointerMove(moveEvent){
+      ghost.style.left = `${moveEvent.clientX}px`;
+      ghost.style.top = `${moveEvent.clientY}px`;
+    }
+
+    function onPointerUp(upEvent){
+      const slot = document
+        .elementsFromPoint(upEvent.clientX, upEvent.clientY)
+        .find(el =>
+          el.classList &&
+          el.classList.contains("battle-slot") &&
+          el.closest(".my-field")
+        );
+
+      img.classList.remove("dragging");
+      ghost.remove();
+
+      if(slot){
+        const slots = [...document.querySelectorAll(".my-field .battle-slot")];
+        const index = slots.indexOf(slot);
+
+        if(index >= 0){
+          placeSelectedCard(index);
+        }
+      }
+
+      draggedCardElement = null;
+
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", onPointerUp);
+    }
+
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
+  });
+}
+
+
+function setupEnemyField(){
+  enemyField = [
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null }
+  ];
+
+  const shuffledAttacks = shuffleArray(attackCards).map(card => ({
+  ...card,
+  type: "ATTACK",
+  atk: getRandomAtk(card)
+}));
+
+const shuffledBuffs = shuffleArray(buffCards).map(card => ({
+  ...card,
+  type: "BUFF"
+}));
+
+
+
+
+  const buffSlots = shuffleArray([0,1,2,3,4]).slice(0, 3);
+
+  for(let i = 0; i < 5; i++){
+    enemyField[i].attack = shuffledAttacks[i];
+  }
+
+  buffSlots.forEach((slotIndex, i) => {
+    enemyField[slotIndex].buff = shuffledBuffs[i];
+  });
+
+  renderEnemyFieldBacks();
+
+  console.log("상대 필드 배치:", enemyField);
+}
+
+function shuffleArray(array){
+  const arr = [...array];
+
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+
+  return arr;
+}
+
+function renderEnemyFieldBacks(){
+  const slots = document.querySelectorAll(".enemy-field .battle-slot");
+
+  slots.forEach((slot, index) => {
+    const fieldSlot = enemyField[index];
+
+    slot.innerHTML = `
+      <span class="slot-num red">${index + 1}</span>
+      ${
+        fieldSlot.buff
+          ? '<div class="card-back buff"></div>'
+          : '<div class="empty-buff"></div>'
+      }
+      <div class="card-back attack"></div>
+    `;
+  });
+}
+
+function showCardDetail(card){
+  const detailImg = document.querySelector(".detail-card-img");
+  const title = document.querySelector(".effect-box h3");
+  const effectText = document.querySelector(".effect-box p");
+
+  if(!card) return;
+
+  const name = card.name || card.cardName || "카드";
+  const type = card.type || card.cardType || "";
+  const rps = card.rps || card.cardRps || "";
+  const atk = card.atk ?? card.attack ?? "";
+  const effect = card.description || card.effect || card.cardEffect || "";
+  const image = card.image || card.cardImage || "";
+
+  if(detailImg && image){
+    detailImg.src = image;
+  }
+
+  if(title){
+    title.textContent = name;
+  }
+
+  if(effectText){
+
+  if(type === "ATTACK" || rps){
+
+    effectText.innerHTML = `
+      <div style="font-size:18px;font-weight:1000;color:#2563eb;">
+        ${rpsToKor(rps)}
+      </div>
+
+      <div style="font-size:18px;font-weight:1000;color:#dc2626;margin-top:4px;">
+        공격력 ${atk}
+      </div>
+
+      <div style="margin-top:10px;">
+        ${effect}
+      </div>
+    `;
+
+  }else{
+
+    effectText.textContent = effect;
+
+  }
+
+
+    // if(type === "ATTACK" || rps){
+    //   effectText.textContent = `[${rpsToKor(rps)}] 공격력 : ${atk}\n${effect}`;
+    // }else{
+    //   effectText.textContent = effect;
+    // }
+  }
+}
+
+
+
+
+
+function placeSelectedCard(slotIndex){
+  if(!selectedCard){
+    showCustomAlert("먼저 배치할 카드를 선택해주세요.");
+    return;
+  }
+
+  const fieldSlot = myField[slotIndex];
+  if(!fieldSlot) return;
+
+  myField.forEach(slot => {
+    if(
+      slot.attack &&
+      slot.attack.element === selectedCard.element
+    ){
+      slot.attack = null;
+    }
+
+    if(
+      slot.buff &&
+      slot.buff.element === selectedCard.element
+    ){
+      slot.buff = null;
+    }
+  });
+
+  if(selectedCard.type === "ATTACK"){
+    if(fieldSlot.attack){
+      restoreHandCard(fieldSlot.attack);
+    }
+
+    fieldSlot.attack = selectedCard;
+  }
+
+  if(selectedCard.type === "BUFF"){
+    const usedBuffCount = myField.filter(s => s.buff).length;
+
+    if(!fieldSlot.buff && usedBuffCount >= 3){
+      showCustomAlert("버프카드는 최대 3장까지만 배치할 수 있습니다.");
+      return;
+    }
+
+    if(fieldSlot.buff){
+      restoreHandCard(fieldSlot.buff);
+    }
+
+    fieldSlot.buff = selectedCard;
+  }
+
+  selectedCard.element.style.visibility = "hidden";
+  selectedCard.element.classList.remove("selected");
+  selectedCard = null;
+
+  renderMyField();
+}
+
+function renderMyField(){
+  const slots = document.querySelectorAll(".my-field .battle-slot");
+
+  slots.forEach((slot, index) => {
+    const fieldSlot = myField[index];
+
+    slot.innerHTML = `
+      <span class="slot-num blue">${index + 1}</span>
+    `;
+
+    if(fieldSlot.attack){
+      const attackImg = document.createElement("img");
+      attackImg.src = fieldSlot.attack.image;
+      attackImg.className = "placed-card attack-placed";
+
+      attackImg.onclick = function(event){
+        event.stopPropagation();
+        showCardDetail(fieldSlot.attack);
+      };
+
+      slot.appendChild(attackImg);
+    }else{
+      const attackBack = document.createElement("div");
+      attackBack.className = "card-back attack blue";
+      slot.appendChild(attackBack);
+    }
+
+    if(fieldSlot.buff){
+      const buffImg = document.createElement("img");
+      buffImg.src = fieldSlot.buff.image;
+      buffImg.className = "placed-card buff-placed";
+
+      buffImg.onclick = function(event){
+        event.stopPropagation();
+        showCardDetail(fieldSlot.buff);
+      };
+
+      slot.appendChild(buffImg);
+    }else{
+      const emptyBuff = document.createElement("div");
+      emptyBuff.className = "empty-buff";
+      slot.appendChild(emptyBuff);
+    }
+
+    slot.onclick = function(){
+      placeSelectedCard(index);
+    };
+
+slot.ondragover = function(event){
+  event.preventDefault();
+  slot.classList.add("drag-over");
+};
+
+slot.ondragleave = function(){
+  slot.classList.remove("drag-over");
+};
+
+slot.ondrop = function(event){
+  event.preventDefault();
+  slot.classList.remove("drag-over");
+
+  const cardEl = draggedCardElement;
+
+if(!cardEl || cardEl.style.visibility === "hidden"){
+  console.log("드롭 실패: 드래그 카드 없음");
+  return;
+}
+
+  selectedCard = {
+    element: cardEl,
+    cardNo: cardEl.dataset.cardNo,
+    type: cardEl.dataset.cardType,
+    name: cardEl.dataset.cardName,
+    rps: cardEl.dataset.rps,
+    atk: Number(cardEl.dataset.atk || 0),
+    effectCode: cardEl.dataset.effectCode,
+    effect: cardEl.dataset.cardEffect,
+    image: cardEl.src,
+    value1: Number(cardEl.dataset.value1 || 0),
+    value2: Number(cardEl.dataset.value2 || 0)
+  };
+
+  placeSelectedCard(index);
+};
+
+
+  });
+}
+
+function resetMyPlacement(){
+  if(gamePhase !== "PLACEMENT"){
+    showCustomAlert("카드 배치 단계에서만 초기화할 수 있습니다.");
+    return;
+  }
+
+  myField.forEach(slot => {
+    if(slot.attack) restoreHandCard(slot.attack);
+    if(slot.buff) restoreHandCard(slot.buff);
+
+    slot.attack = null;
+    slot.buff = null;
+  });
+
+  selectedCard = null;
+
+  document
+    .querySelectorAll(".hand-card")
+    .forEach(card => {
+      card.classList.remove("selected", "dragging");
+      card.style.visibility = "visible";
+    });
+
+  renderMyField();
+}
+
+
+
+
+
+function renderPlacedCard(slot, type, card){
+  const selector = type === "ATTACK"
+    ? ".card-back.attack, .placed-card.attack-placed"
+    : ".card-back.buff, .empty-buff, .placed-card.buff-placed";
+
+  const target = slot.querySelector(selector);
+  if(!target) return;
+
+  const img = document.createElement("img");
+  img.src = card.image;
+  img.className = type === "ATTACK"
+    ? "placed-card attack-placed"
+    : "placed-card buff-placed";
+
+  img.onclick = function(event){
+    event.stopPropagation();
+    showCardDetail(card);
+  };
+
+  target.replaceWith(img);
+}
+
+function restoreHandCard(card){
+  if(card && card.element){
+    card.element.style.visibility = "visible";
+  }
+}
+
+function createEmptyBuff(){
+  const div = document.createElement("div");
+  div.className = "empty-buff";
+  return div;
+}
+
+function completePlacement(){
+
+  if(placementDone){
+    showCustomAlert("이미 배치가 완료되었습니다. 현재 라운드가 진행 중입니다.");
+    return;
+  }
+
+  const attackCount = myField.filter(slot => slot.attack).length;
+  const buffCount = myField.filter(slot => slot.buff).length;
+
+  if(attackCount < 5){
+    showCustomAlert(`공격카드 5장을 모두 배치해주세요. 
+    현재 ${attackCount}장 배치되었습니다.`);
+    return;
+  }
+
+  if(buffCount > 3){
+    showCustomAlert("버프카드는 최대 3장까지만 배치할 수 있습니다.");
+    return;
+  }
+
+ setupEnemyField();
+
+showCustomAlert(
+  `배치 완료!\n공격카드 ${attackCount}장\n버프카드 ${buffCount}장\n`,
+  "배치 완료"
+);
+
+console.log("내 필드 배치:", myField);
+console.log("상대 필드 배치:", enemyField);
+
+placementDone = true;
+currentTurn = 0;
+gamePhase = "TURN_SHOW_BACKS";
+updateTurnDisplay();
+updateRoundDisplay();
+updateMainActionButton();
+}
+
+
+
+
+function updateMainActionButton(){
+  const btn = document.getElementById("mainActionBtn");
+  if(!btn) return;
+
+  if(gamePhase === "READY"){
+    btn.textContent = "게임 시작";
+  }else if(gamePhase === "PLACEMENT"){
+    btn.textContent = "카드 배치 완료";
+  }else{
+    btn.textContent = "게임 턴 진행";
+  }
+}
+
+function setStageNote(text){
+  const el = document.getElementById("stageNote");
+  if(el) el.textContent = text;
+}
+
+function handleMainAction(){
+  if(gamePhase === "READY"){
+    startCardGame();
+    return;
+  }
+
+  if(gamePhase === "PLACEMENT"){
+    completePlacement();
+    return;
+  }
+
+  nextTurnStep();
+}
+
+function startCardGame(){
+  requestLandscapeMode();
+  myHp = 100;
+  enemyHp = 100;
+  currentTurn = 0;
+  currentRound = 1;
+  placementDone = false;
+  gameOver = false;
+  selectedCard = null;
+  battleLogs = [];
+  myNextBuffNullify = false;
+  enemyNextBuffNullify = false;
+  myDelayedDamage = 0;
+  enemyDelayedDamage = 0;
+  rpsReverseActive = false;
+  rpsReverseOwner = null;
+myActiveBuffs = [];
+enemyActiveBuffs = [];
+skipNextSlot = false;
+revealedModalCards.clear();
+
+  myField = [
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null }
+  ];
+
+  enemyField = [
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null }
+  ];
+
+resetFieldDisplay();
+renderMyField();
+drawPlayerHand();
+  renderBattleLog();
+  updateHpDisplay();
+  updateTurnDisplay();
+  resetVersusArea();
+  gamePhase = "PLACEMENT";
+  updateMainActionButton();
+  setStageNote("카드를 확인한 뒤 내 필드에 배치해주세요.");
+}
+
+function resetVersusArea(){
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+  if(enemyGroup){
+    enemyGroup.innerHTML = `
+      <div class="battle-card buff-card">상대 버프</div>
+      <div class="battle-card attack-card">상대 카드</div>
+    `;
+  }
+
+  if(myGroup){
+    myGroup.innerHTML = `
+      <div class="battle-card attack-card">내 카드</div>
+      <div class="battle-card buff-card">내 버프</div>
+    `;
+  }
+}
+
+function nextTurnStep(){
+if(gameOver){
+  showCustomAlert("게임이 종료되었습니다.\n확인 버튼을 누르면 새 게임을 시작합니다.", startCardGame);
+  return;
+}
+
+  if(!placementDone){
+    showCustomAlert("먼저 카드 배치를 완료해주세요.");
+    gamePhase = "PLACEMENT";
+    updateMainActionButton();
+    return;
+  }
+
+  if(currentTurn >= 5){
+    endRound();
+    return;
+  }
+
+  if(skipNextSlot && gamePhase === "TURN_SHOW_BACKS"){
+  skipNextSlot = false;
+
+  showTurnModal(
+    `TURN ${currentTurn + 1} / 5`,
+    createEmptyBattleCardHTML("스테이시스"),
+    createEmptyBattleCardHTML("스테이시스"),
+    `스테이시스 필드 효과로 TURN ${currentTurn + 1} 전투를 건너뜁니다.`
+  );
+
+  setStageNote(`스테이시스 필드 효과로 TURN ${currentTurn + 1} 전투를 건너뜁니다.`);
+
+  currentTurn += 1;
+  updateTurnDisplay();
+
+  if(currentTurn >= 5){
+    gamePhase = "ROUND_END";
+    setStageNote("라운드가 종료되었습니다. 다음 클릭 시 라운드 결과를 확인합니다.");
+  }else{
+    gamePhase = "TURN_SHOW_BACKS";
+  }
+
+  updateMainActionButton();
+  return;
+}
+
+  currentMySlot = myField[currentTurn];
+  currentEnemySlot = enemyField[currentTurn];
+
+  if(gamePhase === "TURN_SHOW_BACKS"){
+    showBattleBacks(currentMySlot, currentEnemySlot);
+    gamePhase = "TURN_REVEAL_ATTACKS";
+    setStageNote("전투 카드가 준비되었습니다. 다음 클릭 시 공격카드가 공개됩니다.");
+    updateMainActionButton();
+    return;
+  }
+
+  if(gamePhase === "TURN_REVEAL_ATTACKS"){
+currentBattleResult = judgeRPS(
+  currentMySlot.attack.rps,
+  currentEnemySlot.attack.rps
+);
+
+if(rpsReverseActive){
+  currentBattleResult = reverseBattleResult(currentBattleResult);
+}
+
+revealBattleAttacks(
+  currentMySlot,
+  currentEnemySlot,
+  currentBattleResult
+);
+
+  const loserBuff = getLoserBuff(
+    currentMySlot,
+    currentEnemySlot,
+    currentBattleResult
+  );
+
+const winnerBuff = getWinnerBuff(
+  currentMySlot,
+  currentEnemySlot,
+  currentBattleResult
+);
+
+if(currentBattleResult === "DRAW"){
+
+  const hasMyBuff = !!currentMySlot.buff;
+  const hasEnemyBuff = !!currentEnemySlot.buff;
+
+if(hasMyBuff && hasEnemyBuff){
+  setStageNote(
+    "무승부! 진행 버튼을 클릭하면 양쪽 버프카드를 공개합니다."
+  );
+  gamePhase = "TURN_REVEAL_LOSER_BUFF";
+}
+  
+  
+  else if(hasMyBuff){
+    setStageNote(
+      "무승부! 진행 버튼을 클릭하면 내 버프카드를 공개합니다."
+    );
+    gamePhase = "TURN_REVEAL_WINNER_BUFF";
+  }else if(hasEnemyBuff){
+    setStageNote(
+      "무승부! 진행 버튼을 클릭하면 상대 버프카드를 공개합니다."
+    );
+    gamePhase = "TURN_REVEAL_LOSER_BUFF";
+  }else{
+    setStageNote(
+      "무승부! 버프카드가 없어 다음 클릭 시 최종 결과를 계산합니다."
+    );
+    gamePhase = "TURN_RESOLVE";
+  }
+
+  updateMainActionButton();
+  return;
+}
+
+
+
+  if(loserBuff){
+    setStageNote(getResultText(currentBattleResult) + " 다음 클릭 시 패자 버프카드가 공개됩니다.");
+    gamePhase = "TURN_REVEAL_LOSER_BUFF";
+  }else if(winnerBuff){
+    setStageNote(getResultText(currentBattleResult) + " 다음 클릭 시 승자 버프카드가 공개됩니다.");
+    gamePhase = "TURN_REVEAL_WINNER_BUFF";
+  }else{
+    setStageNote(getResultText(currentBattleResult) + " 버프카드가 없어 다음 클릭 시 최종 결과를 계산합니다.");
+    gamePhase = "TURN_RESOLVE";
+  }
+
+  updateMainActionButton();
+  return;
+}
+
+ if(gamePhase === "TURN_REVEAL_LOSER_BUFF"){
+  revealLoserBuff(currentMySlot, currentEnemySlot, currentBattleResult);
+
+  const winnerBuff = getWinnerBuff(
+    currentMySlot,
+    currentEnemySlot,
+    currentBattleResult
+  );
+
+  if(winnerBuff){
+    setStageNote("다음 클릭 시 승자 버프카드가 공개됩니다.");
+    gamePhase = "TURN_REVEAL_WINNER_BUFF";
+  }else{
+    setStageNote("승자 버프카드가 없어 다음 클릭 시 최종 결과를 계산합니다.");
+    gamePhase = "TURN_RESOLVE";
+  }
+
+  updateMainActionButton();
+  return;
+}
+
+  if(gamePhase === "TURN_REVEAL_WINNER_BUFF"){
+    revealWinnerBuff(currentMySlot, currentEnemySlot, currentBattleResult);
+    setStageNote("다음 클릭 시 최종 결과를 계산합니다.");
+    gamePhase = "TURN_RESOLVE";
+    updateMainActionButton();
+    return;
+  }
+
+
+  
+  if(gamePhase === "TURN_RESOLVE"){
+  applyBattleResult(
+    currentMySlot,
+    currentEnemySlot,
+    currentBattleResult
+  );
+
+  updateHpDisplay();
+
+  if(checkImmediateGameOver()){
+    hideTurnModal?.();
+    updateMainActionButton();
+    return;
+  }
+
+  if(
+    getEffectCode(currentMySlot.buff) === "RPS_REVERSE" ||
+    getEffectCode(currentEnemySlot.buff) === "RPS_REVERSE"
+  ){
+    rpsReverseActive = true;
+    console.log("마엘스트롬 활성화됨:", rpsReverseActive);
+  }
+
+  revealFieldSlot(".my-field", currentTurn, currentMySlot, "blue");
+
+  currentTurn += 1;
+  updateTurnDisplay();
+
+  if(currentTurn >= 5){
+    gamePhase = "ROUND_END";
+    setStageNote("라운드가 종료되었습니다. 다음 클릭 시 라운드 결과를 확인합니다.");
+  }else{
+    gamePhase = "TURN_SHOW_BACKS";
+    setStageNote("다음 턴을 진행합니다.");
+  }
+
+  updateMainActionButton();
+  return;
+}
+
+
+
+
+
+
+
+
+
+  if(gamePhase === "ROUND_END"){
+    endRound();
+    updateMainActionButton();
+  }
+}
+
+function getLoserBuff(mySlot, enemySlot, result){
+  if(result === "WIN") return enemySlot.buff;
+  if(result === "LOSE") return mySlot.buff;
+  return null;
+}
+
+function getWinnerBuff(mySlot, enemySlot, result){
+  if(result === "WIN") return mySlot.buff;
+  if(result === "LOSE") return enemySlot.buff;
+  return null;
+}
+
+function showBattleBacks(mySlot, enemySlot){
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+  if(enemyGroup){
+    enemyGroup.innerHTML = `
+      ${enemySlot.buff ? '<div class="card-back buff"></div>' : createEmptyBattleCardHTML("상대 버프 없음")}
+      <div class="card-back attack"></div>
+    `;
+  }
+
+  if(myGroup){
+    myGroup.innerHTML = `
+      <div class="card-back attack blue"></div>
+      ${mySlot.buff ? '<div class="card-back buff"></div>' : createEmptyBattleCardHTML("내 버프 없음")}
+    `;
+  }
+}
+
+function revealBattleAttacks(mySlot, enemySlot, result){
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+  if(enemyGroup){
+    enemyGroup.innerHTML = `
+      ${enemySlot.buff ? '<div class="card-back buff"></div>' : createEmptyBattleCardHTML("상대 버프 없음")}
+      ${createBattleCardHTML(enemySlot.attack, "attack-card")}
+    `;
+  }
+
+  if(myGroup){
+    myGroup.innerHTML = `
+      ${createBattleCardHTML(mySlot.attack, "attack-card")}
+      ${mySlot.buff ? '<div class="card-back buff"></div>' : createEmptyBattleCardHTML("내 버프 없음")}
+    `;
+  }
+}
+
+function revealLoserBuff(mySlot, enemySlot, result){
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+  if(result === "WIN"){
+    if(enemyGroup){
+      enemyGroup.innerHTML = `
+        ${enemySlot.buff ? createBattleCardHTML(enemySlot.buff, "buff-card") : createEmptyBattleCardHTML("상대 버프 없음")}
+        ${createBattleCardHTML(enemySlot.attack, "attack-card")}
+      `;
+    }
+  }else if(result === "LOSE"){
+    if(myGroup){
+      myGroup.innerHTML = `
+        ${createBattleCardHTML(mySlot.attack, "attack-card")}
+        ${mySlot.buff ? createBattleCardHTML(mySlot.buff, "buff-card") : createEmptyBattleCardHTML("내 버프 없음")}
+      `;
+    }
+  }else{
+    revealAllBuffs(mySlot, enemySlot);
+  }
+}
+
+function revealWinnerBuff(mySlot, enemySlot, result){
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+  if(result === "WIN"){
+    if(myGroup){
+      myGroup.innerHTML = `
+        ${createBattleCardHTML(mySlot.attack, "attack-card")}
+        ${mySlot.buff ? createBattleCardHTML(mySlot.buff, "buff-card") : createEmptyBattleCardHTML("내 버프 없음")}
+      `;
+    }
+  }else if(result === "LOSE"){
+    if(enemyGroup){
+      enemyGroup.innerHTML = `
+        ${enemySlot.buff ? createBattleCardHTML(enemySlot.buff, "buff-card") : createEmptyBattleCardHTML("상대 버프 없음")}
+        ${createBattleCardHTML(enemySlot.attack, "attack-card")}
+      `;
+    }
+  }else{
+    revealAllBuffs(mySlot, enemySlot);
+  }
+}
+
+function revealAllBuffs(mySlot, enemySlot){
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+  if(enemyGroup){
+    enemyGroup.innerHTML = `
+      ${enemySlot.buff ? createBattleCardHTML(enemySlot.buff, "buff-card") : createEmptyBattleCardHTML("상대 버프 없음")}
+      ${createBattleCardHTML(enemySlot.attack, "attack-card")}
+    `;
+  }
+
+  if(myGroup){
+    myGroup.innerHTML = `
+      ${createBattleCardHTML(mySlot.attack, "attack-card")}
+      ${mySlot.buff ? createBattleCardHTML(mySlot.buff, "buff-card") : createEmptyBattleCardHTML("내 버프 없음")}
+    `;
+  }
+}
+
+function getResultText(result){
+  if(result === "WIN") return "내 공격카드 승리!";
+  if(result === "LOSE") return "상대 공격카드 승리!";
+  return "무승부!";
+}
+
+function nextTurn(){
+
+  if(gameOver){
+    showCustomAlert("게임이 종료되었습니다.");
+    return;
+  }
+
+  if(!placementDone){
+    showCustomAlert("먼저 카드 배치를 완료해주세요.");
+    return;
+  }
+
+  if(currentTurn >= 5){
+    endRound();
+    return;
+  }
+
+  const mySlot = myField[currentTurn];
+  const enemySlot = enemyField[currentTurn];
+
+openBattleSlot(currentTurn, mySlot, enemySlot);
+
+applyBattleResult(mySlot, enemySlot);
+
+currentTurn += 1;
+
+  updateTurnDisplay();
+}
+
+
+function openBattleSlot(slotIndex, mySlot, enemySlot){
+  const enemyGroup = document.querySelectorAll(".opened-card-group")[0];
+  const myGroup = document.querySelectorAll(".opened-card-group")[1];
+
+  enemyGroup.innerHTML = `
+    ${
+      enemySlot.buff
+        ? createBattleCardHTML(enemySlot.buff, "buff-card")
+        : createEmptyBattleCardHTML("상대 버프 없음")
+    }
+    ${createBattleCardHTML(enemySlot.attack, "attack-card")}
+  `;
+
+  myGroup.innerHTML = `
+    ${createBattleCardHTML(mySlot.attack, "attack-card")}
+    ${
+      mySlot.buff
+        ? createBattleCardHTML(mySlot.buff, "buff-card")
+        : createEmptyBattleCardHTML("내 버프 없음")
+    }
+  `;
+
+  revealFieldSlot(".enemy-field", slotIndex, enemySlot, "red");
+  revealFieldSlot(".my-field", slotIndex, mySlot, "blue");
+}
+
+function createBattleCardHTML(card, className){
+  return `
+    <img
+      src="${card.image}"
+      class="battle-card-img ${className}"
+      data-card-name="${card.name}"
+      data-card-effect="${card.effect}"
+    >
+  `;
+}
+
+function createEmptyBattleCardHTML(text){
+  return `
+    <div class="battle-card-unit empty-card-unit">
+      <div class="battle-card empty-battle-card">
+        ${text}
+      </div>
+    </div>
+  `;
+}
+
+function revealFieldSlot(fieldSelector, slotIndex, fieldSlot, color){
+  const slot = document.querySelectorAll(`${fieldSelector} .battle-slot`)[slotIndex];
+
+  if(!slot) return;
+
+  const slotNumberClass = color === "red" ? "red" : "blue";
+
+  if(fieldSelector === ".enemy-field"){
+    slot.innerHTML = `
+      <span class="slot-num ${slotNumberClass}">${slotIndex + 1}</span>
+      ${
+        fieldSlot.buff
+          ? `<img src="${fieldSlot.buff.image}" class="placed-card buff-placed">`
+          : `<div class="empty-buff"></div>`
+      }
+      <img src="${fieldSlot.attack.image}" class="placed-card attack-placed">
+    `;
+  }
+
+  if(fieldSelector === ".my-field"){
+    slot.innerHTML = `
+      <span class="slot-num ${slotNumberClass}">${slotIndex + 1}</span>
+      <img src="${fieldSlot.attack.image}" class="placed-card attack-placed">
+      ${
+        fieldSlot.buff
+          ? `<img src="${fieldSlot.buff.image}" class="placed-card buff-placed">`
+          : `<div class="empty-buff"></div>`
+      }
+    `;
+  }
+}
+
+function updateTurnDisplay(){
+  const turnTexts = document.querySelectorAll(".turn-box strong, .turn-ribbon strong");
+  const turnLabel = currentTurn >= 5 ? "TURN END" : `TURN ${currentTurn + 1} / 5`;
+
+  turnTexts.forEach(el => {
+    el.textContent = turnLabel;
+  });
+
+  const ribbonSub = document.querySelector(".turn-ribbon span");
+  if(ribbonSub){
+    ribbonSub.textContent =
+      currentTurn >= 5
+        ? "라운드 종료"
+        : `TURN ${currentTurn + 1} / 5`;
+  }
+
+  const dots = document.querySelectorAll(".turn-dots span");
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("active", index === currentTurn);
+  });
+
+  highlightCurrentSlot();
+}
+
+function highlightCurrentSlot(){
+  document
+    .querySelectorAll(".battle-slot")
+    .forEach(slot => slot.classList.remove("current"));
+
+  if(currentTurn >= 5) return;
+
+  const enemySlot = document.querySelectorAll(".enemy-field .battle-slot")[currentTurn];
+  const mySlot = document.querySelectorAll(".my-field .battle-slot")[currentTurn];
+
+  if(enemySlot) enemySlot.classList.add("current");
+  if(mySlot) mySlot.classList.add("current");
+}
+
+
+function judgeRPS(myRps, enemyRps){
+  if(myRps === enemyRps) return "DRAW";
+
+  if(
+    (myRps === "ROCK" && enemyRps === "SCISSOR") ||
+    (myRps === "SCISSOR" && enemyRps === "PAPER") ||
+    (myRps === "PAPER" && enemyRps === "ROCK")
+  ){
+    return "WIN";
+  }
+
+  return "LOSE";
+}
+
+function reverseBattleResult(result){
+  if(result === "WIN") return "LOSE";
+  if(result === "LOSE") return "WIN";
+  return "DRAW";
+}
+
+function hasRpsReverseBuff(mySlot, enemySlot){
+  const myCode = getEffectCode(mySlot.buff);
+  const enemyCode = getEffectCode(enemySlot.buff);
+
+  return myCode === "RPS_REVERSE" || enemyCode === "RPS_REVERSE";
+}
+
+
+function getBuffValue(buff, fallback = 0){
+  return Number(buff?.value1 ?? buff?.Value1 ?? fallback);
+}
+
+function getEffectCode(buff){
+  return buff?.effectCode || buff?.EffectCode || "";
+}
+
+function getThemeBuffCodeByRps(rps){
+  if(rps === "ROCK") return "ROCK_BUFF";
+  if(rps === "SCISSOR") return "SCISSOR_BUFF";
+  if(rps === "PAPER") return "PAPER_BUFF";
+  return "";
+}
+
+function getThemeBuffBonus(owner, attackCard, currentBuff){
+  const targetCode = getThemeBuffCodeByRps(attackCard.rps);
+  if(!targetCode) return 0;
+
+  const activeList = owner === "MY" ? myActiveBuffs : enemyActiveBuffs;
+
+  let count = activeList.filter(buff => buff.code === targetCode).length;
+
+  if(getEffectCode(currentBuff) === targetCode){
+    count += 1;
+  }
+
+  return count * 5;
+}
+
+
+function isPersistentBuff(code, buff){
+  return [
+    "RPS_REVERSE",
+    "ROCK_BUFF",
+    "SCISSOR_BUFF",
+    "PAPER_BUFF"
+  ].includes(code)
+  || ["마엘스트롬", "Terran Theme", "Zerg Theme", "Protoss Theme"].includes(buff?.name);
+}
+
+function addActiveBuff(owner, buff){
+  if(!buff) return;
+
+  const code = getEffectCode(buff);
+  if(!isPersistentBuff(code, buff)) return;
+
+  const list = owner === "MY" ? myActiveBuffs : enemyActiveBuffs;
+
+  if(!list.some(item => item.code === code)){
+    list.push({
+      code,
+      name: buff.name,
+      effect: buff.effect || buff.description || ""
+    });
+  }
+}
+
+function clearActiveBuffs(owner){
+  if(owner === "MY"){
+    myActiveBuffs = [];
+    if(rpsReverseOwner === "MY"){
+      rpsReverseActive = false;
+      rpsReverseOwner = null;
+    }
+  }
+
+  if(owner === "ENEMY"){
+    enemyActiveBuffs = [];
+    if(rpsReverseOwner === "ENEMY"){
+      rpsReverseActive = false;
+      rpsReverseOwner = null;
+    }
+  }
+
+  renderActiveBuffs();
+}
+
+function renderActiveBuffs(){
+  const enemyBox = document.querySelector(".status-hp.red");
+  const myBox = document.querySelector(".status-hp.blue");
+
+  const enemyBuffText = enemyActiveBuffs.length
+    ? enemyActiveBuffs.map(b => `✨ ${b.name}`).join("<br>")
+    : "지속 버프 없음";
+
+  const myBuffText = myActiveBuffs.length
+    ? myActiveBuffs.map(b => `✨ ${b.name}`).join("<br>")
+    : "지속 버프 없음";
+
+  if(enemyBox){
+    enemyBox.innerHTML = `
+      <div>상대 HP ♥ <span id="enemyHpStatus">${enemyHp}</span></div>
+      <div class="active-buff-list">${enemyBuffText}</div>
+    `;
+  }
+
+  if(myBox){
+    myBox.innerHTML = `
+      <div>내 HP ♥ <span id="myHpStatus">${myHp}</span></div>
+      <div class="active-buff-list">${myBuffText}</div>
+    `;
+  }
+}
+
+// 주석
+// function applyBattleResult(mySlot, enemySlot, battleResult){
+// console.log("applyBattleResult #1");
+
+//   let myBuff = mySlot.buff;
+//   let enemyBuff = enemySlot.buff;
+
+//   const myAttackCard = mySlot.attack;
+//   const enemyAttackCard = enemySlot.attack;
+
+//   if(!myAttackCard || !enemyAttackCard){
+//     alert("전투할 공격카드가 없습니다.");
+//     return;
+//   }
+
+//   let myAtk = Number(myAttackCard.atk || 0);
+//   let enemyAtk = Number(enemyAttackCard.atk || 0);
+
+//   let myBonusDamage = 0;
+//   let enemyBonusDamage = 0;
+
+//   let myImmune = false;
+//   let enemyImmune = false;
+
+//   let myMessage = "";
+//   let enemyMessage = "";
+
+//   // 이전 턴 예약 효과: 다음 슬롯 버프 무효
+//   if(myNextBuffNullify){
+//     enemyBuff = null;
+//     enemyMessage += "이전 락다운 효과! 상대 버프 무효화!\n";
+//     myNextBuffNullify = false;
+//   }
+
+//   if(enemyNextBuffNullify){
+//     myBuff = null;
+//     myMessage += "상대 이전 락다운 효과! 내 버프 무효화!\n";
+//     enemyNextBuffNullify = false;
+//   }
+
+//   const myCode = getEffectCode(myBuff);
+//   const enemyCode = getEffectCode(enemyBuff);
+
+//   // 현재 턴 버프 전체 무효화
+//   if(myCode === "NULLIFY_ALL"){
+//     enemyBuff = null;
+//     enemyMessage += "상대 버프 무효화!\n";
+//   }
+
+//   if(enemyCode === "NULLIFY_ALL"){
+//     myBuff = null;
+//     myMessage += "내 버프 무효화!\n";
+//   }
+
+//   // 무효화 이후 코드 재확인
+//  const finalMyCode = getEffectCode(myBuff);
+// const finalEnemyCode = getEffectCode(enemyBuff);
+
+
+
+// /* 지속 버프 등록 */
+// if(isPersistentBuff(finalMyCode, myBuff)){
+//   addActiveBuff("MY", myBuff);
+// }
+
+// if(isPersistentBuff(finalEnemyCode, enemyBuff)){
+//   addActiveBuff("ENEMY", enemyBuff);
+// }
+
+// renderActiveBuffs();
+
+// /* 마엘스트롬 */
+// if(finalMyCode === "RPS_REVERSE"){
+//   rpsReverseActive = true;
+//   rpsReverseOwner = "MY";
+//   myMessage += "마엘스트롬 발동! 이후 모든 턴의 상성이 반전됩니다.\n";
+// }
+
+// if(finalEnemyCode === "RPS_REVERSE"){
+//   rpsReverseActive = true;
+//   rpsReverseOwner = "ENEMY";
+//   enemyMessage += "상대 마엘스트롬 발동! 이후 모든 턴의 상성이 반전됩니다.\n";
+// }
+
+//   // 현재 HP 비율 피해
+//   if(finalMyCode === "HP_PERCENT_DAMAGE"){
+//     const value = getBuffValue(myBuff, 20);
+//     const damage = Math.floor(enemyHp * value / 100);
+//     enemyHp = Math.max(0, enemyHp - damage);
+//     myMessage += `플레이그 발동! 상대 현재 HP 중 ${value}%가 감소합니다. (-${damage})\n`;
+//   }
+
+//   if(finalEnemyCode === "HP_PERCENT_DAMAGE"){
+//     const value = getBuffValue(enemyBuff, 20);
+//     const damage = Math.floor(myHp * value / 100);
+//     myHp = Math.max(0, myHp - damage);
+//     enemyMessage += `상대 플레이그 발동! 내 현재 HP 중 ${value}% 감소합니다. (-${damage})\n`;
+//   }
+
+//   // HP 회복
+//   if(finalMyCode === "HEAL_HP"){
+//     const heal = getBuffValue(myBuff, 15);
+//     myHp = Math.min(100, myHp + heal);
+//     myMessage += `힐 발동! 내 HP +${heal} 회복됩니다.\n`;
+//   }
+
+//   if(finalEnemyCode === "HEAL_HP"){
+//     const heal = getBuffValue(enemyBuff, 15);
+//     enemyHp = Math.min(100, enemyHp + heal);
+//     enemyMessage += `상대 힐 발동! 상대 HP +${heal}가 회복됩니다.\n`;
+//   }
+
+//   // 공격력 증가
+//   if(finalMyCode === "ATK_UP"){
+//     const value = getBuffValue(myBuff, 10);
+//     myAtk += value;
+//     myMessage += `공격력 +${value} 증가\n`;
+//   }
+
+//   if(finalEnemyCode === "ATK_UP"){
+//     const value = getBuffValue(enemyBuff, 10);
+//     enemyAtk += value;
+//     enemyMessage += `상대 공격력 +${value} 증가\n`;
+//   }
+
+//   // 공격력 2배
+//   if(finalMyCode === "ATK_X2"){
+//     const value = getBuffValue(myBuff, 2);
+//     myAtk *= value;
+//     myMessage += `공격력 ${value}배!\n`;
+//   }
+
+//   if(finalEnemyCode === "ATK_X2"){
+//     const value = getBuffValue(enemyBuff, 2);
+//     enemyAtk *= value;
+//     enemyMessage += `상대 공격력 ${value}배!\n`;
+//   }
+
+//   // 추가 피해
+//   if(finalMyCode === "BONUS_DAMAGE"){
+//     const value = getBuffValue(myBuff, 15);
+//     myBonusDamage += value;
+//     myMessage += `추가 피해 +${value}\n`;
+//   }
+
+//   if(finalEnemyCode === "BONUS_DAMAGE"){
+//     const value = getBuffValue(enemyBuff, 15);
+//     enemyBonusDamage += value;
+//     enemyMessage += `상대 추가 피해 +${value}\n`;
+//   }
+
+//   // 모든 피해 무효
+//   if(finalMyCode === "IMMUNE_ALL" || finalMyCode === "IMMUNE_ATTACK"){
+//     myImmune = true;
+//     myMessage += "피해 무효!\n";
+//   }
+
+//   if(finalEnemyCode === "IMMUNE_ALL" || finalEnemyCode === "IMMUNE_ATTACK"){
+//     enemyImmune = true;
+//     enemyMessage += "상대 피해 무효!\n";
+//   }
+
+//   const result = battleResult;
+
+//   if(result === "WIN"){
+//     let damage = myAtk + myBonusDamage;
+
+//     if(myDelayedDamage > 0){
+//       damage += myDelayedDamage;
+//       myMessage += `예약 피해 +${myDelayedDamage}\n`;
+//       myDelayedDamage = 0;
+//     }
+
+//     if(finalMyCode === "COMBINE_ATTACK"){
+//       damage = myAtk + enemyAtk;
+//       myMessage += "컨슘 발동! 두 카드 공격력 합산!\n";
+//     }
+
+//     if(finalEnemyCode === "DAMAGE_REDUCE"){
+//       const reduce = getBuffValue(enemyBuff, 10);
+//       damage = Math.max(0, damage - reduce);
+//       enemyMessage += `피해 ${reduce} 감소!\n`;
+//     }
+
+//     if(enemyImmune){
+//       damage = 0;
+//     }
+
+//     enemyHp = Math.max(0, enemyHp - damage);
+
+//     // 승리했을 때만 다음 슬롯/예약 효과 발동
+//     if(finalMyCode === "NEXT_BUFF_NULLIFY"){
+//       myNextBuffNullify = true;
+//       myMessage += "락다운 발동! 다음 슬롯 상대 버프 무효!\n";
+//     }
+
+//     if(finalMyCode === "DELAY_DAMAGE"){
+//       const value = getBuffValue(myBuff, 40);
+//       myDelayedDamage = Math.max(myDelayedDamage, value);
+//       myMessage += `핵 공격 준비! 다음 승리 시 추가 피해 +${value}\n`;
+//     }
+
+//     const message = `${myMessage}${enemyMessage}승리!\n상대 HP -${damage}`;
+//     addBattleLog("win", message);
+//     alert(message);
+//   }
+
+//   if(result === "LOSE"){
+//     let damage = enemyAtk + enemyBonusDamage;
+
+//     if(enemyDelayedDamage > 0){
+//       damage += enemyDelayedDamage;
+//       enemyMessage += `상대 예약 피해 +${enemyDelayedDamage}\n`;
+//       enemyDelayedDamage = 0;
+//     }
+
+//     if(finalEnemyCode === "COMBINE_ATTACK"){
+//       damage = enemyAtk + myAtk;
+//       enemyMessage += "상대 컨슘 발동! 두 카드 공격력 합산!\n";
+//     }
+
+//     if(finalMyCode === "DAMAGE_REDUCE"){
+//       const reduce = getBuffValue(myBuff, 10);
+//       damage = Math.max(0, damage - reduce);
+//       myMessage += `피해 ${reduce} 감소!\n`;
+//     }
+
+//     if(myImmune){
+//       damage = 0;
+//     }
+
+//     myHp = Math.max(0, myHp - damage);
+
+//     // 상대가 승리했을 때만 다음 슬롯/예약 효과 발동
+//     if(finalEnemyCode === "NEXT_BUFF_NULLIFY"){
+//       enemyNextBuffNullify = true;
+//       enemyMessage += "상대 락다운 발동! 다음 슬롯 내 버프 무효!\n";
+//     }
+
+//     if(finalEnemyCode === "DELAY_DAMAGE"){
+//       const value = getBuffValue(enemyBuff, 40);
+//       enemyDelayedDamage = Math.max(enemyDelayedDamage, value);
+//       enemyMessage += `상대 핵 공격 준비! 다음 승리 시 추가 피해 +${value}\n`;
+//     }
+
+//     const message = `${enemyMessage}${myMessage}패배!\n내 HP -${damage}`;
+//     addBattleLog("lose", message);
+//     alert(message);
+//   }
+
+//   if(result === "DRAW"){
+//     const message = `${myMessage}${enemyMessage}무승부!\n피해 없음`;
+//     addBattleLog("draw", message);
+//     alert(message);
+//   }
+
+//   updateHpDisplay();
+// }
+
+function addBattleLog(type, message){
+  battleLogs.unshift({
+    type,
+    message,
+    round: currentRound,
+    turn: currentTurn + 1
+  });
+
+  renderBattleLog();
+}
+
+function renderBattleLog(){
+  const logList = document.getElementById("battleLogList");
+  if(!logList) return;
+
+  if(battleLogs.length === 0){
+    logList.innerHTML = `<div class="battle-log-item">아직 전투 기록이 없습니다.</div>`;
+    return;
+  }
+
+  logList.innerHTML = battleLogs.map(log => `
+    <div class="battle-log-item ${log.type}">
+      ROUND ${log.round} / TURN ${log.turn}<br>
+      ${log.message}
+    </div>
+  `).join("");
+}
+
+function clearBattleLog(){
+  battleLogs = [];
+  renderBattleLog();
+}
+
+function updateHpDisplay(){
+
+  const mainHp =
+    document.querySelector(".hp-box strong");
+
+  const myMiniHp =
+    document.querySelector(".hp-mini.blue");
+
+  const enemyMiniHp =
+    document.querySelector(".hp-mini.red");
+
+  const myHpStatus = document.getElementById("myHpStatus");
+  const enemyHpStatus = document.getElementById("enemyHpStatus");
+
+  if(mainHp){
+    mainHp.textContent = myHp;
+  }
+
+  if(myMiniHp){
+    myMiniHp.textContent = `내 HP ♥ ${myHp}`;
+  }
+
+  if(enemyMiniHp){
+    enemyMiniHp.textContent = `상대 HP ♥ ${enemyHp}`;
+  }
+
+  if(myHpStatus){
+    myHpStatus.textContent = myHp;
+  }
+
+  if(enemyHpStatus){
+    enemyHpStatus.textContent = enemyHp;
+  }
+  renderActiveBuffs();
+}
+
+function checkImmediateGameOver(){
+  if(myHp <= 0 && enemyHp <= 0){
+    gameOver = true;
+    gamePhase = "GAME_OVER";
+    updateMainActionButton?.();
+
+    showCustomAlert(
+      "양쪽 HP가 모두 0이 되었습니다.\n최종 결과: 무승부!",
+      startCardGame,
+      "게임 종료"
+    );
+    return true;
+  }
+
+  if(myHp <= 0){
+    gameOver = true;
+    gamePhase = "GAME_OVER";
+    updateMainActionButton?.();
+
+    showCustomAlert(
+      "내 HP가 0이 되었습니다.\n최종 결과: 패배!",
+      startCardGame,
+      "게임 종료"
+    );
+    return true;
+  }
+
+  if(enemyHp <= 0){
+    gameOver = true;
+    gamePhase = "GAME_OVER";
+    updateMainActionButton?.();
+
+    showCustomAlert(
+      "상대 HP가 0이 되었습니다.\n최종 결과: 승리!",
+      startCardGame,
+      "게임 종료"
+    );
+    return true;
+  }
+
+  return false;
+}
+
+function endRound(){
+  showCustomAlert(`${currentRound}라운드 종료!`);
+
+  if(myHp <= 0 && enemyHp <= 0){
+  gameOver = true;
+  showCustomAlert("최종 결과: 승부를 가리지 못했습니다...");
+  return;
+}
+
+if(myHp <= 0){
+  gameOver = true;
+  showCustomAlert("최종 결과: GG를 선언합니다...");
+  return;
+}
+
+  if(enemyHp <= 0){
+  gameOver = true;
+  showCustomAlert("최종 결과: ⭐🎈우ㅡㅡㅡ승!");
+  return;
+}
+
+  if(currentRound >= maxRound){
+    gameOver = true;
+    if(myHp > enemyHp){
+      showCustomAlert(`최종 결과: ⭐🎈우ㅡㅡㅡ승!\n내 HP: ${myHp}\n상대 HP: ${enemyHp}`);
+    }else if(myHp < enemyHp){
+      showCustomAlert(`최종 결과: GG를 선언합니다...\n내 HP: ${myHp}\n상대 HP: ${enemyHp}`);
+    }else{
+      showCustomAlert(`최종 결과: 승부를 가리지 못했습니다...\n내 HP: ${myHp}\n상대 HP: ${enemyHp}`);
+    }
+    return;
+  }
+
+  currentRound += 1;
+  prepareNextRound();
+}
+
+function prepareNextRound(){
+  showCustomAlert(`${currentRound}라운드를 준비합니다.\n카드를 다시 배치해주세요.`);
+
+  currentTurn = 0;
+  placementDone = false;
+  selectedCard = null;
+
+  myNextBuffNullify = false;
+  enemyNextBuffNullify = false;
+
+  myDelayedDamage = 0;
+  enemyDelayedDamage = 0;
+
+  myField = [
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null }
+  ];
+
+  enemyField = [
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null },
+    { attack: null, buff: null }
+  ];
+
+resetFieldDisplay();
+renderMyField();
+drawPlayerHand();
+resetVersusArea();
+updateTurnDisplay();
+updateRoundDisplay();
+gamePhase = "PLACEMENT";
+updateMainActionButton();
+setStageNote("새 라운드입니다. 카드를 다시 배치해주세요.");
+}
+
+function resetFieldDisplay(){
+  const enemySlots = document.querySelectorAll(".enemy-field .battle-slot");
+  const mySlots = document.querySelectorAll(".my-field .battle-slot");
+
+  enemySlots.forEach((slot, index) => {
+    slot.innerHTML = `
+      <span class="slot-num red">${index + 1}</span>
+      <div class="empty-buff"></div>
+      <div class="card-back attack"></div>
+    `;
+  });
+
+  mySlots.forEach((slot, index) => {
+    slot.innerHTML = `
+      <span class="slot-num blue">${index + 1}</span>
+      <div class="card-back attack blue"></div>
+      <div class="empty-buff"></div>
+    `;
+
+    slot.onclick = function(){
+      placeSelectedCard(index);
+    };
+  });
+
+  const enemyGroup = document.querySelectorAll(".opened-card-group")[0];
+  const myGroup = document.querySelectorAll(".opened-card-group")[1];
+
+  if(enemyGroup){
+    enemyGroup.innerHTML = `
+      <div class="battle-card buff-card">상대 버프</div>
+      <div class="battle-card attack-card">상대 카드</div>
+    `;
+  }
+
+  if(myGroup){
+    myGroup.innerHTML = `
+      <div class="battle-card attack-card">내 카드</div>
+      <div class="battle-card buff-card">내 버프</div>
+    `;
+  }
+}
+
+function resetHandDisplay(){
+  document.querySelectorAll(".hand-card").forEach(card => {
+    card.style.visibility = "visible";
+    card.classList.remove("selected");
+  });
+}
+
+function updateRoundDisplay(){
+  const roundText = document.querySelector(".turn-box span");
+
+  if(roundText){
+    roundText.textContent = `ROUND ${currentRound} / ${maxRound}`;
+  }
+}
+
+
+window.addEventListener("DOMContentLoaded", async () => {
+  await loadCards();
+  updateMainActionButton();
+  updateTurnDisplay();
+  updateHpDisplay();
+});
+
+async function loadCards(){
+  const response = await fetch("./data/cards.json");
+  const data = await response.json();
+
+  attackCards = data.attackCards || [];
+  buffCards = data.buffCards || [];
+
+  console.log("카드 로드 완료:", attackCards.length, buffCards.length);
+}
+
+function getRandomAtk(card){
+  return Math.floor(
+    Math.random() * (card.atkMax - card.atkMin + 1)
+  ) + card.atkMin;
+}
+
+function drawPlayerHand(){
+  const attacks = shuffleArray(attackCards)
+    .slice(0, 7)
+    .map(card => ({
+      ...card,
+      type: "ATTACK",
+      atk: getRandomAtk(card)
+    }));
+
+  const buffs = shuffleArray(buffCards)
+    .slice(0, 3)
+    .map(card => ({
+      ...card,
+      type: "BUFF"
+    }));
+
+  renderPlayerHand([...attacks, ...buffs]);
+}
+
+function renderPlayerHand(cards){
+  const handArea = document.getElementById("playerHand");
+  handArea.innerHTML = "";
+
+  cards.forEach(card => {
+    const img = document.createElement("img");
+
+    img.src = card.image;
+    img.className = card.type === "BUFF"
+      ? "hand-card buff-hand"
+      : "hand-card";
+
+      img.dataset.value1 = card.value1 ?? card.Value1 ?? "";
+img.dataset.value2 = card.value2 ?? card.Value2 ?? "";
+    img.dataset.cardNo = card.cardNo;
+    img.dataset.cardType = card.type;
+    img.dataset.cardName = card.name;
+    img.dataset.cardEffect = card.effect || "";
+
+    if(card.type === "ATTACK"){
+      img.dataset.rps = card.rps;
+      img.dataset.atk = card.atk;
+    }
+
+    if(card.effectCode){
+      img.dataset.effectCode = card.effectCode;
+    }
+
+
+img.onclick = function(){
+  selectHandCard(this);
+};
+
+enableCustomDrag(img);
+
+handArea.appendChild(img);
+  });
+}
+
+
+
+
+/* ==== TURN MODAL OVERRIDE ==== */
+function cardBackHTML(type){
+  const backClass = type === "buff" ? "buff" : "attack";
+  return `
+    <div class="battle-card-unit back-card-unit ${backClass}-back-unit">
+      <div class="card-back ${backClass}"></div>
+    </div>
+  `;
+}
+
+function battleImgHTML(card, className, revealKey){
+  if(!card){
+    return createEmptyBattleCardHTML("카드 없음");
+  }
+
+  const safeCard = JSON.stringify(card)
+    .replace(/'/g, "&apos;")
+    .replace(/"/g, "&quot;");
+
+  const metaText = card.type === "ATTACK"
+    ? `[${rpsToKor(card.rps)}] 공격력 : ${card.atk}`
+    : "버프 카드";
+
+  return `
+    <div class="battle-card-unit">
+      <img
+        src="${card.image}"
+        class="battle-card-img ${className}"
+        data-card='${safeCard}'
+        data-card-no="${card.cardNo || ""}"
+        data-card-type="${card.type || ""}"
+        data-card-name="${card.name || ""}"
+        data-card-rps="${card.rps || ""}"
+        data-card-atk="${card.atk ?? ""}"
+        data-card-effect-code="${card.effectCode || ""}"
+        data-card-effect="${card.effect || card.description || ""}"
+        data-card-description="${card.description || card.effect || ""}"
+        data-card-image="${card.image || ""}"
+        data-value1="${card.value1 ?? ""}"
+        data-value2="${card.value2 ?? ""}"
+      >
+      <div class="battle-card-meta ${card.type === "ATTACK" ? "attack-meta" : "buff-meta"}">
+        ${metaText}
+      </div>
+    </div>
+  `;
+}
+
+function getActiveBuffText(owner){
+  const list = owner === "MY" ? myActiveBuffs : enemyActiveBuffs;
+  if(!list || list.length === 0) return "";
+
+  return list.map(buff => `✨ ${buff.name}`).join("<br>");
+}
+
+function showTurnModal(title, enemyHtml, myHtml, message){
+  const backdrop = document.getElementById("turnModalBackdrop");
+  const titleEl = document.getElementById("turnModalTitle");
+  const enemyEl = document.getElementById("turnModalEnemy");
+  const myEl = document.getElementById("turnModalMy");
+  const msgEl = document.getElementById("turnModalMessage");
+
+  if(titleEl){
+    titleEl.innerHTML = `
+      <div class="modal-hp-row">
+        <div class="modal-hp-box red">
+          <strong>상대 HP ♥ ${enemyHp}</strong>
+          <span>${getActiveBuffText("ENEMY") || "지속 버프 없음"}</span>
+        </div>
+
+        <div class="modal-title-text">${title || "게임 턴 진행"}</div>
+
+        <div class="modal-hp-box blue">
+          <strong>내 HP ♥ ${myHp}</strong>
+          <span>${getActiveBuffText("MY") || "지속 버프 없음"}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  if(enemyEl) enemyEl.innerHTML = enemyHtml || "";
+  if(myEl) myEl.innerHTML = myHtml || "";
+  if(msgEl) msgEl.textContent = message || "";
+
+  if(backdrop){
+    backdrop.classList.add("show");
+  }
+
+setTimeout(() => {
+  document.querySelectorAll(".turn-modal .flip-card").forEach(card => {
+    if(card.classList.contains("already-flipped")) return;
+
+    card.classList.add("flipped");
+
+    const key = card.dataset.revealKey;
+    if(key){
+      revealedModalCards.add(key);
+    }
+  });
+}, 120);
+}
+
+function hideTurnModal(){
+  const backdrop = document.getElementById("turnModalBackdrop");
+  if(backdrop) backdrop.classList.remove("show");
+}
+
+function getFieldBuffText(){
+  const activeBuffs = [];
+
+  document.querySelectorAll(".global-buff-slot img").forEach(img => {
+    const name = img.dataset.cardName || "필드 버프";
+    const effect = img.dataset.cardEffect || "";
+    activeBuffs.push(`${name} ${effect}`);
+  });
+
+  return activeBuffs.length
+    ? `필드 버프 효과  ${activeBuffs.join(" / ")}`
+    : "";
+}
+
+function updateTurnDisplay(){
+
+  const roundLabel =
+    document.getElementById("roundLabel");
+
+  const turnLabel =
+    document.getElementById("turnLabel");
+
+  if(roundLabel){
+    roundLabel.textContent =
+      `${currentRound} ROUND`;
+  }
+
+  if(turnLabel){
+
+    if(currentTurn >= 5){
+      turnLabel.textContent = "TURN END";
+    }else{
+      turnLabel.textContent =
+        `TURN ${currentTurn + 1} / 5`;
+    }
+
+  }
+
+}
+
+function showBattleBacks(mySlot, enemySlot){
+  const enemyHtml = `
+    ${enemySlot.buff ? cardBackHTML("buff") : createEmptyBattleCardHTML("상대 버프 없음")}
+    ${cardBackHTML("attack")}
+  `;
+
+  const myHtml = `
+    ${cardBackHTML("attack")}
+    ${mySlot.buff ? cardBackHTML("buff") : createEmptyBattleCardHTML("내 버프 없음")}
+  `;
+
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+  if(enemyGroup) enemyGroup.innerHTML = enemyHtml;
+  if(myGroup) myGroup.innerHTML = myHtml;
+
+
+const hasMyBuff = !!mySlot.buff;
+const hasEnemyBuff = !!enemySlot.buff;
+
+const nextMessage =
+  (!hasMyBuff && !hasEnemyBuff)
+    ? "버프카드가 없어 진행 버튼을 클릭하면 최종 결과를 계산합니다."
+    : "진행 버튼을 클릭해 버프카드를 오픈하세요.";
+
+showTurnModal(
+    `TURN ${currentTurn + 1} / 5`,
+    enemyHtml,
+    myHtml,
+    "양쪽 플레이어의 카드가 준비되었습니다.\n진행 버튼을 클릭해 카드를 오픈하세요."
+  );
+}
+
+function revealBattleAttacks(mySlot, enemySlot, result){
+  const enemyHtml = `
+    ${enemySlot.buff ? cardBackHTML("buff") : createEmptyBattleCardHTML("상대 버프 없음")}
+    ${battleImgHTML(enemySlot.attack, "attack-card", `T${currentTurn}-ENEMY-ATTACK`)}
+  `;
+
+  const myHtml = `
+    ${battleImgHTML(mySlot.attack, "attack-card", `T${currentTurn}-MY-ATTACK`)}
+    ${mySlot.buff ? cardBackHTML("buff") : createEmptyBattleCardHTML("내 버프 없음")}
+  `;
+
+  const resultText = getResultText(result);
+
+  showTurnModal(
+    `TURN ${currentTurn + 1} / 5`,
+    enemyHtml,
+    myHtml,
+    `${resultText}\n진행 버튼을 클릭해 게임을 계속 진행하세요.`
+  );
+}
+
+function revealLoserBuff(mySlot, enemySlot, result){
+  const enemyHtml = `
+    ${
+      result === "WIN" || result === "DRAW"
+        ? (enemySlot.buff ? battleImgHTML(enemySlot.buff, "buff-card", `T${currentTurn}-ENEMY-BUFF`) : createEmptyBattleCardHTML("상대 버프 없음"))
+        : (enemySlot.buff ? cardBackHTML("buff") : createEmptyBattleCardHTML("상대 버프 없음"))
+    }
+    ${battleImgHTML(enemySlot.attack, "attack-card", `T${currentTurn}-ENEMY-ATTACK`)}
+  `;
+
+  const myHtml = `
+    ${battleImgHTML(mySlot.attack, "attack-card", `T${currentTurn}-MY-ATTACK`)}
+    ${
+      result === "LOSE" || result === "DRAW"
+        ? (mySlot.buff ? battleImgHTML(mySlot.buff, "buff-card", `T${currentTurn}-MY-BUFF`) : createEmptyBattleCardHTML("내 버프 없음"))
+        : (mySlot.buff ? cardBackHTML("buff") : createEmptyBattleCardHTML("내 버프 없음"))
+    }
+  `;
+
+  const msg = result === "WIN"
+    ? "상대 버프카드가 공개되었습니다.\n진행 버튼을 클릭하면 최종 결과를 계산합니다."
+    : result === "LOSE"
+      ? "내 버프카드가 공개되었습니다.\n진행 버튼을 클릭하면 최종 결과를 계산합니다."
+      : "버프카드가 공개되었습니다.\n진행 버튼을 클릭하면 최종 결과를 계산합니다.";
+
+  showTurnModal(
+    `TURN ${currentTurn + 1} / 5`,
+    enemyHtml,
+    myHtml,
+    msg
+  );
+}
+
+function revealWinnerBuff(mySlot, enemySlot, result){
+  const enemyHtml = `
+    ${
+      enemySlot.buff
+        ? battleImgHTML(enemySlot.buff, "buff-card", `T${currentTurn}-ENEMY-BUFF`)
+        : createEmptyBattleCardHTML("상대 버프 없음")
+    }
+    ${battleImgHTML(enemySlot.attack, "attack-card", `T${currentTurn}-ENEMY-ATTACK`)}
+  `;
+
+  const myHtml = `
+    ${battleImgHTML(mySlot.attack, "attack-card", `T${currentTurn}-MY-ATTACK`)}
+    ${
+      mySlot.buff
+        ? battleImgHTML(mySlot.buff, "buff-card", `T${currentTurn}-MY-BUFF`)
+        : createEmptyBattleCardHTML("내 버프 없음")
+    }
+  `;
+
+  const msg = result === "WIN"
+    ? "내 버프카드가 공개되었습니다.\n진행 버튼을 클릭하면 최종 결과를 계산합니다."
+    : result === "LOSE"
+      ? "상대 버프카드가 공개되었습니다.\n진행 버튼을 클릭하면 최종 결과를 계산합니다."
+      : "모든 버프카드가 공개 상태입니다.\n진행 버튼을 클릭하면 최종 결과를 계산합니다.";
+
+  showTurnModal(
+    `TURN ${currentTurn + 1} / 5`,
+    enemyHtml,
+    myHtml,
+    msg
+  );
+}
+
+function getBuffResultText(owner, buff){
+  if(!buff) return "";
+  return owner === "MY"
+    ? `내 버프 발동 : ${buff.name}`
+    : `상대 버프 발동 : ${buff.name}`;
+}
+
+function getHpChangeText(result, damage){
+  if(result === "WIN") return damage > 0 ? `🪫 상대 HP -${damage}` : "상대 HP 변동 없음";
+  if(result === "LOSE") return damage > 0 ? `🪫 내 HP -${damage}` : "내 HP 변동 없음";
+  return "🪫 HP 변동 없음";
+}
+
+function getFinalBuffLine(owner, buff, code, result){
+  if(!buff || !code) return "";
+
+  const isMy = owner === "MY";
+  const ownerWon = isMy ? result === "WIN" : result === "LOSE";
+  const ownerLost = isMy ? result === "LOSE" : result === "WIN";
+  const label = isMy ? "내 버프 발동" : "상대 버프 발동";
+
+  if(code === "BONUS_DAMAGE" && ownerWon){
+    const value = getBuffValue(buff, 15);
+    return `${label} : ${buff.name} (추가 피해 +${value} 발생)`;
+  }
+
+  if(code === "COMBINE_ATTACK" && ownerWon){
+    return `${label} : ${buff.name} (두 카드 공격력 합산)`;
+  }
+
+  if(code === "DAMAGE_REDUCE" && ownerLost){
+    const value = getBuffValue(buff, 10);
+    return `${label} : ${buff.name} (피해 ${value} 감소)`;
+  }
+
+  if(code === "ATK_UP"){
+    const value = getBuffValue(buff, 10);
+    return `${label} : ${buff.name} (공격력 +${value})`;
+  }
+
+  if(code === "ATK_X2"){
+    const value = getBuffValue(buff, 2);
+    return `${label} : ${buff.name} (공격력 ${value}배)`;
+  }
+
+  if(code === "HP_PERCENT_DAMAGE"){
+    const value = getBuffValue(buff, 20);
+    return `${label} : ${buff.name} (현재 HP ${value}% 감소)`;
+  }
+
+  if(code === "HEAL_HP"){
+    const value = getBuffValue(buff, 15);
+    return `${label} : ${buff.name} (HP +${value} 회복)`;
+  }
+
+  if(code === "IMMUNE_ALL" || code === "IMMUNE_ATTACK"){
+    return `${label} : ${buff.name} (피해 무효)`;
+  }
+
+  if(code === "NEXT_BUFF_NULLIFY"){
+    return `${label} : ${buff.name} (다음 턴 상대 버프 무효화)`;
+  }
+
+  if(code === "SKIP_NEXT_SLOT"){
+    return `${label} : ${buff.name} (다음 턴 전투 스킵)`;
+  }
+
+  if(code === "RPS_REVERSE"){
+    return `${label} : ${buff.name} (가위바위보 상성 반전)`;
+  }
+
+if(code === "REFLECT_ATTACK"){
+  return `${label} : ${buff.name} (상대 공격력 감소)`;
+}
+
+
+  return "";
+}
+
+function applyBattleResult(mySlot, enemySlot, battleResult){
+console.log("applyBattleResult #2");
+
+  let myBuff = mySlot.buff;
+  let enemyBuff = enemySlot.buff;
+
+  const myAttackCard = mySlot.attack;
+  const enemyAttackCard = enemySlot.attack;
+
+  if(!myAttackCard || !enemyAttackCard){
+    showCustomAlert("전투할 공격카드가 없습니다.");
+    return;
+  }
+
+  let myAtk = Number(myAttackCard.atk || 0);
+  let enemyAtk = Number(enemyAttackCard.atk || 0);
+
+  let myBonusDamage = 0;
+  let enemyBonusDamage = 0;
+  let myDirectDamage = 0;
+let enemyDirectDamage = 0;
+
+  let myImmuneAttack = false;
+let enemyImmuneAttack = false;
+
+let myImmuneAll = false;
+let enemyImmuneAll = false;
+
+  let myMessage = "";
+  let enemyMessage = "";
+
+
+  if(myNukeReadyDamage > 0){
+  enemyHp = Math.max(0, enemyHp - myNukeReadyDamage);
+  myMessage += `고스트, 작전 성공!. 상대 HP -${myNukeReadyDamage}\n`;
+  myNukeReadyDamage = 0;
+}
+
+if(enemyNukeReadyDamage > 0){
+  myHp = Math.max(0, myHp - enemyNukeReadyDamage);
+  enemyMessage += `고스트, 작전 성공!. 내 HP -${enemyNukeReadyDamage}\n`;
+  enemyNukeReadyDamage = 0;
+}
+
+// 주석
+// if(myNukeReadyDamage > 0){
+//   enemyHp = Math.max(0, enemyHp - myNukeReadyDamage);
+//   myMessage += `고스트, 작전개시. 상대 HP -${myNukeReadyDamage}\n`;
+//   myNukeReadyDamage = 0;
+// }
+
+// if(enemyNukeReadyDamage > 0){
+//   myHp = Math.max(0, myHp - enemyNukeReadyDamage);
+//   enemyMessage += `고스트, 작전개시. 내 HP -${enemyNukeReadyDamage}\n`;
+//   enemyNukeReadyDamage = 0;
+// }
+
+
+
+  if(myNextBuffNullify){
+    enemyBuff = null;
+    enemyMessage += "이전 락다운 효과! 상대 버프 무효화!\n";
+    myNextBuffNullify = false;
+  }
+
+  if(enemyNextBuffNullify){
+    myBuff = null;
+    myMessage += "상대 이전 락다운 효과! 내 버프 무효화!\n";
+    enemyNextBuffNullify = false;
+  }
+
+  const myCode = getEffectCode(myBuff);
+  const enemyCode = getEffectCode(enemyBuff);
+
+  
+
+
+
+  if(myCode === "NULLIFY_ALL"){
+  enemyBuff = null;
+  clearActiveBuffs("ENEMY");
+  enemyMessage += "EMP 발동! 상대의 지속 버프가 모두 제거되었습니다.\n";
+}
+
+if(enemyCode === "NULLIFY_ALL"){
+  myBuff = null;
+  clearActiveBuffs("MY");
+  myMessage += "상대 EMP 발동! 내 지속 버프가 모두 제거되었습니다.\n";
+}
+
+// 마인드 컨트롤: 상대 버프 효과를 빼앗아 내 버프로 사용
+if(myCode === "COPY_BUFF" && enemyBuff){
+  myMessage += `마인드 컨트롤 발동! 상대의 ${enemyBuff.name} 효과를 복사합니다.\n`;
+
+  myBuff = {
+    ...enemyBuff,
+    name: `마인드 컨트롤 → ${enemyBuff.name}`
+  };
+
+  enemyBuff = null;
+}
+
+// 상대 마인드 컨트롤: 내 버프 효과를 빼앗아 상대 버프로 사용
+if(enemyCode === "COPY_BUFF" && myBuff){
+  enemyMessage += `상대 마인드 컨트롤 발동! 내 ${myBuff.name} 효과를 복사합니다.\n`;
+
+  enemyBuff = {
+    ...myBuff,
+    name: `마인드 컨트롤 → ${myBuff.name}`
+  };
+
+  myBuff = null;
+}
+
+
+const finalMyCode = getEffectCode(myBuff);
+const finalEnemyCode = getEffectCode(enemyBuff);
+
+const result = battleResult;
+
+if(finalMyCode === "DELAY_DAMAGE"){
+  myNukeArmed = true;
+  myNukeArmedTurnKey = `${currentRound}-${currentTurn}`;
+  myMessage += "핵 공격이 감지되었습니다. Nuclear Launch Detected.\n";
+}
+
+if(finalEnemyCode === "DELAY_DAMAGE"){
+  enemyNukeArmed = true;
+  enemyNukeArmedTurnKey = `${currentRound}-${currentTurn}`;
+  enemyMessage += "상대의 핵 공격이 감지되었습니다. Nuclear Launch Detected.\n";
+}
+
+
+if(finalMyCode === "DIRECT_DAMAGE"){
+  let damage = getBuffValue(myBuff, 15);
+
+  if(finalEnemyCode === "IMMUNE_ALL"){
+    damage = 0;
+    enemyMessage += "다크 스웜 발동! 사이오닉 스톰 피해 무효\n";
+  }else if(finalEnemyCode === "DAMAGE_REDUCE"){
+    const reduce = getBuffValue(enemyBuff, 10);
+    damage = Math.max(0, damage - reduce);
+    enemyMessage += `디펜시브 매트릭스 발동! 사이오닉 스톰 피해 ${reduce} 감소\n`;
+  }
+
+  myDirectDamage += damage;
+  enemyHp = Math.max(0, enemyHp - damage);
+  myMessage += `사이오닉 스톰 발동! 상대 HP -${damage}\n`;
+}
+
+if(finalEnemyCode === "DIRECT_DAMAGE"){
+  let damage = getBuffValue(enemyBuff, 15);
+
+  if(finalMyCode === "IMMUNE_ALL"){
+    damage = 0;
+    myMessage += "다크 스웜 발동! 사이오닉 스톰 피해 무효\n";
+  }else if(finalMyCode === "DAMAGE_REDUCE"){
+    const reduce = getBuffValue(myBuff, 10);
+    damage = Math.max(0, damage - reduce);
+    myMessage += `디펜시브 매트릭스 발동! 사이오닉 스톰 피해 ${reduce} 감소\n`;
+  }
+
+  enemyDirectDamage += damage;
+  myHp = Math.max(0, myHp - damage);
+  enemyMessage += `상대 사이오닉 스톰 발동! 내 HP -${damage}\n`;
+}
+
+
+
+
+  if(finalMyCode === "NEXT_BUFF_NULLIFY"){
+  myNextBuffNullify = true;
+  myMessage += "락다운 발동! 다음 턴 상대 버프카드 효과를 무효화합니다.\n";
+}
+
+if(finalEnemyCode === "NEXT_BUFF_NULLIFY"){
+  enemyNextBuffNullify = true;
+  enemyMessage += "상대 락다운 발동! 다음 턴 내 버프카드 효과를 무효화합니다.\n";
+}
+
+if(finalMyCode === "RPS_REVERSE"){
+  rpsReverseActive = true;
+  rpsReverseOwner = "MY";
+}
+
+if(finalEnemyCode === "RPS_REVERSE"){
+  rpsReverseActive = true;
+  rpsReverseOwner = "ENEMY";
+}
+
+// 주석
+//   if(isPersistentBuff(finalMyCode, myBuff)){
+//   addActiveBuff("MY", myBuff);
+// }
+
+// if(isPersistentBuff(finalEnemyCode, enemyBuff)){
+//   addActiveBuff("ENEMY", enemyBuff);
+// }
+
+// renderActiveBuffs();
+
+
+  if(finalMyCode === "HP_PERCENT_DAMAGE"){
+    const value = getBuffValue(myBuff, 20);
+    const damage = Math.floor(enemyHp * value / 100);
+    enemyHp = Math.max(0, enemyHp - damage);
+    myMessage += `플레이그 발동! 상대의 현재 HP 중 ${value}% 가 감소합니다. (-${damage})\n`;
+  }
+
+  if(finalEnemyCode === "HP_PERCENT_DAMAGE"){
+    const value = getBuffValue(enemyBuff, 20);
+    const damage = Math.floor(myHp * value / 100);
+    myHp = Math.max(0, myHp - damage);
+    enemyMessage += `상대 플레이그 발동! 내 현재 HP 중 ${value}%가 감소합니다. (-${damage})\n`;
+  }
+
+  if(finalMyCode === "HEAL_HP"){
+    const heal = getBuffValue(myBuff, 15);
+    myHp = Math.min(100, myHp + heal);
+    myMessage += `힐 발동! 내 HP +${heal}가 회복됩니다.\n`;
+  }
+
+  if(finalEnemyCode === "HEAL_HP"){
+    const heal = getBuffValue(enemyBuff, 15);
+    enemyHp = Math.min(100, enemyHp + heal);
+    enemyMessage += `상대 힐 발동! 상대 HP +${heal}가 회복됩니다.\n`;
+  }
+
+  if(finalMyCode === "ATK_UP"){
+    const value = getBuffValue(myBuff, 10);
+    myAtk += value;
+    myMessage += `공격력 +${value} 증가\n`;
+  }
+
+  if(finalEnemyCode === "ATK_UP"){
+    const value = getBuffValue(enemyBuff, 10);
+    enemyAtk += value;
+    enemyMessage += `상대 공격력 +${value} 증가\n`;
+  }
+
+
+
+
+  if(finalMyCode === "ATK_X2"){
+    const value = getBuffValue(myBuff, 2);
+    myAtk *= value;
+    myMessage += `공격력 ${value}배!\n`;
+  }
+
+  if(finalEnemyCode === "ATK_X2"){
+    const value = getBuffValue(enemyBuff, 2);
+    enemyAtk *= value;
+    enemyMessage += `상대 공격력 ${value}배!\n`;
+  }
+
+
+
+if(finalMyCode === "RANDOM_DOUBLE_HALF"){
+const originalAtk = myAtk;
+
+  if(Math.random() < 0.5){
+    myAtk *= 2;
+    myMessage += `마인 대박! 공격력 2배 (${myAtk})\n`;
+  }else{
+    myAtk = Math.floor(myAtk / 2);
+    myMessage += `마인 역대박... 공격력 절반 (${myAtk})\n`;
+  }
+}
+
+if(finalEnemyCode === "RANDOM_DOUBLE_HALF"){
+const originalAtk = enemyAtk;
+
+  if(Math.random() < 0.5){
+    enemyAtk *= 2;
+    enemyMessage += `상대 마인 대박! 공격력 2배 (${enemyAtk})\n`;
+  }else{
+    enemyAtk = Math.floor(enemyAtk / 2);
+    enemyMessage += `상대 마인 역대박! 공격력 절반 (${enemyAtk})\n`;
+  }
+}
+  
+
+if(finalMyCode === "BONUS_DAMAGE"){
+  const value = getBuffValue(myBuff, 15);
+
+  if(myBuff?.cardNo === "MSTZ-0069"){
+    if(result === "WIN"){
+      myBonusDamage += value;
+      myMessage += `야마토포 발동! 추가 피해 +${value}\n`;
+    }
+  }else{
+    myBonusDamage += value;
+    myMessage += `추가 피해 +${value}\n`;
+  }
+}
+
+if(finalEnemyCode === "BONUS_DAMAGE"){
+  const value = getBuffValue(enemyBuff, 15);
+
+  if(enemyBuff?.cardNo === "MSTZ-0069"){
+    if(result === "LOSE"){
+      enemyBonusDamage += value;
+      enemyMessage += `상대 야마토포 발동! 추가 피해 +${value}\n`;
+    }
+  }else{
+    enemyBonusDamage += value;
+    enemyMessage += `상대 추가 피해 +${value}\n`;
+  }
+}
+
+
+if(finalMyCode === "IMMUNE_ATTACK"){
+  myImmuneAttack = true;
+  myMessage += "버로우 발동! 공격 피해 무효\n";
+}
+
+if(finalEnemyCode === "IMMUNE_ATTACK"){
+  enemyImmuneAttack = true;
+  enemyMessage += "상대 버로우 발동! 공격 피해 무효\n";
+}
+
+if(finalMyCode === "IMMUNE_ALL"){
+  myImmuneAll = true;
+  myMessage += "다크 스웜 발동! 모든 피해 무효\n";
+}
+
+if(finalEnemyCode === "IMMUNE_ALL"){
+  enemyImmuneAll = true;
+  enemyMessage += "상대 다크 스웜 발동! 모든 피해 무효\n";
+}
+
+
+
+if(finalMyCode === "SKIP_NEXT_SLOT"){
+  skipNextSlot = true;
+  myMessage += "스테이시스 필드 발동! 다음 턴 전투를 건너뜁니다.\n";
+}
+
+if(finalEnemyCode === "SKIP_NEXT_SLOT"){
+  skipNextSlot = true;
+  enemyMessage += "상대 스테이시스 필드 발동! 다음 턴 전투를 건너뜁니다.\n";
+}
+ 
+
+
+if(finalMyCode === "REMOVE_BUFF"){
+  const targets = enemyField
+    .map((slot, index) => ({ slot, index }))
+    .filter(x =>
+      x.slot.buff &&
+      x.index !== currentTurn
+    );
+
+  if(targets.length > 0){
+    const target = targets[Math.floor(Math.random() * targets.length)];
+    const removedName = target.slot.buff.name;
+
+    target.slot.buff = null;
+
+    myMessage += `브루들링 발동! 상대의 ${removedName} 버프카드가 1장 제거되었습니다.\n`;
+
+    renderEnemyFieldBacks();
+  }else{
+    myMessage += "브루들링 발동! 제거할 상대 버프카드가 없습니다.\n";
+  }
+}
+
+if(finalEnemyCode === "REMOVE_BUFF"){
+  const targets = myField
+    .map((slot, index) => ({ slot, index }))
+    .filter(x =>
+      x.slot.buff &&
+      x.index !== currentTurn
+    );
+
+  if(targets.length > 0){
+    const target = targets[Math.floor(Math.random() * targets.length)];
+    const removedName = target.slot.buff.name;
+
+    target.slot.buff = null;
+
+    enemyMessage += `상대 브루들링 발동! 내 ${removedName} 버프카드가 1장 제거되었습니다.\n`;
+
+    renderMyField();
+  }else{
+    enemyMessage += "상대 브루들링 발동! 제거할 버프카드가 없습니다.\n";
+  }
+}
+
+
+ 
+
+const myThemeBonus = getThemeBuffBonus("MY", myAttackCard, myBuff);
+if(myThemeBonus > 0){
+  myAtk += myThemeBonus;
+  myMessage += `필드 테마 버프 +${myThemeBonus}\n`;
+}
+
+const enemyThemeBonus = getThemeBuffBonus("ENEMY", enemyAttackCard, enemyBuff);
+if(enemyThemeBonus > 0){
+  enemyAtk += enemyThemeBonus;
+  enemyMessage += `상대 필드 테마 버프 +${enemyThemeBonus}\n`;
+}
+
+if(finalMyCode === "REFLECT_ATTACK"){
+  const reduce = myAtk;
+
+  enemyAtk = Math.max(0, enemyAtk - reduce);
+
+  myMessage += `피드백 발동! 상대 공격력 ${reduce} 감소\n`;
+}
+
+if(finalEnemyCode === "REFLECT_ATTACK"){
+  const reduce = enemyAtk;
+
+  myAtk = Math.max(0, myAtk - reduce);
+
+  enemyMessage += `상대 피드백 발동! 내 공격력 ${reduce} 감소\n`;
+}
+
+
+  let finalType = "draw";
+  let finalMessage = "";
+
+if(result === "WIN"){
+
+if(myNukeArmed && myNukeArmedTurnKey !== `${currentRound}-${currentTurn}`){
+  myNukeReadyDamage = 40;
+  myNukeArmed = false;
+  myNukeArmedTurnKey = null;
+  myMessage += "핵 공격 확정! 다음 턴 상대 HP -40\n";
+}
+
+    let damage = myAtk + myBonusDamage;
+
+
+
+    if(finalMyCode === "COMBINE_ATTACK"){
+      damage = myAtk + enemyAtk;
+      myMessage += "컨슘 발동! 두 카드 공격력 합산!\n";
+    }
+
+    if(finalEnemyCode === "DAMAGE_REDUCE"){
+      const reduce = getBuffValue(enemyBuff, 10);
+      damage = Math.max(0, damage - reduce);
+      enemyMessage += `피해 ${reduce} 감소!\n`;
+    }
+
+
+
+if(enemyImmuneAll){
+  damage = 0;
+}else if(enemyImmuneAttack){
+  damage = myBonusDamage;
+}
+
+    enemyHp = Math.max(0, enemyHp - damage);
+
+
+
+    finalType = "win";
+finalMessage = [
+  "✌️✊✋ 가위바위보 결과 : 승리",
+  getFinalBuffLine("ENEMY", enemyBuff, finalEnemyCode, result),
+  getFinalBuffLine("MY", myBuff, finalMyCode, result),
+  myMessage.trim(),
+  enemyMessage.trim(),
+  getHpChangeText("WIN", damage + myDirectDamage)
+].filter(Boolean).join("\n");
+
+
+
+}else if(result === "LOSE"){
+
+if(enemyNukeArmed && enemyNukeArmedTurnKey !== `${currentRound}-${currentTurn}`){
+  enemyNukeReadyDamage = 40;
+  enemyNukeArmed = false;
+  enemyNukeArmedTurnKey = null;
+  enemyMessage += "상대 핵 공격 확정! 다음 턴 내 HP -40\n";
+}
+
+    let damage = enemyAtk + enemyBonusDamage;
+
+
+    if(finalEnemyCode === "COMBINE_ATTACK"){
+      damage = enemyAtk + myAtk;
+      enemyMessage += "상대 컨슘 발동! 두 카드 공격력 합산!\n";
+    }
+
+    if(finalMyCode === "DAMAGE_REDUCE"){
+      const reduce = getBuffValue(myBuff, 10);
+      damage = Math.max(0, damage - reduce);
+      myMessage += `피해 ${reduce} 감소!\n`;
+    }
+
+if(myImmuneAll){
+  damage = 0;
+}else if(myImmuneAttack){
+  damage = enemyBonusDamage;
+}
+
+    myHp = Math.max(0, myHp - damage);
+
+   
+
+    finalType = "lose";
+finalMessage = [
+  "✌️✊✋ 가위바위보 결과 : 패배",
+  getFinalBuffLine("MY", myBuff, finalMyCode, result),
+  getFinalBuffLine("ENEMY", enemyBuff, finalEnemyCode, result),
+  myMessage.trim(),
+  enemyMessage.trim(),
+  getHpChangeText("LOSE", damage + enemyDirectDamage)
+].filter(Boolean).join("\n");
+
+
+
+  }else{
+    finalType = "draw";
+
+finalMessage = [
+  "✌️✊✋ 가위바위보 결과 : 무승부",
+  getFinalBuffLine("ENEMY", enemyBuff, finalEnemyCode, result),
+  getFinalBuffLine("MY", myBuff, finalMyCode, result),
+  myMessage.trim(),
+  enemyMessage.trim(),
+  "🪫 HP 변동 없음"
+].filter(Boolean).join("\n");
+  }
+
+if(isPersistentBuff(finalMyCode, myBuff)){
+  addActiveBuff("MY", myBuff);
+}
+
+if(isPersistentBuff(finalEnemyCode, enemyBuff)){
+  addActiveBuff("ENEMY", enemyBuff);
+}
+
+addBattleLog(finalType, finalMessage);
+updateHpDisplay();
+
+if(checkImmediateGameOver()){
+  return;
+}
+
+const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+revealedModalCards.add(`T${currentTurn}-ENEMY-ATTACK`);
+revealedModalCards.add(`T${currentTurn}-MY-ATTACK`);
+
+if(enemyBuff){
+  revealedModalCards.add(`T${currentTurn}-ENEMY-BUFF`);
+}
+
+if(myBuff){
+  revealedModalCards.add(`T${currentTurn}-MY-BUFF`);
+}
+
+const finalEnemyHtml = `
+  ${
+    enemyBuff
+      ? battleImgHTML(enemyBuff, "buff-card", `T${currentTurn}-ENEMY-BUFF`)
+      : createEmptyBattleCardHTML("상대 버프 없음")
+  }
+  ${
+    enemySlot.attack
+      ? battleImgHTML(enemySlot.attack, "attack-card", `T${currentTurn}-ENEMY-ATTACK`)
+      : createEmptyBattleCardHTML("상대 공격 없음")
+  }
+`;
+
+const finalMyHtml = `
+  ${
+    mySlot.attack
+      ? battleImgHTML(mySlot.attack, "attack-card", `T${currentTurn}-MY-ATTACK`)
+      : createEmptyBattleCardHTML("내 공격 없음")
+  }
+  ${
+    myBuff
+      ? battleImgHTML(myBuff, "buff-card", `T${currentTurn}-MY-BUFF`)
+      : createEmptyBattleCardHTML("내 버프 없음")
+  }
+`;
+
+showTurnModal(
+  `TURN ${currentTurn + 1} / 5`,
+  finalEnemyHtml,
+  finalMyHtml,
+  finalMessage + "\n\n진행 버튼을 클릭해 다음 턴으로 진행하세요."
+);
+}
+
+
+
+/* ==== USER REQUEST FIX SCRIPT 2026-06-04 ==== */
+function syncReadyTurnVisibility(){
+  document.body.classList.toggle("is-ready", gamePhase === "READY");
+}
+
+const __oldUpdateMainActionButton = updateMainActionButton;
+updateMainActionButton = function(){
+  __oldUpdateMainActionButton();
+  syncReadyTurnVisibility();
+};
+
+renderEnemyFieldBacks = function(){
+  const slots = document.querySelectorAll(".enemy-field .battle-slot");
+
+  slots.forEach((slot, index) => {
+    const fieldSlot = enemyField[index];
+
+    slot.innerHTML = `
+      <span class="slot-num red">${index + 1}</span>
+      <div class="card-back attack"></div>
+      ${
+        fieldSlot && fieldSlot.buff
+          ? '<div class="card-back buff"></div>'
+          : '<div class="empty-buff"></div>'
+      }
+    `;
+  });
+};
+
+resetFieldDisplay = function(){
+  const enemySlots = document.querySelectorAll(".enemy-field .battle-slot");
+  const mySlots = document.querySelectorAll(".my-field .battle-slot");
+
+  enemySlots.forEach((slot, index) => {
+    slot.innerHTML = `
+      <span class="slot-num red">${index + 1}</span>
+      <div class="card-back attack"></div>
+      <div class="card-back buff"></div>
+    `;
+  });
+
+  mySlots.forEach((slot, index) => {
+    slot.innerHTML = `
+      <span class="slot-num blue">${index + 1}</span>
+      <div class="card-back attack blue"></div>
+      <div class="empty-buff"></div>
+    `;
+
+    slot.onclick = function(){
+      placeSelectedCard(index);
+    };
+  });
+
+  resetVersusArea();
+};
+
+revealFieldSlot = function(fieldSelector, slotIndex, fieldSlot, color){
+  const slot = document.querySelectorAll(`${fieldSelector} .battle-slot`)[slotIndex];
+  if(!slot) return;
+
+  const slotNumberClass = color === "red" ? "red" : "blue";
+
+  if(fieldSelector === ".enemy-field"){
+    slot.innerHTML = `
+      <span class="slot-num ${slotNumberClass}">${slotIndex + 1}</span>
+      <img src="${fieldSlot.attack.image}" class="placed-card attack-placed">
+      ${
+        fieldSlot.buff
+          ? `<img src="${fieldSlot.buff.image}" class="placed-card buff-placed">`
+          : `<div class="empty-buff"></div>`
+      }
+    `;
+  }
+
+  if(fieldSelector === ".my-field"){
+    slot.innerHTML = `
+      <span class="slot-num ${slotNumberClass}">${slotIndex + 1}</span>
+      <img src="${fieldSlot.attack.image}" class="placed-card attack-placed">
+      ${
+        fieldSlot.buff
+          ? `<img src="${fieldSlot.buff.image}" class="placed-card buff-placed">`
+          : `<div class="empty-buff"></div>`
+      }
+    `;
+  }
+};
+
+// 최초 로딩 시에도 READY 상태를 반영
+window.addEventListener("DOMContentLoaded", () => {
+  syncReadyTurnVisibility();
+});
+
+
+/* ==== CLEAN READY / POPUP-ONLY BATTLE FIX SCRIPT ==== */
+
+function setPhaseBodyClass(){
+  document.body.classList.toggle("is-ready", gamePhase === "READY");
+  document.body.classList.toggle("is-placement", gamePhase === "PLACEMENT");
+}
+
+const __phaseOldUpdateMainActionButton = updateMainActionButton;
+updateMainActionButton = function(){
+  __phaseOldUpdateMainActionButton();
+  setPhaseBodyClass();
+};
+
+function emptyAttackSlotHTML(){
+  return `<div class="slot-placeholder attack-placeholder"></div>`;
+}
+
+function emptyBuffSlotHTML(){
+  return `<div class="slot-placeholder buff-placeholder"></div>`;
+}
+
+/* 게임 시작 전/배치 중에는 양쪽 필드를 모두 빈 배치 영역으로 표시 */
+resetFieldDisplay = function(){
+  const enemySlots = document.querySelectorAll(".enemy-field .battle-slot");
+  const mySlots = document.querySelectorAll(".my-field .battle-slot");
+
+  enemySlots.forEach((slot, index) => {
+    slot.innerHTML = `
+      <span class="slot-num red">${index + 1}</span>
+      ${emptyAttackSlotHTML()}
+      ${emptyBuffSlotHTML()}
+    `;
+  });
+
+  mySlots.forEach((slot, index) => {
+    slot.innerHTML = `
+      <span class="slot-num blue">${index + 1}</span>
+      ${emptyAttackSlotHTML()}
+      ${emptyBuffSlotHTML()}
+    `;
+
+    slot.onclick = function(){
+      placeSelectedCard(index);
+    };
+  });
+
+  resetVersusArea();
+  highlightCurrentSlot();
+};
+
+/* 배치 완료 후에만 상대 필드에 카드 뒷면 표시 */
+renderEnemyFieldBacks = function(){
+  const slots = document.querySelectorAll(".enemy-field .battle-slot");
+
+  slots.forEach((slot, index) => {
+    const fieldSlot = enemyField[index];
+
+    slot.innerHTML = `
+      <span class="slot-num red">${index + 1}</span>
+      <div class="card-back attack"></div>
+      ${
+        fieldSlot && fieldSlot.buff
+          ? '<div class="card-back buff"></div>'
+          : '<div class="empty-buff"></div>'
+      }
+    `;
+  });
+
+  highlightCurrentSlot();
+};
+
+/* 내 필드 빈칸도 파란 공격 위 / 보라 버프 아래 */
+const __cleanOldRenderMyField = renderMyField;
+renderMyField = function(){
+  const slots = document.querySelectorAll(".my-field .battle-slot");
+
+  slots.forEach((slot, index) => {
+    const fieldSlot = myField[index];
+
+    slot.innerHTML = `
+      <span class="slot-num blue">${index + 1}</span>
+    `;
+
+    if(fieldSlot.attack){
+      const attackImg = document.createElement("img");
+      attackImg.src = fieldSlot.attack.image;
+      attackImg.className = "placed-card attack-placed";
+      attackImg.onclick = function(event){
+        event.stopPropagation();
+        showCardDetail(fieldSlot.attack);
+      };
+      slot.appendChild(attackImg);
+    }else{
+      const attackPlaceholder = document.createElement("div");
+      attackPlaceholder.className = "slot-placeholder attack-placeholder";
+      slot.appendChild(attackPlaceholder);
+    }
+
+    if(fieldSlot.buff){
+      const buffImg = document.createElement("img");
+      buffImg.src = fieldSlot.buff.image;
+      buffImg.className = "placed-card buff-placed";
+      buffImg.onclick = function(event){
+        event.stopPropagation();
+        showCardDetail(fieldSlot.buff);
+      };
+      slot.appendChild(buffImg);
+    }else{
+      const buffPlaceholder = document.createElement("div");
+      buffPlaceholder.className = "slot-placeholder buff-placeholder";
+      slot.appendChild(buffPlaceholder);
+    }
+
+    slot.onclick = function(){
+      placeSelectedCard(index);
+    };
+  });
+
+  highlightCurrentSlot();
+};
+
+/* READY/배치 중에는 현재 턴 테두리 표시 금지 */
+highlightCurrentSlot = function(){
+  document
+    .querySelectorAll(".battle-slot")
+    .forEach(slot => slot.classList.remove("current"));
+
+  if(
+    gamePhase === "READY" ||
+    gamePhase === "PLACEMENT" ||
+    !placementDone ||
+    currentTurn >= 5
+  ){
+    return;
+  }
+
+  const enemySlot = document.querySelectorAll(".enemy-field .battle-slot")[currentTurn];
+  const mySlot = document.querySelectorAll(".my-field .battle-slot")[currentTurn];
+
+  if(enemySlot) enemySlot.classList.add("current");
+  if(mySlot) mySlot.classList.add("current");
+};
+
+/* 상단 VS 영역은 안내문만 남김 */
+resetVersusArea = function(){
+  const enemyGroup = document.querySelector(".enemy-open-group");
+  const myGroup = document.querySelector(".my-open-group");
+
+  if(enemyGroup) enemyGroup.innerHTML = "";
+  if(myGroup) myGroup.innerHTML = "";
+};
+
+const __cleanOldSetStageNote = setStageNote;
+setStageNote = function(text){
+  const isReadyText = gamePhase === "READY";
+  __cleanOldSetStageNote(text);
+  setPhaseBodyClass();
+};
+
+/* 초기 로딩 때 기존 HTML에 박혀 있는 카드 뒷면 제거 */
+window.addEventListener("DOMContentLoaded", () => {
+  gamePhase = "READY";
+  placementDone = false;
+  resetFieldDisplay();
+  resetVersusArea();
+  updateMainActionButton();
+  setStageNote("게임 시작 버튼을 눌러주세요.");
+});
+
+/* 게임 시작 시에도 빈 필드에서 시작 */
+const __cleanOldStartCardGame = startCardGame;
+startCardGame = function(){
+  __cleanOldStartCardGame();
+  resetFieldDisplay();
+  gamePhase = "PLACEMENT";
+  updateMainActionButton();
+  setStageNote("카드를 확인한 뒤 내 필드에 배치해주세요.");
+};
+
+
+
+/* ==== ROUND MODAL CLEANUP OVERRIDE ==== */
+const __roundModalOldEndRound = endRound;
+endRound = function(){
+  hideTurnModal();
+  __roundModalOldEndRound();
+  hideTurnModal();
+};
+
+const __roundModalOldPrepareNextRound = prepareNextRound;
+prepareNextRound = function(){
+  hideTurnModal();
+  __roundModalOldPrepareNextRound();
+  hideTurnModal();
+};
+
+const __roundModalOldStartCardGame = startCardGame;
+startCardGame = function(){
+  hideTurnModal();
+  __roundModalOldStartCardGame();
+};
+
+
+
+/* ==== CARD META + DETAIL CLICK FIX SCRIPT ==== */
+function escapeHTMLText(value){
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function rpsToKor(rps){
+  if(rps === "ROCK") return "바위";
+  if(rps === "PAPER") return "보";
+  if(rps === "SCISSOR") return "가위";
+  return rps || "-";
+}
+
+function getCardTypeLabel(card){
+  const type = card?.type || card?.Type || "";
+  return type;
+}
+
+/* 팝업 카드 HTML: 공격카드는 하단에 [속성 / 공격력] 표시 */
+createBattleCardHTML = function(card, className){
+  if(!card) return createEmptyBattleCardHTML("카드 없음");
+
+  const type = getCardTypeLabel(card);
+  const rps = card.rps || card.RPS || "";
+  const atk = card.atk ?? card.attack ?? card.atkMin ?? "";
+  const isAttack = type === "ATTACK" || className === "attack-card" || !!rps;
+
+  const meta = isAttack
+    ? `<div class="battle-card-meta attack-meta">[${escapeHTMLText(rpsToKor(rps))}] 공격력 : ${escapeHTMLText(atk)}</div>`
+    : `<div class="battle-card-meta buff-meta">버프 카드</div>`;
+
+  return `
+    <div class="battle-card-unit">
+      <img
+        src="${escapeHTMLText(card.image)}"
+        class="battle-card-img ${escapeHTMLText(className)}"
+        data-card-no="${escapeHTMLText(card.cardNo || "")}"
+        data-card-type="${escapeHTMLText(type)}"
+        data-card-name="${escapeHTMLText(card.name || "")}"
+        data-card-rps="${escapeHTMLText(rps)}"
+        data-card-atk="${escapeHTMLText(atk)}"
+        data-card-effect-code="${escapeHTMLText(card.effectCode || "")}"
+        data-card-effect="${escapeHTMLText(card.effect || "")}"
+        data-card-image="${escapeHTMLText(card.image || "")}"
+        data-value1="${escapeHTMLText(card.value1 ?? card.Value1 ?? "")}"
+        data-value2="${escapeHTMLText(card.value2 ?? card.Value2 ?? "")}"
+        title="상세 정보 보기"
+      >
+      ${meta}
+    </div>
+  `;
+};
+
+/* 상세 정보창 출력 강화 */
+showCardDetail = function(card){
+  if(!card) return;
+
+  const detailImg = document.querySelector(".detail-card-img");
+  const effectText = document.querySelector(".effect-box p");
+  const title = document.querySelector(".effect-box h3");
+
+  const type = card.type || card.Type || "";
+  const name = card.name || card.cardName || "카드";
+  const image = card.image || card.src || "";
+  const rps = card.rps || card.RPS || "";
+  const atk = card.atk ?? card.attack ?? card.atkMin ?? "";
+  const effect = card.effect || card.cardEffect || "";
+
+  if(detailImg && image){
+    detailImg.src = image;
+  }
+
+  if(title){
+    title.textContent = name;
+  }
+
+  if(effectText){
+    if(type === "ATTACK" || rps){
+      effectText.textContent = `[${rpsToKor(rps)}] 공격력 : ${atk}\n${effect}`;
+    }else{
+      effectText.textContent = effect || "카드 효과 정보가 없습니다.";
+    }
+  }
+};
+
+/* 팝업/필드/손패의 카드 클릭 시 우측 상세 정보창 갱신 */
+document.addEventListener("click", function(event){
+  const img = event.target.closest(".battle-card-img");
+  if(!img) return;
+
+  let card = null;
+
+  if(img.dataset.card){
+    try{
+      card = JSON.parse(
+        img.dataset.card
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+      );
+    }catch(e){
+      card = null;
+    }
+  }
+
+  if(!card){
+    card = {
+      cardNo: img.dataset.cardNo,
+      type: img.dataset.cardType,
+      name: img.dataset.cardName,
+      rps: img.dataset.cardRps,
+      atk: Number(img.dataset.cardAtk || 0),
+      effectCode: img.dataset.cardEffectCode,
+      effect: img.dataset.cardEffect,
+      description: img.dataset.cardDescription,
+      image: img.dataset.cardImage || img.src,
+      value1: Number(img.dataset.value1 || 0),
+      value2: Number(img.dataset.value2 || 0)
+    };
+  }
+
+  showCardDetail(card);
+});
+
+/* 배치된 카드도 상세 표시용 데이터를 유지 */
+const __detailOldRenderMyField = renderMyField;
+renderMyField = function(){
+  __detailOldRenderMyField();
+
+  document.querySelectorAll(".my-field .battle-slot").forEach((slot, index) => {
+    const fieldSlot = myField[index];
+    const attackImg = slot.querySelector(".attack-placed");
+    const buffImg = slot.querySelector(".buff-placed");
+
+    if(attackImg && fieldSlot.attack){
+      attachCardDataset(attackImg, fieldSlot.attack);
+    }
+    if(buffImg && fieldSlot.buff){
+      attachCardDataset(buffImg, fieldSlot.buff);
+    }
+  });
+};
+
+function attachCardDataset(img, card){
+  img.dataset.cardNo = card.cardNo || "";
+  img.dataset.cardType = card.type || "";
+  img.dataset.cardName = card.name || "";
+  img.dataset.cardRps = card.rps || "";
+  img.dataset.cardAtk = card.atk ?? "";
+  img.dataset.cardEffectCode = card.effectCode || "";
+  img.dataset.cardEffect = card.effect || card.description || "";
+  img.dataset.cardDescription = card.description || card.effect || "";
+  img.dataset.cardImage = card.image || img.src;
+  img.dataset.value1 = card.value1 ?? card.Value1 ?? "";
+  img.dataset.value2 = card.value2 ?? card.Value2 ?? "";
+}
+
+let customAlertCallback = null;
+
+function showCustomAlert(message, callback = null, title = "알림"){
+  customAlertCallback = callback;
+
+  document.querySelector(".custom-alert-title").textContent = title;
+  document.getElementById("customAlertMessage").innerHTML = message;
+  document.getElementById("customAlertBackdrop").classList.add("show");
+}
+
+// function closeCustomAlert(){
+//   document.getElementById("customAlertBackdrop").classList.remove("show");
+
+//   if(typeof customAlertCallback === "function"){
+//     const callback = customAlertCallback;
+//     customAlertCallback = null;
+//     callback();
+//   }
+// }
+function closeCustomAlert(){
+  document.getElementById("customAlertBackdrop").classList.remove("show");
+
+  document
+    .querySelector(".custom-alert")
+    ?.classList.remove("mobile-alert-card-detail");
+
+  if(typeof customAlertCallback === "function"){
+    const callback = customAlertCallback;
+    customAlertCallback = null;
+    callback();
+  }
+}
+
+function createFlipCardHTML(backSrc, frontSrc, card, className = "", revealKey = ""){
+  const alreadyRevealed = revealKey && revealedModalCards.has(revealKey);
+  const flipClass = alreadyRevealed ? "flipped already-flipped" : "";
+
+  const isAttack = card.type === "ATTACK" || className === "attack-card";
+
+  const meta = isAttack
+    ? `<div class="battle-card-meta attack-meta">[${rpsToKor(card.rps)}] 공격력 : ${card.atk}</div>`
+    : `<div class="battle-card-meta buff-meta">버프 카드</div>`;
+
+  return `
+    <div class="battle-card-unit">
+      <div class="flip-card ${flipClass}" data-reveal-key="${revealKey}">
+        <div class="flip-card-inner">
+          <div class="flip-card-face flip-card-back">
+            <img src="${backSrc}">
+          </div>
+          <div class="flip-card-face flip-card-front">
+            <img src="${frontSrc}" class="battle-card-img ${className}">
+          </div>
+        </div>
+      </div>
+      ${meta}
+    </div>
+  `;
+}
+
+
+function toggleMobileMenu(){
+  document.getElementById("mobileMenu").classList.toggle("show");
+}
+window.toggleMobileMenu = toggleMobileMenu;
+
+
+
+
+async function requestLandscapeMode(){
+  try{
+    if(screen.orientation && screen.orientation.lock){
+      await screen.orientation.lock("landscape");
+    }
+  }catch(e){
+    console.log("가로모드 자동 전환은 브라우저에서 제한될 수 있습니다.");
+  }
+}
+
+async function startMobileLandscapeUI(){
+  document.body.classList.add("mobile-ready");
+
+  try{
+    if(screen.orientation && screen.orientation.lock){
+      await screen.orientation.lock("landscape");
+    }
+  }catch(e){
+    console.log("모바일 브라우저에서 가로모드 자동 전환이 제한될 수 있습니다.");
+  }
+}
+
+window.startMobileLandscapeUI = startMobileLandscapeUI;
+
+function openGameHelpModal(){
+  document.getElementById("gameHelpBackdrop").classList.add("show");
+}
+
+function closeGameHelpModal(){
+  document.getElementById("gameHelpBackdrop").classList.remove("show");
+}
+
+window.openGameHelpModal = openGameHelpModal;
+window.closeGameHelpModal = closeGameHelpModal;
+
+
+document.addEventListener("DOMContentLoaded", function(){
+  const mobileStartBtn = document.getElementById("mobileStartBtn");
+
+  if(mobileStartBtn){
+    mobileStartBtn.addEventListener("click", function(){
+      document.body.classList.add("mobile-ready");
+      startMobileLandscapeUI();
+    });
+  }
+});
+
+function toggleMobileMenu(){
+  document.getElementById("mobileMenu").classList.toggle("show");
+}
+window.toggleMobileMenu = toggleMobileMenu;
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  const detailBtn = document.getElementById("mobileCardDetailBtn");
+  const actionPanel = document.querySelector(".action-panel");
+
+  if(detailBtn){
+    detailBtn.classList.add("show");
+
+    if(actionPanel && detailBtn.parentElement !== actionPanel.parentElement){
+      actionPanel.parentElement.insertBefore(detailBtn, actionPanel);
+    }
+  }
+});
+
+
+
+
+
+
+// ==== MOBILE HELP BUTTON CONTROL ROW FINAL FIX ====
+function setupMobileControlRow(){
+  if(!window.matchMedia || !window.matchMedia("(max-width:920px)").matches) return;
+
+  const layout = document.querySelector(".cardgame-layout");
+  const detailBtn = document.getElementById("mobileCardDetailBtn");
+  const actionPanel = document.querySelector(".action-panel");
+
+  if(!layout || !detailBtn || !actionPanel) return;
+
+  let row = document.getElementById("mobileControlRow");
+  if(!row){
+    row = document.createElement("div");
+    row.id = "mobileControlRow";
+    row.className = "mobile-control-row";
+    layout.insertAdjacentElement("afterend", row);
+  }
+
+  let helpBtn = document.getElementById("mobileGameHelpBtn");
+  if(!helpBtn){
+    helpBtn = document.createElement("button");
+    helpBtn.id = "mobileGameHelpBtn";
+    helpBtn.className = "mobile-help-btn";
+    helpBtn.type = "button";
+    helpBtn.innerHTML = "🔔게임방법";
+    helpBtn.addEventListener("click", function(){
+      if(typeof openGameHelpModal === "function"){
+        openGameHelpModal();
+      }
+    });
+  }
+
+  detailBtn.classList.add("show");
+
+  if(helpBtn.parentElement !== row) row.appendChild(helpBtn);
+  if(detailBtn.parentElement !== row) row.appendChild(detailBtn);
+  if(actionPanel.parentElement !== row) row.appendChild(actionPanel);
+}
+
+window.addEventListener("DOMContentLoaded", setupMobileControlRow);
+window.addEventListener("resize", setupMobileControlRow);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="turnModalBackdrop" class="turn-modal-backdrop">
+  <div class="turn-modal">
+    <div id="turnModalTitle" class="turn-modal-title">게임 턴 진행</div>
+    <div class="turn-modal-body">
+      <div id="turnModalEnemy" class="turn-modal-side"></div>
+      <div class="turn-modal-vs">VS</div>
+      <div id="turnModalMy" class="turn-modal-side"></div>
+    </div>
+    <div id="turnModalMessage" class="turn-modal-message"></div>
+
+<button
+  id="mobileTurnNextBtn"
+  class="mobile-turn-next-btn"
+  type="button"
+>
+  진행
+</button>
+
+
+
+
+    
+  </div>
+</div>
+  </section>
+</main>
+</div>
+
+
+<footer class="footer">
+
+  <div class="footer-copy">
+    © 2026 주니.킨콘. All Rights Reserved.
+  </div>
+
+  <div class="footer-links">
+
+    <a
+      href="https://www.sooplive.com/station/joony86"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/soop-logo.png"
+  alt="SOOP"
+/>
+    </a>
+
+    <a
+      href="https://www.youtube.com/@kinkonvv"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/youtube-logo.png"
+  alt="YouTube"
+/>
+    </a>
+
+  </div>
+
+</footer>
+
+<div id="customAlertBackdrop" class="custom-alert-backdrop">
+  <div class="custom-alert">
+    <div class="custom-alert-title">알림</div>
+    <div id="customAlertMessage" class="custom-alert-message"></div>
+    <button onclick="closeCustomAlert()">확인</button>
+  </div>
+</div>
+
+
+<div id="gameHelpBackdrop" class="game-help-backdrop">
+  <div class="game-help-modal">
+    <button class="game-help-close" onclick="closeGameHelpModal()">×</button>
+<!-- 도움말 -->
+    <h2>게임 방법</h2>
+
+    <div class="game-help-content">
+      <section>
+        <h3>1. 카드 배치</h3>
+        <p>1️⃣각 플레이어는 7장의 공격 카드와 3장의 버프 카드를 받습니다.</p>
+          <p>2️⃣자신의 필드에 공격 카드 5장을 필수로 배치하고, 버프 카드는 원하는 슬롯에 배치할 수 있습니다.</p>
+<p>3️⃣공격 카드의 공격력은 랜덤으로 책정됩니다.</p>
+<p>4️⃣카드의 자세한 정보는 해당 카드를 클릭하면 볼 수 있습니다.</p>
+      </section>
+
+      <section>
+        <h3>2. 턴 진행</h3>
+        <p>1️⃣게임은 총 5개의 슬롯을 순서대로 공개하며 진행됩니다.</p>
+<p>2️⃣각 턴마다 공격 카드와 버프 카드가 공개되고 전투가 시작됩니다.</p>
+      </section>
+
+      <section>
+        <h3>3. 가위바위보 전투</h3>
+        <p>1️⃣공격 카드의 손 모양(가위, 바위, 보)으로 승패를 결정합니다.</p>
+        <p>2️⃣승리한 카드가 해당 카드의 공격력만큼 상대 HP에 피해를 줍니다.</p>
+        <p>3️⃣카드의 공격력은 랜덤으로 설정됩니다.</p>
+      </section>
+
+      <section>
+        <h3>4. 버프 카드의 활용</h3>
+        <p>1️⃣가위바위보를 진 플레이어의 버프 카드부터 공개합니다.</p>
+        <p>2️⃣버프 카드는 공격력 증가, 추가 피해, 피해 감소, 피해 무효, 회복 등 다양한 효과를 가지고 있습니다.</p>
+<p>3️⃣일부 버프는 조건을 만족해야 발동하며, 일부 버프는 다음 턴이나 다음 라운드까지 효과가 유지됩니다.</p>
+
+      </section>
+
+<section>
+        <h3>5. 승리 조건</h3>
+        <p>1️⃣1라운드 당 5턴씩, 총 3라운드로 진행합니다.</p>
+        <p>2️⃣상대 HP를 먼저 0으로 만들거나, 최종 라운드 종료 시 더 많은 HP를 남기면 승리합니다.</p>
+      </section>
+
+
+    </div>
+  </div>
+</div>
+
+<button
+  id="mobileCardDetailBtn"
+  class="mobile-card-detail-btn show"
+  onclick="openSelectedCardDetail()"
+>
+  선택한 카드<br> 상세 정보 보기
+</button>
+
+</body>
+</html>

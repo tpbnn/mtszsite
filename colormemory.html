@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>캄몬스타즈 - 컬러 기억력 테스트</title>
+<link rel="icon" href="./favicon.png" type="image/png" />
+<link rel="stylesheet" href="common.css" />
+<style>
+#page-colormemory{display:block;}
+
+.minigame-tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+  margin-bottom:20px;
+}
+
+.minigame-tab{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:48px;
+  padding:0 20px;
+  border-radius:14px;
+  text-decoration:none;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+  transition:.15s ease;
+}
+
+.minigame-tab:hover{
+  transform:translateY(-2px);
+  border-color:#00A2FF;
+}
+
+.minigame-tab.active{
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  border-color:transparent;
+  color:#fff;
+}
+
+body.light .minigame-tab{
+  background:#fff;
+  color:#0f172a;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+body.light .minigame-tab.active{color:#fff;}
+
+#page-colormemory .color-memory-box{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:22px;
+  padding:58px;
+  box-shadow:0 16px 36px rgba(0,0,0,.14);
+  display:flex;
+  justify-content:center;
+}
+
+body.light #page-colormemory .color-memory-box{
+  background:#fff;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+#page-colormemory .game-wrap{
+  display:flex;
+  justify-content:center;
+  width:100%;
+}
+
+#page-colormemory .game-card{
+  width:min(600px,90vw);
+  aspect-ratio:1/1;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 28px 70px rgba(0,0,0,.35);
+  background:#000;
+  position:relative;
+}
+
+#page-colormemory .screen{display:none;width:100%;height:100%;}
+#page-colormemory .screen.active{display:block;}
+
+#page-colormemory .start-screen{background:#000;color:#fff;padding:46px;position:relative;}
+#page-colormemory .start-title{font-size:72px;font-weight:1000;letter-spacing:-4px;line-height:.9;margin-top:4px;}
+#page-colormemory .start-desc{margin-top:30px;max-width:340px;font-size:17px;line-height:1.45;font-weight:800;color:rgba(255,255,255,.82);}
+#page-colormemory .start-bottom{position:absolute;left:46px;right:46px;bottom:38px;}
+#page-colormemory .start-label{font-size:16px;font-weight:1000;margin-bottom:14px;margin-left:12px;}
+#page-colormemory .start-actions{display:flex;align-items:center;gap:16px;}
+#page-colormemory .circle-btn{width:76px;height:76px;border-radius:50%;border:0;background:#fff;color:#000;font-size:28px;font-weight:1000;cursor:pointer;box-shadow:0 12px 24px rgba(0,0,0,.25);}
+#page-colormemory .mode-pill{padding:13px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.22);color:#fff;font-weight:1000;background:rgba(255,255,255,.08);}
+
+#page-colormemory .memory-screen{color:#fff;padding:34px;position:relative;}
+#page-colormemory .memory-round{position:absolute;top:34px;left:34px;font-size:17px;font-weight:900;opacity:.72;}
+#page-colormemory .memory-count{position:absolute;top:32px;right:34px;text-align:right;}
+#page-colormemory .memory-count strong{display:block;font-size:86px;line-height:.85;font-weight:1000;letter-spacing:-4px;}
+#page-colormemory .memory-count span{display:block;margin-top:8px;font-size:15px;font-weight:1000;}
+
+#page-colormemory .adjust-screen{display:none;grid-template-columns:153px 1fr;background:#111;}
+#page-colormemory .adjust-screen.active{display:grid;}
+#page-colormemory .slider-panel{display:flex;height:100%;}
+#page-colormemory .color-slider{width:51px;height:100%;position:relative;overflow:hidden;}
+#page-colormemory .slider-bg{position:absolute;inset:0;z-index:1;}
+#page-colormemory .vertical-slider{position:absolute;left:70%;top:50%;width:626px;height:51px;transform:translate(-50%,-50%) rotate(-90deg);appearance:none;-webkit-appearance:none;background:transparent !important;cursor:pointer;z-index:5;}
+#page-colormemory .vertical-slider::-webkit-slider-runnable-track{height:51px;background:transparent !important;border:none !important;}
+#page-colormemory .vertical-slider::-moz-range-track{height:51px;background:transparent !important;border:none !important;}
+#page-colormemory .vertical-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:0;box-shadow:0 3px 12px rgba(0,0,0,.35);}
+#page-colormemory .vertical-slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:0;box-shadow:0 3px 12px rgba(0,0,0,.35);}
+#page-colormemory .adjust-color-area{position:relative;background:#ef476f;}
+#page-colormemory .adjust-round{position:absolute;top:34px;left:34px;font-weight:1000;opacity:.75;}
+#page-colormemory .submit-btn{position:absolute;right:34px;bottom:34px;width:74px;height:74px;border-radius:50%;border:0;background:#fff;color:#111;font-size:18px;font-weight:1000;cursor:pointer;box-shadow:0 14px 28px rgba(0,0,0,.22);}
+
+#page-colormemory .result-screen{position:relative;background:#111;color:#000;}
+#page-colormemory .result-top,#page-colormemory .result-bottom{height:50%;padding:34px;position:relative;}
+#page-colormemory .result-round{font-size:17px;font-weight:1000;}
+#page-colormemory .round-score{position:absolute;top:34px;right:34px;font-size:86px;line-height:.85;font-weight:1000;letter-spacing:-3px;}
+#page-colormemory .round-message{position:absolute;top:132px;right:34px;font-size:19px;font-weight:1000;text-align:right;}
+#page-colormemory .color-info{position:absolute;left:34px;bottom:24px;font-size:14px;font-weight:1000;}
+#page-colormemory .color-info span{display:block;margin-bottom:6px;opacity:.45;}
+#page-colormemory .next-btn{position:absolute;right:34px;bottom:34px;width:66px;height:66px;border-radius:50%;border:0;background:#fff;font-size:34px;cursor:pointer;box-shadow:0 12px 24px rgba(0,0,0,.2);}
+
+#page-colormemory .final-screen{background:#000;color:#fff;padding:46px;text-align:center;position:relative;}
+#page-colormemory .final-score{font-size:120px;font-weight:1000;line-height:.9;margin-top:40px;letter-spacing:-6px;}
+#page-colormemory .final-score small{font-size:36px;color:rgba(255,255,255,.35);letter-spacing:0;}
+#page-colormemory .final-title{margin-top:28px;font-size:28px;font-weight:1000;}
+#page-colormemory .final-desc{margin:16px auto 0;max-width:360px;font-size:16px;line-height:1.5;font-weight:800;color:rgba(255,255,255,.72);}
+#page-colormemory .final-round-list{display:flex;justify-content:center;gap:10px;margin-top:34px;}
+#page-colormemory .final-round-item{width:54px;height:54px;border-radius:14px;border:2px solid rgba(255,255,255,.2);position:relative;overflow:hidden;}
+#page-colormemory .final-round-color{width:100%;height:100%;}
+#page-colormemory .final-round-score{position:absolute;inset:auto 0 0 0;background:rgba(0,0,0,.55);color:#fff;font-size:12px;font-weight:1000;padding:3px 0;}
+#page-colormemory .final-actions{position:absolute;left:46px;right:46px;bottom:38px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+#page-colormemory .final-actions button{height:56px;border-radius:999px;border:0;font-size:16px;font-weight:1000;cursor:pointer;}
+#page-colormemory .copy-btn{background:rgba(255,255,255,.14);color:#fff;}
+#page-colormemory .restart-btn{background:#fff;color:#000;}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#111827;color:white;padding:13px 18px;border-radius:999px;font-weight:900;font-size:14px;display:none;z-index:9999;}
+.toast.show{display:block;}
+
+@media(max-width:768px){
+  .minigame-tabs{display:grid;grid-template-columns:1fr 1fr;}
+  .minigame-tab{width:100%;padding:0 10px;font-size:14px;}
+  #page-colormemory .color-memory-box{padding:16px;}
+  #page-colormemory .start-screen,#page-colormemory .final-screen{padding:30px;}
+  #page-colormemory .start-title{font-size:52px;}
+  #page-colormemory .start-desc{font-size:14px;}
+  #page-colormemory .start-bottom,#page-colormemory .final-actions{left:30px;right:30px;bottom:28px;}
+  #page-colormemory .circle-btn{width:64px;height:64px;}
+  #page-colormemory .memory-count strong,#page-colormemory .round-score{font-size:62px;}
+  #page-colormemory .vertical-slider{width:calc(90vw + 26px);height:51px;}
+  #page-colormemory .final-score{font-size:82px;}
+  #page-colormemory .final-title{font-size:22px;}
+}
+
+
+/* ==== COLOR MEMORY LIGHT MODE FIX ==== */
+body.light #page-colormemory .section-title h2,
+body.light-mode #page-colormemory .section-title h2{
+  color:#0f172a !important;
+}
+
+body.light #page-colormemory .section-title span,
+body.light-mode #page-colormemory .section-title span{
+  color:#334155 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+}
+
+body.light #page-colormemory .minigame-tab,
+body.light-mode #page-colormemory .minigame-tab{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border:1px solid rgba(15,23,42,.14) !important;
+  box-shadow:none !important;
+}
+
+body.light #page-colormemory .minigame-tab:visited,
+body.light-mode #page-colormemory .minigame-tab:visited{
+  color:#0f172a !important;
+}
+
+body.light #page-colormemory .minigame-tab:hover,
+body.light-mode #page-colormemory .minigame-tab:hover{
+  color:#0458ff !important;
+  border-color:#00A2FF !important;
+  box-shadow:0 12px 24px rgba(0,162,255,.14) !important;
+}
+
+body.light #page-colormemory .minigame-tab.active,
+body.light-mode #page-colormemory .minigame-tab.active,
+body.light #page-colormemory .minigame-tab.active:visited,
+body.light-mode #page-colormemory .minigame-tab.active:visited{
+  background:linear-gradient(135deg,#0458ff,#00a2ff) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+  box-shadow:0 12px 26px rgba(0,162,255,.22) !important;
+}
+
+body.light #page-colormemory .color-memory-box,
+body.light-mode #page-colormemory .color-memory-box{
+  background:#ffffff !important;
+  border:1px solid rgba(15,23,42,.12) !important;
+  box-shadow:0 16px 36px rgba(15,23,42,.08) !important;
+}
+
+body.light #page-colormemory .game-card,
+body.light-mode #page-colormemory .game-card{
+  box-shadow:0 28px 70px rgba(15,23,42,.18) !important;
+}
+
+body.light .toast,
+body.light-mode .toast{
+  background:#0f172a !important;
+  color:#ffffff !important;
+}
+
+</style>
+</head>
+<body data-page="minigame">
+
+<div class="floating-banner">
+  <a href="https://calm-hoxy.vercel.app/" target="_blank"><img src="./banner/banner1.png" alt="배너1"></a>
+  <a href="https://fmcalm.vercel.app/" target="_blank"><img src="./banner/banner2.png" alt="배너2"></a>
+  <a href="https://calm-mstz.vercel.app/" target="_blank"><img src="./banner/banner3.png" alt="배너3"></a>
+  <a href="https://www.fmkorea.com/starcraft/" target="_blank"><img src="./banner/banner4.png" alt="배너4"></a>
+  <a href="https://www.youtube.com//" target="_blank"><img src="./banner/banner5.png" alt="배너5"></a>
+  <a href="https://www.naver.com/" target="_blank"><img src="./banner/banner6.png" alt="배너6"></a>
+  <a href="https://www.sooplive.com/" target="_blank"><img src="./banner/banner0.png" alt="배너7"></a>
+  <a href="https://lazygyu.github.io/roulette/" target="_blank"><img src="./banner/banner8.png" alt="배너9"></a>
+  <a href="https://910map.tistory.com/" target="_blank"><img src="./banner/banner9.png" alt="배너10"></a>
+  <a href="https://scintro.vercel.app/" target="_blank"><img src="./banner/banner11.png" alt="배너11"></a>
+</div>
+
+<div class="app">
+<header class="topbar">
+  <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
+  <nav class="nav">
+    <a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="playlist" href="playlist.html">영상 모음</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a>
+    <a data-page="multiview" href="multiview.html">멀티뷰</a>
+    <a data-page="minigame" href="minigame.html">미니게임</a>
+    <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+  </nav>
+</header>
+
+<main id="page-colormemory" class="page">
+  <section class="card panel">
+    <div class="section-title">
+      <h2>컬러 기억력 테스트</h2>
+      <span>5개의 색상을 기억하고 H / S / B 값을 맞춰보세요</span>
+    </div>
+
+    <div class="minigame-tabs">
+      <a class="minigame-tab" href="./suttda.html">스타 게이머 섯다</a>
+      <a class="minigame-tab" href="./calm2048.html">캄몬 2048</a>
+      <a class="minigame-tab active" href="./colormemory.html">컬러 기억력 테스트</a>
+      <a class="minigame-tab" href="./calmquiz.html">스타퀴즈쇼</a>
+      <a class="minigame-tab" href="./calmcard.html">캄드게임배틀</a>
+    </div>
+
+    <div class="color-memory-box">
+  <div class="game-wrap">
+    <div class="game-card">
+
+      <section id="startScreen" class="screen start-screen active">
+        <div class="start-title">color<br>memory</div>
+        <div class="start-desc">
+          색상은 생각보다 정확히 기억하기 어렵습니다.<br>
+          5개의 색상을 보고, 기억 속 색을 찾아보세요.
+        </div>
+
+        <div class="start-bottom">
+          <div class="start-label">START</div>
+          <div class="start-actions">
+            <button class="circle-btn" onclick="startGame()">▶</button>
+            <div class="mode-pill">5 rounds</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="memoryScreen" class="screen memory-screen">
+        <div class="memory-round" id="memoryRound">1 / 5</div>
+        <div class="memory-count">
+          <strong id="memoryCount">3</strong>
+          <span>이 색깔을 잘 기억하세요.</span>
+        </div>
+      </section>
+
+      <section id="adjustScreen" class="screen adjust-screen">
+        <div class="slider-panel">
+          <div class="color-slider hue-slider" id="hBar">
+            <div class="slider-bg" id="hBg"></div>
+            <input id="hSlider" class="vertical-slider" type="range" min="0" max="360" value="180">
+          </div>
+
+          <div class="color-slider sat-slider" id="sBar">
+            <div class="slider-bg" id="sBg"></div>
+            <input id="sSlider" class="vertical-slider" type="range" min="0" max="100" value="50">
+          </div>
+
+          <div class="color-slider bri-slider" id="bBar">
+            <div class="slider-bg" id="bBg"></div>
+            <input id="bSlider" class="vertical-slider" type="range" min="0" max="100" value="50">
+          </div>
+        </div>
+
+        <div class="adjust-color-area" id="adjustColorArea">
+          <div class="adjust-round" id="adjustRound">1 / 5</div>
+          <button class="submit-btn" onclick="submitGuess()">OK!</button>
+        </div>
+      </section>
+
+      <section id="roundResultScreen" class="screen result-screen">
+        <div class="result-top" id="resultTop">
+          <div class="result-round" id="resultRound">1 / 5</div>
+          <div class="round-score" id="roundScore">0</div>
+          <div class="round-message" id="roundMessage">Round result</div>
+          <div class="color-info">
+            <span>당신의 기억</span>
+            <b id="yourHsb">H0 S0 B0</b>
+          </div>
+        </div>
+
+        <div class="result-bottom" id="resultBottom">
+          <div class="color-info">
+            <span>진짜 정답</span>
+            <b id="originHsb">H0 S0 B0</b>
+          </div>
+          <button class="next-btn" onclick="nextRound()">→</button>
+        </div>
+      </section>
+
+      <section id="finalScreen" class="screen final-screen">
+        <div class="final-score"><span id="finalScore">0</span><small>/100</small></div>
+        <div class="final-title" id="finalTitle">결과</div>
+        <div class="final-desc" id="finalDesc">색상 기억력 테스트 결과입니다.</div>
+
+        <div class="final-round-list" id="finalRoundList"></div>
+
+        <div class="final-actions">
+          <button class="copy-btn" onclick="copyResult()">결과를 이미지로 저장</button>
+          <button class="restart-btn" onclick="restartGame()">다시 하기</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<div class="toast" id="toast">결과가 복사되었습니다</div>
+
+<footer class="footer">
+  <div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div>
+  <div class="footer-links">
+    <a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon"><img src="icons/soop-logo.png" alt="SOOP"></a>
+    <a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon"><img src="icons/youtube-logo.png" alt="YouTube"></a>
+  </div>
+</footer>
+
+<script type="module" src="app.js"></script>
+<script src="./theme.js?v=3"></script>
+<script>
+const TOTAL_ROUNDS = 5;
+const SHOW_SECONDS = 3;
+
+let targets = [];
+let currentRound = 0;
+let results = [];
+let timer = null;
+
+const screens = {
+  start: document.getElementById("startScreen"),
+  memory: document.getElementById("memoryScreen"),
+  adjust: document.getElementById("adjustScreen"),
+  roundResult: document.getElementById("roundResultScreen"),
+  final: document.getElementById("finalScreen")
+};
+
+const hSlider = document.getElementById("hSlider");
+const sSlider = document.getElementById("sSlider");
+const bSlider = document.getElementById("bSlider");
+const adjustColorArea = document.getElementById("adjustColorArea");
+
+
+function showScreen(name){
+  Object.values(screens).forEach(screen => screen.classList.remove("active"));
+  screens[name].classList.add("active");
+}
+
+function hsvToRgb(h, s, v){
+  h = ((h % 360) + 360) % 360;
+  s /= 100;
+  v /= 100;
+
+  const c = v * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = v - c;
+
+  let r = 0;
+  let g = 0;
+  let b = 0;
+
+  if(h < 60){ r = c; g = x; b = 0; }
+  else if(h < 120){ r = x; g = c; b = 0; }
+  else if(h < 180){ r = 0; g = c; b = x; }
+  else if(h < 240){ r = 0; g = x; b = c; }
+  else if(h < 300){ r = x; g = 0; b = c; }
+  else{ r = c; g = 0; b = x; }
+
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255)
+  };
+}
+
+function hsbToCss(color){
+  const rgb = hsvToRgb(color.h, color.s, color.b);
+  return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+}
+
+function randomColor(){
+  return {
+    h: Math.floor(Math.random() * 361),
+    s: Math.floor(35 + Math.random() * 66),
+    b: Math.floor(35 + Math.random() * 66)
+  };
+}
+
+function getCurrentColorFromSliders(){
+  return {
+    h: Number(hSlider.value),
+    s: Number(sSlider.value),
+    b: Number(bSlider.value)
+  };
+}
+
+function startGame(){
+  targets = Array.from({length:TOTAL_ROUNDS}, randomColor);
+  currentRound = 0;
+  results = [];
+  showMemory();
+}
+
+function showMemory(){
+  const target = targets[currentRound];
+
+  document.getElementById("memoryRound").textContent = `${currentRound + 1} / ${TOTAL_ROUNDS}`;
+  screens.memory.style.background = hsbToCss(target);
+
+  let remain = SHOW_SECONDS;
+  document.getElementById("memoryCount").textContent = remain;
+
+  showScreen("memory");
+  clearInterval(timer);
+
+  timer = setInterval(() => {
+    remain--;
+    document.getElementById("memoryCount").textContent = remain;
+
+    if(remain <= 0){
+      clearInterval(timer);
+      openAdjust();
+    }
+  }, 1000);
+}
+
+function openAdjust(){
+  hSlider.value = 180;
+  sSlider.value = 50;
+  bSlider.value = 50;
+
+  document.getElementById("adjustRound").textContent = `${currentRound + 1} / ${TOTAL_ROUNDS}`;
+
+  updateAdjustColor();
+  showScreen("adjust");
+}
+
+function updateAdjustColor(){
+  const color = getCurrentColorFromSliders();
+
+  adjustColorArea.style.background = hsbToCss(color);
+  updateSliderBackgrounds(color.h, color.s, color.b);
+}
+
+function updateSliderBackgrounds(h, s, b){
+  document.getElementById("hBg").style.background =
+    `linear-gradient(
+      to bottom,
+      ${hsbToCss({h:360,s:100,b:100})},
+      ${hsbToCss({h:300,s:100,b:100})},
+      ${hsbToCss({h:240,s:100,b:100})},
+      ${hsbToCss({h:180,s:100,b:100})},
+      ${hsbToCss({h:120,s:100,b:100})},
+      ${hsbToCss({h:60,s:100,b:100})},
+      ${hsbToCss({h:0,s:100,b:100})}
+    )`;
+
+  document.getElementById("sBg").style.background =
+    `linear-gradient(
+      to bottom,
+      ${hsbToCss({h, s:100, b})},
+      ${hsbToCss({h, s:0, b})}
+    )`;
+
+  document.getElementById("bBg").style.background =
+    `linear-gradient(
+      to bottom,
+      ${hsbToCss({h, s, b:100})},
+      ${hsbToCss({h, s, b:75})},
+      ${hsbToCss({h, s, b:50})},
+      ${hsbToCss({h, s, b:25})},
+      ${hsbToCss({h, s, b:0})}
+    )`;
+}
+
+hSlider.addEventListener("input", updateAdjustColor);
+sSlider.addEventListener("input", updateAdjustColor);
+bSlider.addEventListener("input", updateAdjustColor);
+
+function submitGuess(){
+  const target = targets[currentRound];
+  const guess = getCurrentColorFromSliders();
+  const scoreInfo = calculateScore(target, guess);
+
+  const result = {
+    round:currentRound + 1,
+    target,
+    guess,
+    ...scoreInfo
+  };
+
+  results.push(result);
+  showRoundResult(result);
+}
+
+function calculateScore(target, guess){
+  let hDiff = Math.abs(target.h - guess.h);
+  hDiff = Math.min(hDiff, 360 - hDiff);
+
+  const sDiff = Math.abs(target.s - guess.s);
+  const bDiff = Math.abs(target.b - guess.b);
+
+  const hScore = Math.max(0, 100 - (hDiff / 180) * 100);
+  const sScore = Math.max(0, 100 - sDiff);
+  const bScore = Math.max(0, 100 - bDiff);
+
+  let score = Math.round(
+    hScore * 0.7 +
+    sScore * 0.15 +
+    bScore * 0.15
+  );
+
+  // 색상이 크게 다르면 추가 감점
+  if(hDiff >= 120){
+    score = Math.round(score * 0.45);
+  }else if(hDiff >= 90){
+    score = Math.round(score * 0.6);
+  }else if(hDiff >= 60){
+    score = Math.round(score * 0.8);
+  }
+
+  return {
+    score,
+    hDiff:Math.round(hDiff),
+    sDiff,
+    bDiff
+  };
+}
+
+function showRoundResult(result){
+  document.getElementById("resultRound").textContent = `${result.round} / ${TOTAL_ROUNDS}`;
+  animateNumber(document.getElementById("roundScore"), result.score);
+  document.getElementById("roundMessage").textContent = getRoundMessage(result.score);
+
+  document.getElementById("yourHsb").textContent =
+    `H${result.guess.h} S${result.guess.s} B${result.guess.b}`;
+
+  document.getElementById("originHsb").textContent =
+    `H${result.target.h} S${result.target.s} B${result.target.b}`;
+
+  document.getElementById("resultTop").style.background = hsbToCss(result.guess);
+  document.getElementById("resultBottom").style.background = hsbToCss(result.target);
+
+  showScreen("roundResult");
+}
+
+function animateNumber(el, target, duration = 900){
+  const startTime = performance.now();
+
+  function tick(now){
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(target * eased);
+
+    if(progress < 1){
+      requestAnimationFrame(tick);
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+
+function nextRound(){
+  currentRound++;
+
+  if(currentRound >= TOTAL_ROUNDS){
+    showFinalResult();
+  }else{
+    showMemory();
+  }
+}
+
+function showFinalResult(){
+  const finalScore = Math.round(
+    results.reduce((sum, item) => sum + item.score, 0) / results.length
+  );
+
+  const message = getFinalMessage(finalScore);
+
+  animateNumber(document.getElementById("finalScore"), finalScore, 1200);
+  document.getElementById("finalTitle").textContent = message.title;
+  document.getElementById("finalDesc").textContent = message.desc;
+
+  document.getElementById("finalRoundList").innerHTML = results.map(item => `
+    <div class="final-round-item">
+      <div class="final-round-color" style="background:${hsbToCss(item.guess)}"></div>
+      <div class="final-round-score">${item.score}</div>
+    </div>
+  `).join("");
+
+  showScreen("final");
+}
+
+function getRoundMessage(score){
+  if(score >= 95) return "Almost perfect.";
+  if(score >= 85) return "Great color memory.";
+  if(score >= 70) return "Pretty close.";
+  if(score >= 50) return "Not bad.";
+  if(score >= 30) return "Color drifted away.";
+  return "Wrong hemisphere. Wrong everything.";
+}
+
+function getFinalMessage(score){
+  if(score >= 95){
+    return {
+      title:"🎨 캄몬 컬러 마스터",
+      desc:"거의 색상을 복사한 수준입니다. 눈썰미가 미쳤습니다."
+    };
+  }
+
+  if(score >= 85){
+    return {
+      title:"🌈 프로급 색감",
+      desc:"색상, 채도, 밝기 감각이 상당히 좋습니다."
+    };
+  }
+
+  if(score >= 70){
+    return {
+      title:"✨ 뛰어난 색상 기억력",
+      desc:"대부분의 색을 꽤 정확하게 기억했습니다."
+    };
+  }
+
+  if(score >= 50){
+    return {
+      title:"🙂 평균 이상의 감각",
+      desc:"생각보다 색 기억은 어렵습니다. 그래도 준수합니다."
+    };
+  }
+
+  if(score >= 30){
+    return {
+      title:"😅 색상이 조금 흔들렸습니다",
+      desc:"기억한 색과 실제 색 사이에 제법 차이가 있었습니다."
+    };
+  }
+
+  return {
+    title:"🫠 색상이 기억나지 않습니다",
+    desc:"괜찮습니다. 이 게임은 원래 생각보다 어렵습니다."
+  };
+}
+
+function copyResult(){
+  const score = document.getElementById("finalScore").textContent;
+  const title = document.getElementById("finalTitle").textContent;
+  const desc = document.getElementById("finalDesc").textContent;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 900;
+  canvas.height = 1200;
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "center";
+  ctx.font = "900 150px Arial";
+  ctx.fillText(`${score}/100`, 450, 300);
+
+  ctx.font = "900 58px Arial";
+  ctx.fillText(title.replace(/[^\uAC00-\uD7A3a-zA-Z0-9\s]/g, ""), 450, 430);
+
+  ctx.fillStyle = "#cbd5e1";
+  ctx.font = "800 34px Arial";
+  ctx.fillText(desc, 450, 510);
+
+  const size = 90;
+  const gap = 22;
+  const startX = (900 - (size * results.length + gap * (results.length - 1))) / 2;
+
+  results.forEach((item, i) => {
+    ctx.fillStyle = hsbToCss(item.guess);
+    ctx.fillRect(startX + i * (size + gap), 650, size, size);
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "900 24px Arial";
+    ctx.fillText(item.score, startX + i * (size + gap) + size / 2, 775);
+  });
+
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "800 28px Arial";
+  ctx.fillText("CALM MONSTARZ", 450, 1040);
+
+  const link = document.createElement("a");
+  link.download = "color-memory-result.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+
+  showToast("결과 이미지가 저장되었습니다");
+}
+
+function restartGame(){
+  clearInterval(timer);
+  showScreen("start");
+}
+
+function showToast(message){
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1800);
+}
+</script>
+
+</body>
+</html>

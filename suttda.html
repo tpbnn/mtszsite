@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>캄몬스타즈 - 스타 게이머 섯다</title>
+  <link rel="icon" href="./favicon.png" type="image/png" />
+  <link rel="stylesheet" href="common.css" />
+
+  <style>
+    #page-suttda{
+      display:block;
+    }
+
+    .suttda-layout{
+      display:grid;
+      grid-template-columns:300px minmax(480px,1fr) 320px;
+      gap:18px;
+      align-items:start;
+      margin-top:20px;
+    }
+
+    .suttda-box{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      padding:20px;
+      box-shadow:0 16px 36px rgba(0,0,0,.14);
+    }
+
+    body.light .suttda-box{
+      background:#fff;
+      border:1px solid rgba(15,23,42,.12);
+    }
+
+    .suttda-box h3{
+      margin:0 0 14px;
+      font-size:20px;
+      font-weight:1000;
+      color:#fff;
+    }
+
+    body.light .suttda-box h3{
+      color:#0f172a;
+    }
+
+    .suttda-input{
+      width:100%;
+      height:46px;
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:14px;
+      padding:0 14px;
+      font-size:15px;
+      font-weight:800;
+      outline:none;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+    }
+
+    .suttda-input::placeholder{
+      color:rgba(255,255,255,.45);
+    }
+
+    body.light .suttda-input{
+      background:#fff;
+      color:#0f172a;
+      border:1px solid #e2e8f0;
+    }
+
+    body.light .suttda-input::placeholder{
+      color:#94a3b8;
+    }
+
+    .suttda-btn{
+      width:100%;
+      height:44px;
+      border:0;
+      border-radius:14px;
+      margin-top:10px;
+      font-size:14px;
+      font-weight:1000;
+      cursor:pointer;
+      color:#fff;
+    }
+
+    .suttda-btn.primary{
+      background:linear-gradient(135deg,#0458ff,#00a2ff);
+    }
+
+    .suttda-btn.success{
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+    }
+
+    .suttda-btn.danger{
+      background:linear-gradient(135deg,#dc2626,#fb7185);
+    }
+
+    .suttda-btn.light{
+      background:rgba(255,255,255,.12);
+      color:#fff;
+    }
+
+    body.light .suttda-btn.light{
+      background:#eef2ff;
+      color:#3730a3;
+    }
+
+    .suttda-help{
+      margin:12px 0 0;
+      font-size:13px;
+      line-height:1.5;
+      color:rgba(255,255,255,.58);
+    }
+
+    body.light .suttda-help{
+      color:#64748b;
+    }
+
+    .suttda-error{
+      min-height:20px;
+      margin-top:8px;
+      color:#ff6b7a;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .participant-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:16px;
+    }
+
+    .participant-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font-weight:900;
+    }
+
+    body.light .participant-item{
+      background:#f8fafc;
+      color:#0f172a;
+    }
+
+    .participant-item button{
+      border:0;
+      border-radius:10px;
+      padding:6px 10px;
+      background:#fee2e2;
+      color:#991b1b;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .table-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .table-status{
+      flex:1;
+      min-height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:7px 14px;
+      border-radius:999px;
+      background:rgba(0,162,255,.14);
+      color:#7dd3fc;
+      font-size:13px;
+      font-weight:1000;
+      text-align:center;
+    }
+
+    body.light .table-status{
+      background:#eff6ff;
+      color:#1e40af;
+    }
+
+    .table-area{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+      gap:14px;
+    }
+
+    .player-card{
+      min-height:220px;
+      border-radius:18px;
+      padding:12px;
+      text-align:center;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      transition:.2s ease;
+    }
+
+    body.light .player-card{
+      background:#fff;
+      border:1px solid #e2e8f0;
+    }
+
+    .player-card.winner{
+      border-color:#facc15;
+      background:linear-gradient(180deg,rgba(250,204,21,.22),rgba(255,255,255,.08));
+      animation:winnerGlow 1s infinite alternate;
+    }
+
+    @keyframes winnerGlow{
+      from{box-shadow:0 0 0 3px rgba(250,204,21,.18);}
+      to{box-shadow:0 0 0 7px rgba(250,204,21,.32);}
+    }
+
+    .player-name{
+      margin-bottom:10px;
+      font-size:16px;
+      font-weight:1000;
+      color:#fff;
+    }
+
+    body.light .player-name{
+      color:#0f172a;
+    }
+
+    .cards{
+      display:flex;
+      justify-content:center;
+      gap:6px;
+      margin-bottom:10px;
+    }
+
+    .sutta-card{
+      width:66px;
+      height:96px;
+      border-radius:10px;
+      overflow:hidden;
+      background:#111827;
+      border:2px solid rgba(255,255,255,.22);
+      box-shadow:0 8px 18px rgba(0,0,0,.24);
+    }
+
+    .sutta-card img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .sutta-card.revealed{
+      animation:cardReveal .45s ease;
+      border-color:#f59e0b;
+    }
+
+    .sutta-card.gwang-card{
+      box-shadow:
+        0 0 0 3px rgba(245,158,11,.25),
+        0 0 24px rgba(245,158,11,.5);
+    }
+
+    @keyframes cardReveal{
+      0%{transform:rotateY(90deg) translateY(-8px) scale(.92);opacity:.2;}
+      60%{transform:rotateY(0) translateY(-10px) scale(1.08);opacity:1;}
+      100%{transform:rotateY(0) translateY(0) scale(1);}
+    }
+
+    .hand-info{
+      min-height:46px;
+      font-size:14px;
+      line-height:1.5;
+      font-weight:900;
+      color:rgba(255,255,255,.78);
+      word-break:keep-all;
+    }
+
+    body.light .hand-info{
+      color:#334155;
+    }
+
+    .reveal-card{
+      border:0;
+      border-radius:18px;
+      background:
+        linear-gradient(rgba(4,88,255,.92), rgba(0,162,255,.92)),
+        url("./icons/reveal-bg.png");
+      background-size:contain;
+      background-position:center;
+      background-repeat:no-repeat;
+      padding:14px;
+      min-height:180px;
+      color:white;
+      font-size:18px;
+      font-weight:1000;
+      text-align:center;
+      cursor:pointer;
+      box-shadow:0 14px 28px rgba(0,162,255,.26);
+      transition:.12s ease;
+    }
+
+    .reveal-card:hover{
+      transform:translateY(-3px);
+    }
+
+    .reveal-card:active{
+      transform:scale(.94);
+    }
+
+    .table-area.shuffle .player-card,
+    .table-area.shuffle .sutta-card{
+      animation:shuffleShake .12s infinite;
+    }
+
+    @keyframes shuffleShake{
+      0%{transform:translateX(0) rotate(0deg);}
+      25%{transform:translateX(-4px) rotate(-2deg);}
+      50%{transform:translateX(4px) rotate(2deg);}
+      75%{transform:translateX(-3px) rotate(-1deg);}
+      100%{transform:translateX(0) rotate(0deg);}
+    }
+
+    .rank-banner{
+      display:flex;
+      justify-content:center;
+      margin:6px 0 14px;
+    }
+
+    .rank-banner img{
+      width:100%;
+      max-width:260px;
+      height:auto;
+      display:block;
+      object-fit:contain;
+    }
+
+    .rank-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .rank-item{
+      padding:12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    body.light .rank-item{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+    }
+
+    .rank-name{
+      margin-bottom:4px;
+      font-weight:1000;
+      color:#fff;
+    }
+
+    body.light .rank-name{
+      color:#0f172a;
+    }
+
+    .rank-hand{
+      color:#7dd3fc;
+      font-weight:1000;
+    }
+
+    body.light .rank-hand{
+      color:#2563eb;
+    }
+
+    .final-winner{
+      margin-bottom:12px;
+      padding:18px;
+      border-radius:18px;
+      background:linear-gradient(135deg,#f59e0b,#facc15);
+      color:#111827;
+      text-align:center;
+      font-weight:1000;
+      font-size:20px;
+    }
+
+    .info-wrap{
+      position:relative;
+    }
+
+    .info-btn{
+      width:34px;
+      height:34px;
+      border:0;
+      border-radius:50%;
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      font-weight:1000;
+      cursor:pointer;
+    }
+
+    body.light .info-btn{
+      background:#eef2ff;
+      color:#3730a3;
+    }
+
+.rank-popup{
+  position:fixed;
+  top:120px;
+  right:0px;
+
+  width:220px;
+  max-width:calc(100vw - 80px);
+  max-height:70vh;
+  overflow-y:auto;
+
+  background:#fff;
+  color:#334155;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 14px 34px rgba(15,23,42,.28);
+
+  display:none;
+  z-index:99999;
+}
+
+    .info-wrap:hover .rank-popup{
+      display:block;
+    }
+
+    .rank-popup h4{
+      margin:0 0 10px;
+      font-size:15px;
+      color:#0f172a;
+    }
+
+    .rank-popup div{
+      font-size:13px;
+      line-height:1.75;
+    }
+
+    @media(max-width:1100px){
+      .suttda-layout{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:768px){
+      .table-head{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .table-area{
+        grid-template-columns:1fr;
+      }
+    }
+
+
+.minigame-tabs{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+  margin-bottom:20px;
+}
+
+.minigame-tab{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:48px;
+  padding:0 20px;
+  border-radius:14px;
+  text-decoration:none;
+
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+
+  transition:.15s ease;
+}
+
+.minigame-tab:hover{
+  transform:translateY(-2px);
+  border-color:#00A2FF;
+}
+
+.minigame-tab.active{
+  background:linear-gradient(135deg,#0458ff,#00a2ff);
+  border-color:transparent;
+}
+
+body.light .minigame-tab{
+  background:#fff;
+  color:#0f172a;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+body.light .minigame-tab.active{
+  color:#fff;
+}
+
+@media(max-width:768px){
+  .minigame-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .minigame-tab{
+    width:100%;
+    padding:0 10px;
+    font-size:14px;
+  }
+}
+
+@media(max-width:768px){
+  .rank-popup{
+    left:16px;
+    right:16px;
+    top:100px;
+    width:auto;
+    max-width:none;
+    max-height:75vh;
+  }
+}
+
+
+/* 섯다 페이지 미니게임 탭 라이트모드 보정 */
+body.light #page-suttda .minigame-tab,
+body.light-mode #page-suttda .minigame-tab{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border:1px solid rgba(15,23,42,.14) !important;
+}
+
+body.light #page-suttda .minigame-tab:visited,
+body.light-mode #page-suttda .minigame-tab:visited{
+  color:#0f172a !important;
+}
+
+body.light #page-suttda .minigame-tab:hover,
+body.light-mode #page-suttda .minigame-tab:hover{
+  color:#0458ff !important;
+  border-color:#00A2FF !important;
+}
+
+body.light #page-suttda .minigame-tab.active,
+body.light-mode #page-suttda .minigame-tab.active{
+  background:linear-gradient(135deg,#0458ff,#00a2ff) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+}
+
+body.light #page-suttda .minigame-tab.active:visited,
+body.light-mode #page-suttda .minigame-tab.active:visited{
+  color:#ffffff !important;
+}
+
+  
+/* =========================================================
+   LIGHT MODE FIX - SUTTDA PAGE
+   기존 body.light만 있던 규칙이 현재 theme.js의 body.light-mode에서
+   적용되지 않는 문제를 보정합니다.
+   ========================================================= */
+
+body.light-mode #page-suttda .section-title h2,
+body.light #page-suttda .section-title h2{
+  color:#0f172a !important;
+}
+
+body.light-mode #page-suttda .section-title span,
+body.light #page-suttda .section-title span{
+  color:#334155 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+}
+
+/* 미니게임 탭 */
+body.light-mode #page-suttda .minigame-tab,
+body.light #page-suttda .minigame-tab{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border:1px solid rgba(15,23,42,.14) !important;
+  box-shadow:none !important;
+}
+
+body.light-mode #page-suttda .minigame-tab:visited,
+body.light #page-suttda .minigame-tab:visited{
+  color:#0f172a !important;
+}
+
+body.light-mode #page-suttda .minigame-tab:hover,
+body.light #page-suttda .minigame-tab:hover{
+  color:#0458ff !important;
+  border-color:#00A2FF !important;
+  box-shadow:0 12px 24px rgba(0,162,255,.14) !important;
+}
+
+body.light-mode #page-suttda .minigame-tab.active,
+body.light #page-suttda .minigame-tab.active{
+  background:linear-gradient(135deg,#0458ff,#00a2ff) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+  box-shadow:0 12px 26px rgba(0,162,255,.22) !important;
+}
+
+body.light-mode #page-suttda .minigame-tab.active:visited,
+body.light #page-suttda .minigame-tab.active:visited{
+  color:#ffffff !important;
+}
+
+/* 섯다 박스 */
+body.light-mode #page-suttda .suttda-box,
+body.light #page-suttda .suttda-box{
+  background:#ffffff !important;
+  border:1px solid rgba(15,23,42,.10) !important;
+  box-shadow:0 18px 42px rgba(15,23,42,.08) !important;
+}
+
+body.light-mode #page-suttda .suttda-box h3,
+body.light #page-suttda .suttda-box h3,
+body.light-mode #page-suttda .table-head h3,
+body.light #page-suttda .table-head h3{
+  color:#0f172a !important;
+}
+
+/* 입력창 */
+body.light-mode #page-suttda .suttda-input,
+body.light #page-suttda .suttda-input{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border:1px solid #dbe3f0 !important;
+}
+
+body.light-mode #page-suttda .suttda-input::placeholder,
+body.light #page-suttda .suttda-input::placeholder{
+  color:#94a3b8 !important;
+}
+
+/* 도움말 / 에러 */
+body.light-mode #page-suttda .suttda-help,
+body.light #page-suttda .suttda-help{
+  color:#64748b !important;
+}
+
+body.light-mode #page-suttda .suttda-error,
+body.light #page-suttda .suttda-error{
+  color:#dc2626 !important;
+}
+
+/* 참가자 목록 */
+body.light-mode #page-suttda .participant-item,
+body.light #page-suttda .participant-item{
+  background:#f8fafc !important;
+  color:#0f172a !important;
+  border:1px solid #e2e8f0 !important;
+}
+
+/* 테이블 상태 */
+body.light-mode #page-suttda .table-status,
+body.light #page-suttda .table-status{
+  background:#e0f2fe !important;
+  color:#0284c7 !important;
+}
+
+/* 플레이어 카드 */
+body.light-mode #page-suttda .player-card,
+body.light #page-suttda .player-card{
+  background:#ffffff !important;
+  border:1px solid #e2e8f0 !important;
+}
+
+body.light-mode #page-suttda .player-name,
+body.light #page-suttda .player-name{
+  color:#0f172a !important;
+}
+
+body.light-mode #page-suttda .hand-info,
+body.light #page-suttda .hand-info{
+  color:#334155 !important;
+}
+
+/* 족보 / 랭킹 */
+body.light-mode #page-suttda .rank-item,
+body.light #page-suttda .rank-item{
+  background:#f8fafc !important;
+  border:1px solid #e2e8f0 !important;
+}
+
+body.light-mode #page-suttda .rank-name,
+body.light #page-suttda .rank-name{
+  color:#0f172a !important;
+}
+
+body.light-mode #page-suttda .rank-hand,
+body.light #page-suttda .rank-hand{
+  color:#2563eb !important;
+}
+
+body.light-mode #page-suttda .info-btn,
+body.light #page-suttda .info-btn{
+  background:#eef2ff !important;
+  color:#3730a3 !important;
+}
+
+/* 라이트모드에서 삭제 버튼/상태가 흐려지지 않게 */
+body.light-mode #page-suttda .participant-item button,
+body.light #page-suttda .participant-item button{
+  background:#fee2e2 !important;
+  color:#991b1b !important;
+}
+
+/* 라이트모드에서 카드 뒷면 주변 대비 */
+body.light-mode #page-suttda .sutta-card,
+body.light #page-suttda .sutta-card{
+  border-color:rgba(15,23,42,.14) !important;
+}
+
+/* 모바일 포함: 라이트모드에서도 기본 텍스트 대비 유지 */
+body.light-mode #page-suttda,
+body.light #page-suttda{
+  color:#0f172a !important;
+}
+
+
+  </style>
+</head>
+
+<body data-page="minigame">
+
+<div class="floating-banner">
+  <a href="https://calm-hoxy.vercel.app/" target="_blank"><img src="./banner/banner1.png" alt="배너1"></a>
+  <a href="https://fmcalm.vercel.app/" target="_blank"><img src="./banner/banner2.png" alt="배너2"></a>
+  <a href="https://calm-mstz.vercel.app/" target="_blank"><img src="./banner/banner3.png" alt="배너3"></a>
+  <a href="https://www.fmkorea.com/starcraft/" target="_blank"><img src="./banner/banner4.png" alt="배너4"></a>
+  <a href="https://www.youtube.com//" target="_blank"><img src="./banner/banner5.png" alt="배너5"></a>
+  <a href="https://www.naver.com/" target="_blank"><img src="./banner/banner6.png" alt="배너6"></a>
+  <a href="https://www.sooplive.com/" target="_blank"><img src="./banner/banner0.png" alt="배너7"></a>
+  <a href="https://lazygyu.github.io/roulette/" target="_blank"><img src="./banner/banner8.png" alt="배너9"></a>
+  <a href="https://910map.tistory.com/" target="_blank"><img src="./banner/banner9.png" alt="배너10"></a>
+  <a href="https://scintro.vercel.app/" target="_blank"><img src="./banner/banner11.png" alt="배너11"></a>
+</div>
+
+<div class="app">
+
+<header class="topbar">
+  <a class="logo" href="index.html">
+    <div>CALM MONSTARZ</div>
+  </a>
+
+  <nav class="nav">
+    <a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="playlist" href="playlist.html">영상 모음</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a>
+    <a data-page="multiview" href="multiview.html">멀티뷰</a>
+    <a data-page="minigame" href="minigame.html">미니게임</a>
+
+    <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+  </nav>
+</header>
+
+<main id="page-suttda" class="page">
+  <section class="card panel">
+    <div class="section-title">
+      <h2>스타 게이머 섯다</h2>
+      <span>참가자를 입력하고 게이머 카드를 한 장씩 공개하세요</span>
+    </div>
+
+
+<div class="minigame-tabs">
+
+  <a class="minigame-tab active" href="./suttda.html">
+    스타 게이머 섯다
+  </a>
+
+  <a class="minigame-tab" href="./calm2048.html">
+    캄몬 2048
+  </a>
+
+  <a class="minigame-tab" href="./colormemory.html">
+    컬러 기억력 테스트
+  </a>
+
+  <a class="minigame-tab" href="./calmquiz.html">
+    스타퀴즈쇼
+  </a>
+
+  <a class="minigame-tab" href="./calmcard.html">
+    캄드게임배틀
+  </a>
+
+</div>
+
+
+    <div class="suttda-layout">
+
+      <section class="suttda-box">
+        <h3>참가자 입력</h3>
+
+        <input
+          id="nameInput"
+          class="suttda-input"
+          placeholder="예) 마토"
+          autocomplete="off"
+        />
+
+        <button class="suttda-btn primary" onclick="addPlayer()">참가자 추가</button>
+        <button class="suttda-btn success" onclick="startGame()">게임 시작</button>
+        <button class="suttda-btn danger" onclick="resetGame()">전체 초기화</button>
+
+        <div id="errorText" class="suttda-error"></div>
+
+        <p class="suttda-help">
+          최소 2명 / 최대 10명까지 참가할 수 있습니다.
+        </p>
+
+        <div id="participantList" class="participant-list"></div>
+      </section>
+
+      <section class="suttda-box">
+        <div class="table-head">
+          <h3>게임 테이블</h3>
+          <div id="status" class="table-status">참가자를 입력해주세요.</div>
+        </div>
+
+        <div id="tableArea" class="table-area"></div>
+      </section>
+
+      <section class="suttda-box">
+        <div class="table-head">
+          <h3>실시간 족보판</h3>
+
+          <div class="info-wrap">
+            <button class="info-btn">?</button>
+
+            <div class="rank-popup">
+              <h4>족보 순위</h4>
+              <div>
+                <strong>정점 대결</strong> : 38광땡<br>
+                <strong>테란의 신</strong> : 18광땡<br>
+                <strong>전설의 컨트롤</strong> : 13광땡<br>
+                <strong>장땡 ~ 1땡</strong> : 같은 번호 2장<br>
+                <strong>알리</strong> : 1 + 2<br>
+                <strong>독사</strong> : 1 + 4<br>
+                <strong>구삥</strong> : 1 + 9<br>
+                <strong>장삥</strong> : 1 + 10<br>
+                <strong>장사</strong> : 4 + 10<br>
+                <strong>세륙</strong> : 4 + 6<br>
+                <strong>갑오</strong> : 합 끝수 9<br>
+                <strong>끗</strong> : 합 끝수<br>
+                <strong>망통</strong> : 합 끝수 0
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rank-banner">
+          <img src="./icons/rank-character.png" alt="족보 캐릭터">
+        </div>
+
+        <div id="rankArea" class="rank-list"></div>
+
+        <div id="winnerArea" class="final-winner" style="display:none;"></div>
+      </section>
+
+    </div>
+  </section>
+</main>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-copy">
+    © 2026 주니.킨콘. All Rights Reserved.
+  </div>
+
+  <div class="footer-links">
+    <a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon">
+      <img src="./icons/soop-logo.png" alt="SOOP" />
+    </a>
+
+    <a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon">
+      <img src="./icons/youtube-logo.png" alt="YouTube" />
+    </a>
+  </div>
+</footer>
+
+<script type="module" src="app.js"></script>
+<script src="./theme.js?v=3"></script>
+
+<script>
+let players = [];
+let revealQueue = [];
+let revealIndex = 0;
+let gameStarted = false;
+
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const cardSet = [
+  {month:1, type:"광", label:"임요환", title:"테란 유저", image:"./suttdacards/1-gwang.png"},
+  {month:1, type:"피", label:"김지성", title:"테란 유저", image:"./suttdacards/1-pi.png"},
+
+  {month:2, type:"피", label:"홍진호", title:"저그 유저", image:"./suttdacards/2-pi1.png"},
+  {month:2, type:"피", label:"김명운", title:"저그 유저", image:"./suttdacards/2-pi2.png"},
+
+  {month:3, type:"광", label:"이제동", title:"컨트롤형", image:"./suttdacards/3-gwang.png"},
+  {month:3, type:"피", label:"김택용", title:"컨트롤형", image:"./suttdacards/3-pi1.png"},
+
+  {month:4, type:"피", label:"변현제", title:"프로토스 유저", image:"./suttdacards/4-pi1.png"},
+  {month:4, type:"피", label:"장윤철", title:"프로토스 유저", image:"./suttdacards/4-pi2.png"},
+
+  {month:5, type:"피", label:"김정우", title:"공격형", image:"./suttdacards/5-pi1.png"},
+  {month:5, type:"피", label:"박상현", title:"공격형", image:"./suttdacards/5-pi2.png"},
+
+  {month:6, type:"피", label:"정윤종", title:"운영형", image:"./suttdacards/6-pi1.png"},
+  {month:6, type:"피", label:"이재호", title:"운영형", image:"./suttdacards/6-pi2.png"},
+
+  {month:7, type:"피", label:"김민철", title:"전략형", image:"./suttdacards/7-pi1.png"},
+  {month:7, type:"피", label:"김윤환", title:"전략형", image:"./suttdacards/7-pi2.png"},
+
+  {month:8, type:"광", label:"이영호", title:"속도형", image:"./suttdacards/8-gwang.png"},
+  {month:8, type:"피", label:"이윤열", title:"속도형", image:"./suttdacards/8-pi1.png"},
+
+  {month:9, type:"피", label:"도재욱", title:"물량형", image:"./suttdacards/9-pi1.png"},
+  {month:9, type:"피", label:"임홍규", title:"물량형", image:"./suttdacards/9-pi2.png"},
+
+  {month:10, type:"피", label:"흑운장", title:"심리형", image:"./suttdacards/10-pi1.png"},
+  {month:10, type:"피", label:"김성현", title:"심리형", image:"./suttdacards/10-pi2.png"}
+];
+
+function addPlayer(){
+  const input = document.getElementById("nameInput");
+  const error = document.getElementById("errorText");
+  const name = input.value.trim();
+
+  if(!name){
+    error.textContent = "이름을 입력해주세요.";
+    return;
+  }
+
+  if(players.length >= 10){
+    error.textContent = "최대 10명까지 가능합니다.";
+    return;
+  }
+
+  if(players.some(p => p.name === name)){
+    error.textContent = "중복 이름입니다.";
+    return;
+  }
+
+  players.push({
+    id: Date.now() + Math.random(),
+    name,
+    cards: [],
+    revealed: [false,false],
+    hand: null,
+    power: 0
+  });
+
+  input.value = "";
+  error.textContent = "";
+
+  renderParticipants();
+  renderTable();
+  renderRanks();
+}
+
+function removePlayer(id){
+  if(gameStarted) return;
+
+  players = players.filter(p => String(p.id) !== String(id));
+
+  renderParticipants();
+  renderTable();
+  renderRanks();
+}
+
+function renderParticipants(){
+  const area = document.getElementById("participantList");
+
+  area.innerHTML = players.map(p => `
+    <div class="participant-item">
+      <span>${p.name}</span>
+      <button onclick="removePlayer('${p.id}')">삭제</button>
+    </div>
+  `).join("");
+}
+
+function shuffle(array){
+  for(let i = array.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+async function startGame(){
+  if(players.length < 2){
+    document.getElementById("errorText").textContent = "최소 2명 이상 필요합니다.";
+    return;
+  }
+
+  gameStarted = true;
+
+  const deck = [...cardSet];
+  shuffle(deck);
+
+  players.forEach(p => {
+    p.cards = [deck.pop(), deck.pop()];
+    p.revealed = [false,false];
+    p.hand = null;
+    p.power = 0;
+  });
+
+  revealQueue = [];
+
+  players.forEach(p => {
+    revealQueue.push({player:p, index:0});
+  });
+
+  players.forEach(p => {
+    revealQueue.push({player:p, index:1});
+  });
+
+  revealIndex = 0;
+
+  const tableArea = document.getElementById("tableArea");
+
+  document.getElementById("status").textContent = "게이머 섞는 중...";
+  tableArea.classList.add("shuffle");
+  renderTable();
+
+  await sleep(1200);
+
+  tableArea.classList.remove("shuffle");
+
+  document.getElementById("status").textContent = "게이머 섞기 완료";
+
+  document.getElementById("winnerArea").style.display = "none";
+
+  renderTable();
+  renderRanks();
+}
+
+function revealNextCard(){
+  if(revealIndex >= revealQueue.length){
+    return;
+  }
+
+  const current = revealQueue[revealIndex];
+
+  current.player.revealed[current.index] = true;
+
+  if(current.player.revealed[0] && current.player.revealed[1]){
+    const result = evaluateHand(current.player.cards);
+    current.player.hand = result.displayName;
+    current.player.power = result.power;
+  }
+
+  revealIndex++;
+
+  renderTable();
+  renderRanks();
+
+  if(revealIndex >= revealQueue.length){
+    finishGame();
+  }
+}
+
+function resetGame(){
+  if(!confirm("전체 초기화할까요?")){
+    return;
+  }
+
+  players = [];
+  revealQueue = [];
+  revealIndex = 0;
+  gameStarted = false;
+
+  document.getElementById("nameInput").value = "";
+  document.getElementById("errorText").textContent = "";
+  document.getElementById("status").textContent = "참가자를 입력해주세요.";
+
+  document.getElementById("winnerArea").style.display = "none";
+  document.getElementById("winnerArea").innerHTML = "";
+
+  renderParticipants();
+  renderTable();
+  renderRanks();
+}
+
+function evaluateHand(cards){
+  const a = cards[0];
+  const b = cards[1];
+
+  const months = [a.month, b.month].sort((x,y) => x - y);
+  const sum = (a.month + b.month) % 10;
+
+  const isGwangA = a.type === "광";
+  const isGwangB = b.type === "광";
+
+  if(isGwangA && isGwangB){
+    if(months[0] === 3 && months[1] === 8){
+      return {
+        displayName: "38광땡 (정점 대결)",
+        power: 1000
+      };
+    }
+
+    if(months[0] === 1 && months[1] === 8){
+      return {
+        displayName: "테란의 신 (18광땡)",
+        power: 990
+      };
+    }
+
+    if(months[0] === 1 && months[1] === 3){
+      return {
+        displayName: "전설의 컨트롤 (13광땡)",
+        power: 980
+      };
+    }
+  }
+
+  if(a.month === b.month){
+    const ddaengMap = {
+      10:"심리전 마스터",
+      9:"물량 폭주",
+      8:"스피드 스타",
+      7:"전략 설계자",
+      6:"운영의 정석",
+      5:"공격 본능",
+      4:"프로토스 한방",
+      3:"피지컬 괴물",
+      2:"저그 본능",
+      1:"테란 정석"
+    };
+
+    return {
+      displayName: `${ddaengMap[a.month]} (${a.month}땡)`,
+      power: 800 + a.month
+    };
+  }
+
+  const specialMap = {
+    "1-2": {name:"알리", gamerName:"눈치싸움", power:700},
+    "1-4": {name:"독사", gamerName:"앞마당 조이기", power:690},
+    "1-9": {name:"구삥", gamerName:"압도적 물량전", power:680},
+    "1-10": {name:"장삥", gamerName:"멘탈 흔들기", power:670},
+    "4-10": {name:"장사", gamerName:"치명적 심리전", power:660},
+    "4-6": {name:"세륙", gamerName:"빌드 운영", power:650}
+  };
+
+  const key = `${months[0]}-${months[1]}`;
+
+  if(specialMap[key]){
+    const result = specialMap[key];
+
+    return {
+      displayName: `${result.gamerName} (${result.name})`,
+      power: result.power
+    };
+  }
+
+  const ggeutMap = {
+    9:"완성형 경기력",
+    8:"속도전 우위",
+    7:"전략 성공",
+    6:"운영 우세",
+    5:"공격 성공",
+    4:"초반 압박",
+    3:"컨트롤 싸움",
+    2:"물량 교전",
+    1:"판짜기"
+  };
+
+  if(sum === 9){
+    return {
+      displayName:"완성형 경기력 (갑오)",
+      power:609
+    };
+  }
+
+  if(sum === 0){
+    return {
+      displayName:"빌드 꼬임 (망통)",
+      power:500
+    };
+  }
+
+  return {
+    displayName:`${ggeutMap[sum]} (${sum}끗)`,
+    power:500 + sum
+  };
+}
+
+function renderTable(){
+  const area = document.getElementById("tableArea");
+
+  area.innerHTML = players.map(p => {
+    const card1 = p.revealed[0] ? p.cards[0] : null;
+    const card2 = p.revealed[1] ? p.cards[1] : null;
+
+    const label1 = card1
+      ? `[${card1.month}${card1.type === "광" ? "광" : ""}] ${card1.label}`
+      : "?";
+
+    const label2 = card2
+      ? `[${card2.month}${card2.type === "광" ? "광" : ""}] ${card2.label}`
+      : "?";
+
+    const info = p.revealed[0] || p.revealed[1]
+      ? `${label1} + ${label2}<br>${p.hand || "계산중"}`
+      : "대기중";
+
+    const topPower = [...players].sort((a,b) => b.power - a.power)[0]?.power || 0;
+
+    const isWinner =
+      p.hand &&
+      p.power === topPower &&
+      revealIndex >= revealQueue.length;
+
+    return `
+      <div class="player-card ${isWinner ? "winner" : ""}">
+        <div class="player-name">${p.name}</div>
+
+        <div class="cards">
+          <div class="sutta-card ${p.revealed[0] ? "revealed" : ""} ${card1 && card1.type === "광" ? "gwang-card" : ""}">
+            <img src="${card1 ? card1.image : "./suttdacards/card-back.png"}" alt="${label1}" />
+          </div>
+
+          <div class="sutta-card ${p.revealed[1] ? "revealed" : ""} ${card2 && card2.type === "광" ? "gwang-card" : ""}">
+            <img src="${card2 ? card2.image : "./suttdacards/card-back.png"}" alt="${label2}" />
+          </div>
+        </div>
+
+        <div class="hand-info">${info}</div>
+      </div>
+    `;
+  }).join("");
+
+  if(gameStarted && revealIndex < revealQueue.length){
+    area.innerHTML += `
+      <button class="reveal-card" onclick="revealNextCard()">
+        게이머 공개
+      </button>
+    `;
+  }
+}
+
+function renderRanks(){
+  const area = document.getElementById("rankArea");
+
+  const ranked = [...players].sort((a,b) => b.power - a.power);
+
+  const isFinished =
+    revealIndex >= revealQueue.length &&
+    ranked[0]?.hand;
+
+  let html = "";
+
+  if(isFinished){
+    const topPower = ranked[0].power;
+    const winners = ranked.filter(p => p.power === topPower);
+
+    html += `
+      <div class="final-winner">
+        🏆 ${winners.length > 1 ? "공동 WINNER" : "WINNER"} 🏆<br>
+        <span style="font-size:28px;">${winners.map(w => w.name).join(" / ")}</span><br>
+        <span style="font-size:18px;">${winners[0].hand}</span>
+      </div>
+    `;
+  }
+
+  let currentRank = 0;
+  let previousPower = null;
+
+  ranked.forEach((p,index) => {
+    if(p.power !== previousPower){
+      currentRank = index + 1;
+      previousPower = p.power;
+    }
+
+    if(isFinished && p.power === ranked[0].power){
+      return;
+    }
+
+    html += `
+      <div class="rank-item">
+        <div class="rank-name">${currentRank}위 · ${p.name}</div>
+        <div class="rank-hand">${p.hand ? p.hand : "대기중"}</div>
+      </div>
+    `;
+  });
+
+  area.innerHTML = html;
+}
+
+function finishGame(){
+  const ranked = [...players].sort((a,b) => b.power - a.power);
+  const topPower = ranked[0].power;
+  const winners = ranked.filter(p => p.power === topPower);
+
+  document.getElementById("status").textContent =
+    `최종 승자 : ${winners.map(w => w.name).join(" / ")}`;
+
+  gameStarted = false;
+
+  renderRanks();
+  renderTable();
+}
+
+document.querySelector(".info-btn").addEventListener("click", e => {
+  e.stopPropagation();
+  document.querySelector(".rank-popup").classList.toggle("show");
+});
+
+document.addEventListener("click", e => {
+  if(
+    !e.target.closest(".rank-popup") &&
+    !e.target.closest(".info-btn")
+  ){
+    document.querySelector(".rank-popup").classList.remove("show");
+  }
+});
+</script>
+
+</body>
+</html>
