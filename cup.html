@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대회 상세정보 — 캄몬스타즈</title>
+  <link rel="icon" href="./favicon.png" type="image/png" />
+  <link rel="stylesheet" href="common-ncauction.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+
+<body data-page="tournament">
+
+<div class="app">
+
+<header class="topbar">
+  <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
+  <nav class="nav">
+    <a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="playlist" href="playlist.html">영상 모음</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a>
+    <a data-page="multiview" href="multiview.html">멀티뷰</a>
+    <a data-page="tournament" href="tournament.html" class="active">대회정보</a>
+    <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+  </nav>
+</header>
+
+
+<main id="page-tournament" class="page">
+  <section class="tournament-wrap">
+
+    
+    
+
+<div class="tournament-menu">
+
+  
+  <div class="tournament-menu-item active" data-main="match">
+    일정
+    <span>▼</span>
+
+    <div class="tournament-dropdown">
+      <button data-view="calendar">캘린더로 보기</button>
+      <button data-view="table">테이블로 보기</button>
+    </div>
+  </div>
+
+  <div class="tournament-menu-item" data-main="record">
+    조/대진표
+    <span>▼</span>
+
+    <div class="tournament-dropdown">
+      <button data-record="group">조별예선</button>
+      <button data-record="bracket">토너먼트</button>
+    </div>
+  </div>
+
+  <div class="tournament-menu-item" data-main="team">
+    팀/참가자
+  </div>
+
+  <div class="tournament-menu-item" data-main="power">
+    파워랭킹
+  </div>
+
+</div>
+
+<div id="tournamentBreadcrumb" class="tournament-breadcrumb">
+  🏆 대회 정보 > 일정 > 캘린더
+</div>
+
+<section id="matchView" class="main-view">
+
+
+  <section id="calendarView" class="tournament-view active">
+    <div id="calendarGrid" class="jm-calendar-grid"></div>
+  </section>
+
+  <section id="tableView" class="tournament-view">
+    <div class="jm-table-filter">
+      <div class="team-dropdown" id="teamDropdown">
+        <button id="teamDropdownBtn" class="team-dropdown-btn">전체보기 ▼</button>
+        <div id="teamDropdownList" class="team-dropdown-list"></div>
+      </div>
+    </div>
+
+    <div id="matchList" class="tournament-match-list"></div>
+  </section>
+</section>
+
+<section id="recordView" class="main-view hidden">
+
+
+  <section id="groupStandingView">
+    <div id="groupStandingBox"></div>
+  </section>
+
+  <section id="bracketView" class="hidden">
+    <div id="bracketBox"></div>
+  </section>
+</section>
+
+<section id="teamView" class="main-view hidden"></section>
+<section id="powerView" class="main-view hidden"></section>
+
+  </section>
+</main>
+
+</div>
+
+
+
+<script src="./theme.js?v=3"></script>
+
+<script>
+const SHEET_ID = "1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo";
+const SHEET_NAME = "NCAUCTION";
+
+let TOURNAMENT_ROWS = [];
+let MATCHES = [];
+let currentView = "calendar";
+let currentTeam = "전체";
+let calendarMonths = [];
+let currentCalendarIndex = 0;
+
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[s]));
+}
+
+function sheetUrl(){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+}
+
+function normalizeDate(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+
+  // 구글시트/엑셀 날짜 숫자 처리
+  if(/^\d+(\.\d+)?$/.test(raw)){
+    const serial = Number(raw);
+    const utcDays = Math.floor(serial - 25569);
+    const utcValue = utcDays * 86400 * 1000;
+    const date = new Date(utcValue);
+
+    const y = date.getUTCFullYear();
+    const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(date.getUTCDate()).padStart(2, "0");
+
+    return `${y}-${m}-${d}`;
+  }
+
+  const parts = raw.match(/\d+/g);
+  if(!parts || parts.length < 3) return raw;
+
+  const y = parts[0];
+  const m = String(parts[1]).padStart(2, "0");
+  const d = String(parts[2]).padStart(2, "0");
+
+  return `${y}-${m}-${d}`;
+}
+
+async function loadTournamentSheet(){
+  const res = await fetch(sheetUrl());
+
+  if(!res.ok){
+    throw new Error("시트를 불러오지 못했습니다.");
+  }
+
+  const csvText = await res.text();
+  const workbook = XLSX.read(csvText, { type:"string" });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+  TOURNAMENT_ROWS = XLSX.utils.sheet_to_json(sheet, { defval:"" });
+
+buildMatches();
+buildCalendarMonths();
+renderTeamFilter();
+renderCalendar();
+renderMatchList();
+renderGroupStanding();
+renderBracket();
+renderTeamView();
+renderPowerRanking();
+}
+
+function buildMatches(){
+  const map = new Map();
+
+  TOURNAMENT_ROWS.forEach(row => {
+    if(!row["화면구분"] && !row["경기명"]) return;
+
+    const matchKey = [
+      row["화면구분"],
+      row["경기구분"],
+      row["조"],
+      row["라운드"],
+      row["경기명"],
+      row["날짜"],
+      row["시간"],
+      row["팀A"],
+      row["팀B"]
+    ].join("|");
+
+    if(!map.has(matchKey)){
+      map.set(matchKey, {
+        key: matchKey,
+        화면구분: row["화면구분"],
+        경기구분: row["경기구분"],
+        조: row["조"],
+        라운드: row["라운드"],
+        경기명: row["경기명"],
+        날짜: normalizeDate(row["날짜"]),
+        원본날짜: row["날짜"],
+        시간: row["시간"],
+        상태: row["상태"],
+        팀A: row["팀A"],
+        점수A: row["점수A"],
+        점수B: row["점수B"],
+        팀B: row["팀B"],
+        승리팀: row["승리팀"],
+        sets: []
+      });
+    }
+
+map.get(matchKey).sets.push({
+  세트: row["세트"],
+  세트A: row["세트A선수"],
+  세트B: row["세트B선수"],
+  세트승자: row["세트승자"],
+  맵: row["맵"],
+
+  세트A티어: row["선수A티어"] || "",
+  세트A종족: row["선수A종족"] || "",
+  세트B티어: row["선수B티어"] || "",
+  세트B종족: row["선수B종족"] || "",
+
+세트A비고: row["선수A비고"] || "",
+세트B비고: row["선수B비고"] || "",
+
+홈픽: row["선수A비고"] || "",
+원정픽: row["선수B비고"] || ""
+});
+  });
+
+  MATCHES = [...map.values()].sort((a, b) => {
+  // 1순위: 날짜
+  if(a.날짜 !== b.날짜){
+    return a.날짜.localeCompare(b.날짜);
+  }
+
+  const timeA = String(a.시간 || "").trim();
+  const timeB = String(b.시간 || "").trim();
+
+  const isFixedA = /^\d{1,2}:\d{2}$/.test(timeA);
+  const isFixedB = /^\d{1,2}:\d{2}$/.test(timeB);
+
+  // 2순위: 시간이 있는 경기 먼저
+  if(isFixedA && !isFixedB) return -1;
+  if(!isFixedA && isFixedB) return 1;
+
+  // 3순위: 시간이 둘 다 있으면 시간순
+  if(isFixedA && isFixedB){
+    return timeA.localeCompare(timeB);
+  }
+
+  // 4순위: 둘 다 시간이 없으면 입력 순서 유지
+  return 0;
+});
+}
+
+function getFilteredMatches(){
+  if(currentTeam === "전체") return MATCHES;
+
+  return MATCHES.filter(m =>
+    m.팀A === currentTeam ||
+    m.팀B === currentTeam
+  );
+}
+
+function getTeamList(){
+  return TOURNAMENT_ROWS
+    .map(row => ({
+      name: String(row["팀명리스트"] || "").trim(),
+      logo: String(row["팀로고 이미지 경로"] || "").trim()
+    }))
+    .filter(team => team.name);
+}
+
+function getTeamMembers(teamName){
+  return TOURNAMENT_ROWS
+    .map(row => ({
+      name: String(row["이름"] || "").trim(),
+      team: String(row["소속"] || "").trim(),
+      race: String(row["종족"] || "").trim(),
+      tier: String(row["티어"] || "").trim(),
+      stationId: String(row["방송국ID"] || "").trim()
+    }))
+    .filter(player => player.name && player.team === teamName);
+}
+
+function renderTeamFilter(){
+
+  const dropdownList =
+    document.getElementById("teamDropdownList");
+
+  const dropdownBtn =
+    document.getElementById("teamDropdownBtn");
+
+  const dropdown =
+    document.getElementById("teamDropdown");
+
+  const teams = getTeamList();
+
+  dropdownList.innerHTML = `
+    <div class="team-option" data-team="전체">
+      전체보기
+    </div>
+
+    ${teams.map(team => `
+      <div
+        class="team-option"
+        data-team="${team.name}"
+      >
+        ${team.name}
+      </div>
+    `).join("")}
+  `;
+
+  dropdownBtn.onclick = () => {
+    dropdown.classList.toggle("open");
+  };
+
+  dropdownList
+    .querySelectorAll(".team-option")
+    .forEach(item => {
+
+      item.onclick = () => {
+
+        currentTeam =
+          item.dataset.team;
+
+        dropdownBtn.textContent =
+          item.textContent + " ▼";
+
+        dropdown.classList.remove("open");
+
+        renderMatchList();
+
+      };
+
+    });
+
+}
+
+function getTeamLogo(teamName){
+  const team = getTeamList().find(t => t.name === teamName);
+  if(!team || !team.logo) return "";
+
+  return `./teamlogo/${team.logo}`;
+}
+
+
+function buildCalendarMonths(){
+  const validDates = MATCHES
+    .map(m => m.날짜)
+    .filter(Boolean)
+    .sort();
+
+  if(!validDates.length){
+    calendarMonths = [];
+    return;
+  }
+
+  const first = validDates[0].slice(0, 7);
+  const last = validDates[validDates.length - 1].slice(0, 7);
+
+  const [startY, startM] = first.split("-").map(Number);
+  const [endY, endM] = last.split("-").map(Number);
+
+  calendarMonths = [];
+
+  let y = startY;
+  let m = startM;
+
+  while(y < endY || (y === endY && m <= endM)){
+    calendarMonths.push({
+      year: y,
+      month: m
+    });
+
+    m++;
+
+    if(m > 12){
+      m = 1;
+      y++;
+    }
+  }
+
+  currentCalendarIndex = 0;
+}
+
+function renderCalendar(){
+  const box = document.getElementById("calendarGrid");
+
+  if(!MATCHES.length){
+    box.innerHTML = `<div class="tournament-empty">등록된 일정이 없습니다.</div>`;
+    return;
+  }
+
+  if(!calendarMonths.length){
+    buildCalendarMonths();
+  }
+
+  const current = calendarMonths[currentCalendarIndex];
+
+  if(!current){
+    box.innerHTML = `<div class="tournament-empty">날짜 형식을 확인해주세요.</div>`;
+    return;
+  }
+
+  const year = current.year;
+  const month = current.month;
+
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDate = new Date(year, month, 0).getDate();
+  const startDay = firstDay.getDay();
+
+  const monthTitle = `${year}.${String(month).padStart(2, "0")}`;
+
+  let html = `
+    <div class="jm-calendar">
+<div class="jm-calendar-nav">
+  <button id="calendarPrevBtn" ${currentCalendarIndex === 0 ? "disabled" : ""}>
+  <span class="calendar-arrow">‹</span>
+</button>
+  <div class="jm-calendar-title">${monthTitle}</div>
+  <button id="calendarNextBtn" ${currentCalendarIndex === calendarMonths.length - 1 ? "disabled" : ""}>
+  <span class="calendar-arrow">›</span>
+</button>
+</div>
+
+      <div class="jm-calendar-week">
+        <div class="sun">일</div>
+        <div>월</div>
+        <div>화</div>
+        <div>수</div>
+        <div>목</div>
+        <div>금</div>
+        <div class="sat">토</div>
+      </div>
+
+      <div class="jm-calendar-days">
+  `;
+
+  for(let i = 0; i < startDay; i++){
+    html += `<div class="jm-day empty"></div>`;
+  }
+
+  for(let day = 1; day <= lastDate; day++){
+    const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const dayMatches = MATCHES.filter(m => m.날짜 === dateKey);
+
+    html += `
+      <div class="jm-day">
+        <div class="jm-day-num">${day}</div>
+        ${dayMatches.map(m => `
+          <button class="jm-calendar-event" data-key="${esc(m.key)}">
+            ${esc(m.시간 || "미정")} ${esc(m.경기명 || m.라운드)}<br>
+${esc(m.팀A || "미정")} vs ${esc(m.팀B || "미정")}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  html += `
+      </div>
+    </div>
+  `;
+
+  box.innerHTML = html;
+
+  document.getElementById("calendarPrevBtn")?.addEventListener("click", () => {
+    if(currentCalendarIndex <= 0) return;
+    currentCalendarIndex--;
+    renderCalendar();
+  });
+
+  document.getElementById("calendarNextBtn")?.addEventListener("click", () => {
+    if(currentCalendarIndex >= calendarMonths.length - 1) return;
+    currentCalendarIndex++;
+    renderCalendar();
+  });
+
+  document.querySelectorAll(".jm-calendar-event").forEach(btn => {
+    btn.addEventListener("click", () => {
+      switchView("table");
+
+      const target = MATCHES.find(m => m.key === btn.dataset.key);
+      if(!target) return;
+
+      currentTeam = "전체";
+      renderMatchList(target.key);
+    });
+  });
+}
+
+
+function renderMatchList(openKey = ""){
+  const box = document.getElementById("matchList");
+  const list = getFilteredMatches();
+
+  if(!list.length){
+    box.innerHTML = `<div class="tournament-empty">표시할 경기 데이터가 없습니다.</div>`;
+    return;
+  }
+
+  box.innerHTML = list.map((m) => {
+    const logoA = getTeamLogo(m.팀A);
+    const logoB = getTeamLogo(m.팀B);
+
+    return `
+      <article class="tournament-match-block" data-key="${esc(m.key)}">
+        <div class="tournament-match-card">
+
+          <div class="tm-left">
+            <strong>${esc(m.날짜)} · ${esc(m.시간 || "미정")}</strong>
+            <span>${esc(m.경기명 || m.라운드)}</span>
+          </div>
+
+          <div class="tm-score">
+
+            <div class="tm-team tm-team-a">
+              <span>${esc(m.팀A || "미정")}</span>
+              ${
+                logoA
+                  ? `<img class="tm-team-logo" src="${logoA}" alt="">`
+                  : ""
+              }
+            </div>
+
+            <span class="score-a ${
+              Number(m.점수A) > Number(m.점수B)
+                ? "winning-score"
+                : Number(m.점수A) < Number(m.점수B)
+                  ? "losing-score"
+                  : ""
+            }">
+              ${esc(m.점수A || "-")}
+            </span>
+
+            <span class="score-colon"> : </span>
+
+            <span class="score-b ${
+              Number(m.점수B) > Number(m.점수A)
+                ? "winning-score"
+                : Number(m.점수B) < Number(m.점수A)
+                  ? "losing-score"
+                  : ""
+            }">
+              ${esc(m.점수B || "-")}
+            </span>
+
+            <div class="tm-team tm-team-b">
+              ${
+                logoB
+                  ? `<img class="tm-team-logo" src="${logoB}" alt="">`
+                  : ""
+              }
+              <span>${esc(m.팀B || "미정")}</span>
+            </div>
+
+          </div>
+
+          <button class="tm-detail-btn" type="button">
+            ${openKey === m.key ? "접기 ▲" : "상세 엔트리"}
+          </button>
+
+        </div>
+
+        <div class="inline-detail ${openKey === m.key ? "" : "hidden"}">
+          ${renderInlineDetail(m)}
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  document.querySelectorAll(".tm-detail-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      const block = btn.closest(".tournament-match-block");
+      const key = block.dataset.key;
+      const isOpen = !block.querySelector(".inline-detail").classList.contains("hidden");
+
+      renderMatchList(isOpen ? "" : key);
+    });
+  });
+}
+
+function playerWithBadges(name, tier, race, note, winner, side){
+  const isWinner =
+    name &&
+    winner &&
+    String(name).trim() === String(winner).trim();
+
+  return `
+    <div class="set-player-box ${side} ${isWinner ? "is-winner" : "is-loser"}">
+      <div class="set-player-name-line">
+        <strong>${esc(name || "미정")}</strong>
+      </div>
+
+<div class="set-player-badge-line">
+  ${tier ? `<span class="player-badge tier">${esc(tier)}</span>` : ""}
+  ${race ? `<span class="player-badge race race-${esc(race)}">${esc(race)}</span>` : ""}
+  ${note ? `<span class="player-badge note">${esc(note)}</span>` : ""}
+</div>
+    </div>
+  `;
+}
+
+function renderInlineDetail(match){
+  return `
+    <div class="detail-head">
+      <h2>${esc(match.경기명)}</h2>
+      <p>${esc(match.날짜)} ${esc(match.시간 || "미정")} · ${esc(match.상태 || "상태 미정")}</p>
+    </div>
+
+    <div class="detail-score">
+      <strong>${esc(match.팀A || "미정")}</strong>
+      <b>${esc(match.점수A || "-")} : ${esc(match.점수B || "-")}</b>
+      <strong>${esc(match.팀B || "미정")}</strong>
+    </div>
+
+    <div class="set-list">
+      ${match.sets.map(set => `
+        <div class="set-row tournament-set-row">
+          <div class="set-num">${esc(set.세트 || "미정")}</div>
+
+          <div class="set-vs">
+${playerWithBadges(
+  set.세트A,
+  set.세트A티어,
+  set.세트A종족,
+  set.세트A비고,
+  set.세트승자,
+  "left"
+)}
+
+<span class="vs-text">VS</span>
+
+${playerWithBadges(
+  set.세트B,
+  set.세트B티어,
+  set.세트B종족,
+  set.세트B비고,
+  set.세트승자,
+  "right"
+)}
+          </div>
+
+          <div class="set-map">${esc(set.맵 || "미정")}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+// 주석 : 아래 이름 들어간 팀은 조별예선에 미포함
+// function isRealTeamName(name){
+//   const value = String(name || "").trim();
+
+//   if(!value) return false;
+
+//   if(value.includes("승리팀")) return false;
+//   if(value.includes("패배팀")) return false;
+//   if(value.includes("승자")) return false;
+//   if(value.includes("패자")) return false;
+//   if(value === "미정") return false;
+
+//   return true;
+// }
+
+
+
+
+function renderGroupStanding(){
+
+  const box = document.getElementById("groupStandingBox");
+  if(!box) return;
+
+  const groups = {};
+
+  const realTeams = new Set(
+    getTeamList().map(team => team.name)
+  );
+
+  MATCHES.forEach(match => {
+    if(match.화면구분 !== "조별예선") return;
+
+    const group = String(match.조 || "기타").trim();
+    if(!groups[group]) groups[group] = {};
+
+    const teamA = String(match.팀A || "").trim();
+    const teamB = String(match.팀B || "").trim();
+
+    const hasTeamA = realTeams.has(teamA);
+    const hasTeamB = realTeams.has(teamB);
+
+    if(!hasTeamA && !hasTeamB) return;
+
+    if(hasTeamA && !groups[group][teamA]){
+      groups[group][teamA] = {
+        team: teamA,
+        games:0,
+        win:0,
+        lose:0,
+        gf:0,
+        ga:0,
+        gd:0,
+        points:0
+      };
+    }
+
+    if(hasTeamB && !groups[group][teamB]){
+      groups[group][teamB] = {
+        team: teamB,
+        games:0,
+        win:0,
+        lose:0,
+        gf:0,
+        ga:0,
+        gd:0,
+        points:0
+      };
+    }
+
+    const aScore = Number(match.점수A || 0);
+    const bScore = Number(match.점수B || 0);
+    const winTeam = String(match.승리팀 || "").trim();
+    const hasResult = winTeam && winTeam !== "미정";
+
+if(hasResult){
+
+  if(hasTeamA){
+    groups[group][teamA].games++;
+    groups[group][teamA].gf += aScore;
+    groups[group][teamA].ga += bScore;
+    groups[group][teamA].gd =
+      groups[group][teamA].gf - groups[group][teamA].ga;
+  }
+
+  if(hasTeamB){
+    groups[group][teamB].games++;
+    groups[group][teamB].gf += bScore;
+    groups[group][teamB].ga += aScore;
+    groups[group][teamB].gd =
+      groups[group][teamB].gf - groups[group][teamB].ga;
+  }
+
+}
+
+    if(hasResult && hasTeamA && winTeam === teamA){
+      groups[group][teamA].win++;
+      groups[group][teamA].points += 5;
+
+      if(hasTeamB){
+        groups[group][teamB].lose++;
+      }
+    }
+
+    if(hasResult && hasTeamB && winTeam === teamB){
+      groups[group][teamB].win++;
+      groups[group][teamB].points += 5;
+
+      if(hasTeamA){
+        groups[group][teamA].lose++;
+      }
+    }
+  });
+
+  const groupOrder = ["A조", "B조", "C조", "D조"];
+
+  const visibleGroups = groupOrder.filter(group => {
+    const teams = groups[group] || {};
+    return Object.keys(teams).length > 0;
+  });
+
+  if(visibleGroups.length === 0){
+    box.innerHTML = `
+      <div class="tournament-empty">
+        <center><h3>조 추첨이 이루어지지 않았습니다.</h3></center>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = visibleGroups.map(group => {
+
+    const teams = groups[group] || {};
+
+    const ranking = Object.values(teams).sort((a,b) => {
+      if(b.points !== a.points) return b.points - a.points;
+      if(b.win !== a.win) return b.win - a.win;
+      if(b.gd !== a.gd) return b.gd - a.gd;
+      if(b.gf !== a.gf) return b.gf - a.gf;
+      return a.team.localeCompare(b.team);
+    });
+
+    return `
+      <div class="group-standing-card">
+        <table class="group-standing-table">
+          <thead>
+            <tr>
+              <th>${esc(group)}</th>
+              <th>경기</th>
+              <th>W</th>
+              <th>L</th>
+              <th>득점</th>
+              <th>실점</th>
+              <th>득실</th>
+              <th>승점</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${ranking.map((team, idx) => `
+              <tr>
+                <td class="standing-team-cell">
+                  <div class="standing-team-inner">
+                    <span class="standing-rank">${idx + 1}위</span>
+
+                    ${
+                      getTeamLogo(team.team)
+                        ? `<img class="standing-team-logo" src="${getTeamLogo(team.team)}" alt="${esc(team.team)}">`
+                        : `<span class="standing-team-logo empty"></span>`
+                    }
+
+                    <span class="standing-team-name">${esc(team.team)}</span>
+                  </div>
+                </td>
+
+                <td>${team.games}</td>
+                <td>${team.win}</td>
+                <td>${team.lose}</td>
+                <td>${team.gf}</td>
+                <td>${team.ga}</td>
+                <td>${team.gd > 0 ? "+" : ""}${team.gd}</td>
+                <td>${team.points}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }).join("");
+}
+
+
+
+
+
+
+
+
+
+function renderBracket(){
+  const box = document.getElementById("bracketBox");
+  if(!box) return;
+
+  const rounds = ["8강", "4강", "결승"];
+
+  const visibleRounds = rounds.filter(round => {
+    return MATCHES.some(m => m.경기구분 === round);
+  });
+
+  if(visibleRounds.length === 0){
+    box.innerHTML = `
+      <div class="tournament-empty">
+        <center><h3>토너먼트 대진이 등록되지 않았습니다.</h3></center>
+      </div>
+    `;
+    return;
+  }
+
+  const roundHtml = visibleRounds.map(round => {
+    const matches = MATCHES.filter(m => m.경기구분 === round);
+
+    return `
+      <div class="bracket-round">
+        <h2>${round}</h2>
+
+        <div class="bracket-match-list">
+          ${matches.map(m => `
+            <div class="bracket-match-card">
+              <div class="bracket-match-title">
+                <strong>${esc(m.경기명 || m.라운드)}</strong>
+                <span>
+                  ${esc(m.날짜 || "날짜 미정")}
+                  ${m.시간 ? `· ${esc(m.시간)}` : ""}
+                </span>
+              </div>
+
+              <div class="bracket-team ${m.승리팀 === m.팀A ? "winner" : ""}">
+                <span class="bracket-team-name">
+                  ${
+                    getTeamLogo(m.팀A)
+                      ? `<img class="bracket-team-logo" src="${getTeamLogo(m.팀A)}" alt="${esc(m.팀A)}">`
+                      : ""
+                  }
+                  <b>${esc(m.팀A || "미정")}</b>
+                </span>
+                <strong>${esc(m.점수A || "-")}</strong>
+              </div>
+
+              <div class="bracket-team ${m.승리팀 === m.팀B ? "winner" : ""}">
+                <span class="bracket-team-name">
+                  ${
+                    getTeamLogo(m.팀B)
+                      ? `<img class="bracket-team-logo" src="${getTeamLogo(m.팀B)}" alt="${esc(m.팀B)}">`
+                      : ""
+                  }
+                  <b>${esc(m.팀B || "미정")}</b>
+                </span>
+                <strong>${esc(m.점수B || "-")}</strong>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  box.innerHTML = `
+    <div class="bracket-wrap">
+      ${roundHtml}
+    </div>
+  `;
+}
+
+function renderTeamView(){
+  const box = document.getElementById("teamView");
+  if(!box) return;
+
+  const teams = getTeamList();
+
+  box.innerHTML = `
+    <div class="team-tabs">
+      ${teams.map((team, index) => `
+        <button class="team-tab ${index === 0 ? "active" : ""}" data-team="${esc(team.name)}">
+          ${esc(team.name)}
+        </button>
+      `).join("")}
+    </div>
+
+    <div id="teamDetailBox"></div>
+  `;
+
+  document.querySelectorAll(".team-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".team-tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderTeamDetail(btn.dataset.team);
+    });
+  });
+
+  if(teams[0]){
+    renderTeamDetail(teams[0].name);
+  }
+}
+
+function getSoopProfileImage(stationId){
+  const id = String(stationId || "").trim();
+  if(!id) return "./images/default-profile.png";
+
+  return `https://profile.img.sooplive.co.kr/LOGO/${id.slice(0, 2)}/${id}/${id}.jpg`;
+}
+
+function getSoopStationUrl(stationId){
+  const id = String(stationId || "").trim();
+  if(!id) return "#";
+
+  return `https://www.sooplive.com/station/${id}`;
+}
+
+function renderTeamDetail(teamName){
+  const box = document.getElementById("teamDetailBox");
+  const team = getTeamList().find(t => t.name === teamName);
+  const members = getTeamMembers(teamName);
+
+  const logo = team?.logo ? `./teamlogo/${team.logo}` : "";
+
+  box.innerHTML = `
+  <div class="team-profile-head">
+    <div class="team-logo-box">
+      ${logo ? `<img src="${esc(logo)}" alt="${esc(teamName)}">` : `<span>로고</span>`}
+    </div>
+
+    <div class="team-title-box">
+      <div class="team-title">${esc(teamName)}</div>
+      <div class="team-subtitle">TEAM ROSTER</div>
+    </div>
+  </div>
+
+  <div class="team-member-grid">
+      ${
+        members.length
+          ? members.map(player => `
+            <a
+              class="team-member-card"
+              href="${getSoopStationUrl(player.stationId)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div class="team-member-image">
+                <img
+                  src="${getSoopProfileImage(player.stationId)}"
+                  alt="${esc(player.name)}"
+                  onerror="this.src='./images/default-profile.png'"
+                >
+              </div>
+
+              <div class="team-member-name">${esc(player.name)}</div>
+
+              <div class="team-member-meta">
+                ${esc(player.tier || "-")} ${esc(player.race || "-")}
+              </div>
+            </a>
+          `).join("")
+          : `<div class="tournament-empty">등록된 팀원이 없습니다.</div>`
+      }
+    </div>
+  `;
+}
+
+let currentPowerTab = "overall";
+
+const POWER_DESC = {
+  overall: "전체 경기 승률 기준 랭킹입니다.",
+  ace: "가장 많은 승리를 기록한 선수 랭킹입니다.",
+  savior: "팀이 패배 위기일 때 승리를 기록한 해결사 랭킹입니다.",
+  firstPick: "선픽으로 출전했을 때 가장 좋은 성적을 기록한 선수 랭킹입니다.",
+  secondPick: "후픽으로 출전했을 때 가장 좋은 성적을 기록한 선수 랭킹입니다.",
+  loseContinue: "팀의 연패 상황에서 가장 많이 출전한 선수 랭킹입니다.",
+  winBreak: "상대팀의 연승 흐름을 가장 많이 끊어낸 선수 랭킹입니다.",
+  opener: "선봉으로 출전하여 가장 좋은 성적을 기록한 선수 랭킹입니다.",
+  clutch: "승부를 결정짓는 마지막 세트 승리를 가장 많이 기록한 선수 랭킹입니다.",
+  winStreak: "개인 최다 연승 기록 기준 랭킹입니다.",
+  loseStreak: "개인 최다 연패 기록 기준 랭킹입니다.",
+  comeback: "팀이 밀리는 상황에서 승리를 만들어낸 역전의 신 랭킹입니다.",
+  mvp: "승리·클러치·역전승 등을 종합 반영한 MVP 지수 랭킹입니다."
+};
+
+function renderPowerRanking(){
+  const box = document.getElementById("powerView");
+  if(!box) return;
+
+  const tabs = [
+    ["overall", "종합 승률"],
+    // ["ace", "에이스"],
+    // ["savior", "해결사"],
+    // ["firstPick", "선픽"],
+    // ["secondPick", "후픽"],
+    // ["loseContinue", "연패 지속"],
+    // ["winBreak", "연승 끊김"],
+    // ["opener", "선봉장"],
+    // ["clutch", "클러치"],
+    // ["winStreak", "최다 연승"],
+    // ["loseStreak", "최다 연패"],
+    // ["comeback", "역전의 신"],
+    // ["mvp", "MVP 지수"]
+  ];
+
+  box.innerHTML = `
+    <div class="power-tabs">
+      ${tabs.map(([key, label]) => `
+        <button
+          class="power-tab ${currentPowerTab === key ? "active" : ""}"
+          data-power="${key}"
+        >
+          ${label}
+        </button>
+      `).join("")}
+    </div>
+
+<div id="powerRankingDesc" class="power-ranking-desc"></div>
+
+
+
+<div id="powerRankingContent"></div>
+  `;
+
+  document.querySelectorAll(".power-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentPowerTab = btn.dataset.power;
+      renderPowerRanking();
+    });
+  });
+
+  renderPowerRankingContent();
+}
+
+function renderPowerRankingContent(){
+  const descEl = document.getElementById("powerRankingDesc");
+
+  if(descEl){
+    descEl.textContent = POWER_DESC[currentPowerTab] || "";
+  }
+
+  const box = document.getElementById("powerRankingContent");
+  if(!box) return;
+
+  const ranking = buildPlayerPowerRanking(currentPowerTab);
+
+  if(!ranking.length){
+    box.innerHTML = `<div class="tournament-empty">파워랭킹 데이터가 없습니다.</div>`;
+    return;
+  }
+
+  const isOverall = currentPowerTab === "overall";
+
+  box.innerHTML = `
+    <div class="power-ranking-list ${isOverall ? "is-overall" : ""}">
+      ${ranking.map((p, index) => {
+        const rankNo = index + 1;
+        const recordText = isOverall
+          ? `${p.games}전 ${p.win}승 ${p.lose}패`
+          : `${esc(p.label)} ${p.score}`;
+
+        return `
+          <div class="power-ranking-row ${isOverall ? "is-overall" : ""}">
+            <div class="power-rank ${rankNo === 1 ? "is-top" : ""}">
+              <span>${rankNo}</span>
+            </div>
+
+            <div class="power-player">
+              ${esc(p.name)}
+            </div>
+
+            <div class="power-tier-badge race-${esc(p.race || "")}">
+              
+              <span>${esc(p.tier || "-")} · ${esc(p.race || "-")}</span>
+            </div>
+
+            <div class="power-games">
+              <span class="power-games-icon">⚔</span>
+              <strong>${recordText}</strong>
+            </div>
+
+            <div class="power-winrate">
+              <span>승률</span>
+              <strong>${p.winRate}%</strong>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function buildPlayerPowerRanking(type){
+  const players = {};
+
+  function initPlayer(name, tier, race){
+    if(!name || name === "미정") return;
+
+    if(!players[name]){
+      players[name] = {
+        name,
+        tier: tier || "",
+        race: race || "",
+        games: 0,
+        win: 0,
+        lose: 0,
+        firstPick: 0,
+        firstPickWin: 0,
+        secondPick: 0,
+        secondPickWin: 0,
+        opener: 0,
+        openerWin: 0,
+        clutch: 0,
+        clutchWin: 0,
+        winStreak: 0,
+        loseStreak: 0,
+        maxWinStreak: 0,
+        maxLoseStreak: 0,
+        winBreak: 0,
+        loseContinue: 0,
+        comeback: 0,
+        mvp: 0
+      };
+    }
+
+    if(tier && !players[name].tier) players[name].tier = tier;
+    if(race && !players[name].race) players[name].race = race;
+  }
+
+  MATCHES.forEach(match => {
+    let teamASetWins = 0;
+    let teamBSetWins = 0;
+
+    match.sets.forEach((set, idx) => {
+      const a = set.세트A;
+      const b = set.세트B;
+      const winner = set.세트승자;
+
+      initPlayer(a, set.세트A티어, set.세트A종족);
+      initPlayer(b, set.세트B티어, set.세트B종족);
+
+      if(!a || !b || !winner || winner === "미정") return;
+
+      const aWin = winner === a;
+      const bWin = winner === b;
+
+      const loser = aWin ? b : a;
+
+      players[a].games++;
+      players[b].games++;
+
+      if(aWin){
+        players[a].win++;
+        players[b].lose++;
+      }
+
+      if(bWin){
+        players[b].win++;
+        players[a].lose++;
+      }
+
+      // 선픽 / 후픽: 홈팀 Y열, 원정팀 Z열 모두 참조
+      const aPick = String(set.홈픽 || "");
+      const bPick = String(set.원정픽 || "");
+
+      if(aPick.includes("선픽")){
+        players[a].firstPick++;
+        if(aWin) players[a].firstPickWin++;
+      }
+
+      if(aPick.includes("후픽")){
+        players[a].secondPick++;
+        if(aWin) players[a].secondPickWin++;
+      }
+
+      if(bPick.includes("선픽")){
+        players[b].firstPick++;
+        if(bWin) players[b].firstPickWin++;
+      }
+
+      if(bPick.includes("후픽")){
+        players[b].secondPick++;
+        if(bWin) players[b].secondPickWin++;
+      }
+
+      // 선봉장: 1세트 출전
+      if(idx === 0){
+        players[a].opener++;
+        players[b].opener++;
+        if(aWin) players[a].openerWin++;
+        if(bWin) players[b].openerWin++;
+      }
+
+      // 클러치: 마지막 세트 출전 후 승리
+      if(idx === match.sets.length - 1){
+        if(aWin){
+          players[a].clutch++;
+          players[a].clutchWin++;
+        }
+
+        if(bWin){
+          players[b].clutch++;
+          players[b].clutchWin++;
+        }
+      }
+
+      // 역전의 신: 팀이 지고 있는 상황에서 승리
+      if(teamASetWins < teamBSetWins && aWin){
+        players[a].comeback++;
+      }
+
+      if(teamBSetWins < teamASetWins && bWin){
+        players[b].comeback++;
+      }
+
+      // 연승 끊김: 직전 세트까지 상대팀이 연승 중이고, 출전해서 패배
+      if(idx >= 1){
+        const prevSets = match.sets.slice(0, idx);
+        const prevWinners = prevSets.map(s => s.세트승자);
+
+        const prevAllA = prevWinners.every(w => w === a || w === match.sets[idx - 1].세트A);
+        const prevAllB = prevWinners.every(w => w === b || w === match.sets[idx - 1].세트B);
+
+        if(loser === a && teamBSetWins >= 2){
+          players[a].winBreak++;
+        }
+
+        if(loser === b && teamASetWins >= 2){
+          players[b].winBreak++;
+        }
+      }
+
+      // 개인 연승/연패
+      [a, b].forEach(name => {
+        const p = players[name];
+        const won = name === winner;
+
+        if(won){
+          p.winStreak++;
+          p.loseStreak = 0;
+        } else {
+          p.loseStreak++;
+          p.winStreak = 0;
+        }
+
+        p.maxWinStreak = Math.max(p.maxWinStreak, p.winStreak);
+        p.maxLoseStreak = Math.max(p.maxLoseStreak, p.loseStreak);
+      });
+
+      if(aWin) teamASetWins++;
+      if(bWin) teamBSetWins++;
+    });
+  });
+
+  let list = Object.values(players).filter(p => p.games > 0);
+
+  list.forEach(p => {
+    p.winRate = p.games ? Math.round((p.win / p.games) * 100) : 0;
+
+    if(type === "overall"){
+      p.score = p.winRate;
+      p.label = "승률";
+    } else if(type === "ace"){
+      p.score = p.win;
+      p.label = "승수";
+    } else if(type === "firstPick"){
+      p.score = p.firstPickWin;
+      p.label = "선픽승";
+    } else if(type === "secondPick"){
+      p.score = p.secondPickWin;
+      p.label = "후픽승";
+    } else if(type === "opener"){
+      p.score = p.openerWin;
+      p.label = "선봉승";
+    } else if(type === "clutch"){
+      p.score = p.clutchWin;
+      p.label = "클러치승";
+    } else if(type === "winStreak"){
+      p.score = p.maxWinStreak;
+      p.label = "최다연승";
+    } else if(type === "loseStreak"){
+      p.score = p.maxLoseStreak;
+      p.label = "최다연패";
+    } else if(type === "comeback"){
+      p.score = p.comeback;
+      p.label = "역전승";
+    } else if(type === "winBreak"){
+      p.score = p.winBreak;
+      p.label = "연승끊김";
+    } else if(type === "loseContinue"){
+      p.score = p.maxLoseStreak;
+      p.label = "연패지속";
+    } else if(type === "mvp"){
+      p.score =
+        p.win * 3 +
+        p.clutchWin * 2 +
+        p.comeback * 2 +
+        p.firstPickWin +
+        p.secondPickWin -
+        p.lose;
+      p.label = "MVP";
+    } else {
+      p.score = p.winRate;
+      p.label = "점수";
+    }
+  });
+
+  return list
+    .filter(p => p.score > 0)
+    .sort((a, b) => {
+      if(b.score !== a.score) return b.score - a.score;
+      if(b.winRate !== a.winRate) return b.winRate - a.winRate;
+      if(b.win !== a.win) return b.win - a.win;
+      if(a.lose !== b.lose) return a.lose - b.lose;
+      return a.name.localeCompare(b.name);
+    });
+}
+
+// function renderPowerRanking(){
+//   const box = document.getElementById("powerView");
+//   if(!box) return;
+
+//   const players = {};
+
+//   MATCHES.forEach(match => {
+//     match.sets.forEach(set => {
+//       const a = set.세트A;
+//       const b = set.세트B;
+//       const winner = set.세트승자;
+
+//       [a, b].forEach(player => {
+//         if(!player || player === "미정") return;
+
+//         if(!players[player]){
+//           players[player] = {
+//             name: player,
+//             games: 0,
+//             win: 0,
+//             lose: 0,
+//             points: 0,
+//             tier: "",
+//             race: ""
+//           };
+//         }
+//       });
+
+//       if(a && a !== "미정"){
+//         players[a].games++;
+//         players[a].tier = players[a].tier || set.세트A티어;
+//         players[a].race = players[a].race || set.세트A종족;
+//       }
+
+//       if(b && b !== "미정"){
+//         players[b].games++;
+//         players[b].tier = players[b].tier || set.세트B티어;
+//         players[b].race = players[b].race || set.세트B종족;
+//       }
+
+//       if(winner && winner !== "미정"){
+//         const loser = winner === a ? b : a;
+
+//         if(players[winner]){
+//           players[winner].win++;
+//           players[winner].points += 2;
+//         }
+
+//         if(loser && loser !== "미정" && players[loser]){
+//           players[loser].lose++;
+//           players[loser].points -= 1;
+//         }
+//       }
+//     });
+//   });
+
+//   const ranking = Object.values(players)
+//     .filter(p => p.games > 0)
+//     .sort((a,b) => {
+//       const aRate = a.games ? a.win / a.games : 0;
+//       const bRate = b.games ? b.win / b.games : 0;
+
+//       if(b.points !== a.points) return b.points - a.points;
+//       if(b.win !== a.win) return b.win - a.win;
+//       if(bRate !== aRate) return bRate - aRate;
+//       if(a.lose !== b.lose) return a.lose - b.lose;
+//       return a.name.localeCompare(b.name);
+//     });
+
+//   if(!ranking.length){
+//     box.innerHTML = `<div class="tournament-empty">파워랭킹 데이터가 없습니다.</div>`;
+//     return;
+//   }
+
+//   box.innerHTML = `
+//     <div class="power-ranking-list">
+//       ${ranking.map((p, index) => {
+//         const winRate = p.games ? Math.round((p.win / p.games) * 100) : 0;
+
+//         return `
+//           <div class="power-ranking-row">
+//             <div class="power-rank">${index + 1}</div>
+
+//             <div class="power-player">
+//               <strong>${esc(p.name)}</strong>
+//               <span>${esc(p.tier || "-")} · ${esc(p.race || "-")}</span>
+//             </div>
+
+//             <div class="power-point">
+//               <strong>${p.points}</strong>
+//               <span>승점</span>
+//             </div>
+
+//             <div class="power-record">
+//               <strong>${p.games}전 ${p.win}승 ${p.lose}패</strong>
+//               <span>승률 ${winRate}%</span>
+//             </div>
+//           </div>
+//         `;
+//       }).join("")}
+//     </div>
+//   `;
+// }
+
+
+
+
+function switchView(view){
+  currentView = view;
+
+  document.getElementById("calendarView").classList.toggle("active", view === "calendar");
+  document.getElementById("tableView").classList.toggle("active", view === "table");
+
+  updateBreadcrumb("match", view);
+}
+
+// document.querySelectorAll("#matchView .tournament-tab[data-view]").forEach(btn => {
+//   btn.addEventListener("click", () => {
+//     switchView(btn.dataset.view);
+//   });
+// });
+
+/* 메인 메뉴 */
+
+document.querySelectorAll(".tournament-menu-item").forEach(item => {
+
+  item.addEventListener("click", () => {
+
+    const main = item.dataset.main;
+
+    if(!main) return;
+
+    document.querySelectorAll(".tournament-menu-item").forEach(el => {
+      el.classList.toggle("active", el.dataset.main === main);
+    });
+switchMainView(main);
+
+if(main === "match"){
+  updateBreadcrumb("match", currentView);
+} else {
+  updateBreadcrumb(main);
+}
+  });
+
+});
+
+
+/* 경기 드롭다운 */
+
+document.querySelectorAll(".tournament-dropdown button[data-view]")
+.forEach(btn => {
+
+  btn.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    switchMainView("match");
+
+    switchView(btn.dataset.view);
+    updateBreadcrumb("match", btn.dataset.view);
+
+    document.querySelectorAll(".tournament-menu-item").forEach(el => {
+      el.classList.toggle(
+        "active",
+        el.dataset.main === "match"
+      );
+    });
+
+  });
+
+});
+
+
+/* 전적 드롭다운 */
+
+document.querySelectorAll(".tournament-dropdown button[data-record]")
+.forEach(btn => {
+
+  btn.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    switchMainView("record");
+
+    document.querySelectorAll(".tournament-menu-item").forEach(el => {
+      el.classList.toggle(
+        "active",
+        el.dataset.main === "record"
+      );
+    });
+
+    const record = btn.dataset.record;
+
+    updateBreadcrumb("record", record);
+
+    document
+      .getElementById("groupStandingView")
+      .classList.toggle("hidden", record !== "group");
+
+    document
+      .getElementById("bracketView")
+      .classList.toggle("hidden", record !== "bracket");
+
+  });
+
+});
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadTournamentSheet().catch(err => {
+    console.error(err);
+    document.getElementById("calendarGrid").innerHTML =
+      `<div class="tournament-empty">대회 데이터를 불러오지 못했습니다.</div>`;
+  });
+});
+
+
+function switchMainView(main){
+  document.querySelectorAll(".main-tabs .tournament-tab").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.main === main);
+  });
+
+  document.getElementById("matchView").classList.toggle("hidden", main !== "match");
+  document.getElementById("recordView").classList.toggle("hidden", main !== "record");
+  document.getElementById("teamView").classList.toggle("hidden", main !== "team");
+  document.getElementById("powerView").classList.toggle("hidden", main !== "power");
+}
+
+// document.querySelectorAll(".main-tabs .tournament-tab").forEach(btn => {
+//   btn.addEventListener("click", () => {
+//     switchMainView(btn.dataset.main);
+//   });
+// });
+
+// document.querySelectorAll(".sub-tabs .tournament-tab").forEach(btn => {
+//   btn.addEventListener("click", () => {
+//     const record = btn.dataset.record;
+
+//     document.querySelectorAll(".sub-tabs .tournament-tab").forEach(b => {
+//       b.classList.toggle("active", b.dataset.record === record);
+//     });
+
+//     document.getElementById("groupStandingView").classList.toggle("hidden", record !== "group");
+//     document.getElementById("bracketView").classList.toggle("hidden", record !== "bracket");
+//   });
+// });
+
+function updateBreadcrumb(main, sub){
+
+  const el =
+    document.getElementById("tournamentBreadcrumb");
+
+  let mainName = "";
+  let subName = "";
+
+  switch(main){
+
+    case "match":
+      mainName = "일정";
+
+      subName =
+        sub === "table"
+          ? "테이블"
+          : "캘린더";
+      break;
+
+    case "record":
+      mainName = "조/대진표";
+
+      subName =
+        sub === "bracket"
+          ? "토너먼트"
+          : "조별예선";
+      break;
+
+    case "team":
+      mainName = "팀/참가자";
+      break;
+
+    case "power":
+      mainName = "파워랭킹";
+      break;
+  }
+
+  let text =
+    `🏆 대회 정보 > ${mainName}`;
+
+  if(subName){
+    text += ` > ${subName}`;
+  }
+
+  el.textContent = text;
+}
+
+
+
+
+
+</script>
+
+
+
+<footer class="footer">
+
+  <div class="footer-copy">
+    © 2026 주니.킨콘. All Rights Reserved.
+  </div>
+
+  <div class="footer-links">
+
+    <a
+      href="https://www.sooplive.com/station/joony86"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/soop-logo.png"
+  alt="SOOP"
+/>
+    </a>
+
+    <a
+      href="https://www.youtube.com/@kinkonvv"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/youtube-logo.png"
+  alt="YouTube"
+/>
+    </a>
+
+  </div>
+
+</footer>
+
+
+</body>
+</html>
