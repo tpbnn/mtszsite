@@ -2571,7 +2571,7 @@ body.light-mode #page-records .match-item{
 }
 
 #page-tournament {
-  padding: 36px 28px 80px;
+  padding: 0px 28px 80px;
 }
 
 .tournament-title {
@@ -3654,7 +3654,7 @@ body.light-mode #page-records .match-item{
   display:flex;
   align-items:center;
   max-width:1396px;
-  margin:34px 0 34px;
+  margin:0px 0 34px;
 
   background:rgba(9,15,31,.72);
   border:1px solid rgba(255,255,255,.10);
@@ -6562,4 +6562,243 @@ body.light-mode[data-page="tournament"] #powerRankingContent .power-games{
 
 .power-ranking-desc{
   margin-bottom:24px;
+}
+
+
+
+
+
+/* =========================
+   NCAUCTION 라이트모드 보정
+========================= */
+
+body.light-mode{
+  background:#f4f7ff !important;
+  color:#171827 !important;
+}
+
+/* body.light-mode .topbar, */
+body.light-mode .tournament-menu{
+  background:#515866 !important;
+  border:1px solid rgba(0,0,0,.08) !important;
+  box-shadow:0 18px 40px rgba(20,30,60,.12) !important;
+}
+
+body.light-mode .logo,
+body.light-mode .tournament-breadcrumb{
+  color:#171827 !important;
+}
+
+body.light-mode .tournament-menu-item{
+  color:rgba(255,255,255,.68) !important;
+}
+
+body.light-mode .tournament-menu-item.active{
+  color:#fff !important;
+}
+
+body.light-mode .jm-calendar{
+  background:#ffffff !important;
+  border:1px solid #d7def0 !important;
+  box-shadow:0 18px 50px rgba(30,50,90,.10) !important;
+}
+
+body.light-mode .jm-calendar-title{
+  color:#171827 !important;
+}
+
+body.light-mode .jm-calendar-week div{
+  color:#4b5568 !important;
+}
+
+body.light-mode .jm-calendar-week .sun{
+  color:#ff2a51 !important;
+}
+
+body.light-mode .jm-calendar-week .sat{
+  color:#178bff !important;
+}
+
+body.light-mode .jm-day{
+  background:#f8fbff !important;
+  border:1px solid #e1e8f8 !important;
+}
+
+body.light-mode .jm-day.empty{
+  background:transparent !important;
+  border-color:transparent !important;
+}
+
+body.light-mode .jm-day-num{
+  color:#1f2937 !important;
+  opacity:1 !important;
+}
+
+body.light-mode .jm-calendar-event{
+  background:#eef4ff !important;
+  color:#1f2937 !important;
+  border:1px solid #cfe0ff !important;
+}
+
+body.light-mode .jm-calendar-event:hover{
+  background:#178bff !important;
+  color:#fff !important;
+}
+
+/* 캘린더 월 이동 버튼 */
+body.light-mode #calendarPrevBtn,
+body.light-mode #calendarNextBtn{
+  background:#eef4ff !important;
+  border:1px solid #cfdcff !important;
+  color:#1f2937 !important;
+
+  width:52px;
+  height:52px;
+
+  border-radius:14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:34px;
+  font-weight:900;
+}
+
+/* hover */
+body.light-mode #calendarPrevBtn:hover,
+body.light-mode #calendarNextBtn:hover{
+  background:#178bff !important;
+  border-color:#178bff !important;
+  color:#ffffff !important;
+}
+
+/* 비활성 */
+body.light-mode #calendarPrevBtn:disabled,
+body.light-mode #calendarNextBtn:disabled{
+  opacity:.35;
+  background:#f4f6fb !important;
+  color:#9aa4b5 !important;
+}
+
+
+
+/* 조/대진표 라이트모드 카드 */
+body.light-mode .bracket-match-card{
+  background:#ffffff !important;
+  border:1px solid #d7def0 !important;
+  color:#171827 !important;
+  box-shadow:0 12px 30px rgba(30,50,90,.10) !important;
+}
+
+body.light-mode .bracket-match-card *{
+  color:#171827 !important;
+  opacity:1 !important;
+}
+
+body.light-mode .bracket-match-card .bracket-match-title,
+body.light-mode .bracket-match-card h3,
+body.light-mode .bracket-match-card strong{
+  color:#0f172a !important;
+}
+
+body.light-mode .bracket-match-card .bracket-team,
+body.light-mode .bracket-match-card .bracket-team-name,
+body.light-mode .bracket-match-card span{
+  color:#1f2937 !important;
+}
+
+body.light-mode .bracket-match-card .bracket-score{
+  color:#0356fe !important;
+  font-weight:1000 !important;
+}
+
+
+
+
+
+
+
+/* =========================
+   팀/참가자 라이트모드
+========================= */
+
+
+/* =========================
+   팀/참가자 라이트모드 최종 덮어쓰기
+========================= */
+
+body.light-mode #page-tournament .team-profile-head,
+body.light-mode #page-tournament #teamView{
+  color:#111827 !important;
+}
+
+body.light-mode #page-tournament .team-title{
+  color:#111827 !important;
+  text-shadow:none !important;
+  opacity:1 !important;
+}
+
+body.light-mode #page-tournament .team-subtitle{
+  color:#0356fe !important;
+  opacity:1 !important;
+}
+
+/* 팀 탭 */
+body.light-mode #page-tournament .team-tabs{
+  background:#ffffff !important;
+  border:1px solid #d7def0 !important;
+  box-shadow:0 10px 24px rgba(30,50,90,.08) !important;
+}
+
+body.light-mode #page-tournament .team-tab{
+  background:#eef4ff !important;
+  border:1px solid #cfe0ff !important;
+  color:#334155 !important;
+}
+
+body.light-mode #page-tournament .team-tab.active{
+  background:linear-gradient(135deg,#178bff,#45b8ff) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+}
+
+/* 선수 카드 */
+body.light-mode #page-tournament .team-member-card{
+  background:#ffffff !important;
+  border:1px solid #d7def0 !important;
+  color:#111827 !important;
+  box-shadow:0 10px 25px rgba(30,50,90,.08) !important;
+  opacity:1 !important;
+}
+
+/* 카드 내부 전체 */
+body.light-mode #page-tournament .team-member-card *{
+  color:#111827 !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+
+/* 이름 */
+body.light-mode #page-tournament .team-member-name,
+body.light-mode #page-tournament .team-member-card strong{
+  color:#111827 !important;
+  opacity:1 !important;
+}
+
+/* 티어/종족 배지 */
+body.light-mode #page-tournament .team-member-tier,
+body.light-mode #page-tournament .team-member-race,
+body.light-mode #page-tournament .team-member-card span{
+  color:#0356fe !important;
+  background:#eef4ff !important;
+  border-color:#cfe0ff !important;
+  opacity:1 !important;
+}
+
+/* 이미지 흐림 방지 */
+body.light-mode #page-tournament .team-member-image,
+body.light-mode #page-tournament .team-member-image img{
+  opacity:1 !important;
+  filter:none !important;
 }
