@@ -321,20 +321,47 @@ function renderTeamFilter(){
 
   const teams = getTeamList();
 
-  dropdownList.innerHTML = `
-    <div class="team-option" data-team="전체">
-      전체보기
-    </div>
+  // dropdownList.innerHTML = `
+  //   <div class="team-option" data-team="전체">
+  //     전체보기
+  //   </div>
 
-    ${teams.map(team => `
-      <div
-        class="team-option"
-        data-team="${team.name}"
-      >
-        ${team.name}
-      </div>
-    `).join("")}
-  `;
+  //   ${teams.map(team => `
+  //     <div
+  //       class="team-option"
+  //       data-team="${team.name}"
+  //     >
+  //       ${team.name}
+  //     </div>
+  //   `).join("")}
+  // `;
+
+dropdownList.innerHTML = `
+  <div class="team-option" data-team="전체">
+    <span>전체보기</span>
+  </div>
+
+  ${teams.map(team => `
+    <div
+      class="team-option"
+      data-team="${team.name}"
+    >
+
+      ${
+        getTeamLogo(team.name)
+          ? `<img
+              class="team-option-logo"
+              src="${getTeamLogo(team.name)}"
+              alt="${team.name}"
+            >`
+          : ""
+      }
+
+      <span>${team.name}</span>
+
+    </div>
+  `).join("")}
+`;
 
   dropdownBtn.onclick = () => {
     dropdown.classList.toggle("open");
