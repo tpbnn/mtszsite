@@ -2871,6 +2871,7 @@ body.light-mode #page-records .match-item{
   font-size:22px;
 
   cursor:pointer;
+  font-weight: 1000;
 }
 
 .team-option:hover{
@@ -5662,4 +5663,18 @@ body.light-mode .tournament-breadcrumb{
   background:linear-gradient(135deg,var(--brand),var(--brand2));
   color:#fff;
   border-color:transparent;
+}
+
+
+.team-option{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.team-option-logo{
+  width:36px;
+  height:36px;
+  object-fit:contain;
+  flex-shrink:0;
 }
