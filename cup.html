@@ -70,17 +70,17 @@
 </div>
 
 <div id="tournamentBreadcrumb" class="tournament-breadcrumb">
-  🏆 대회 정보 > 일정 > 캘린더
+  🏆 대회 정보 > 일정 > 테이블
 </div>
 
 <section id="matchView" class="main-view">
 
 
-  <section id="calendarView" class="tournament-view active">
+  <section id="calendarView" class="tournament-view">
     <div id="calendarGrid" class="jm-calendar-grid"></div>
   </section>
 
-  <section id="tableView" class="tournament-view">
+  <section id="tableView" class="tournament-view active">
     <div class="jm-table-filter">
       <div class="team-dropdown" id="teamDropdown">
         <button id="teamDropdownBtn" class="team-dropdown-btn">전체보기 ▼</button>
@@ -122,7 +122,7 @@ const SHEET_NAME = "NCAUCTION";
 
 let TOURNAMENT_ROWS = [];
 let MATCHES = [];
-let currentView = "calendar";
+let currentView = "table";
 let currentTeam = "전체";
 let calendarMonths = [];
 let currentCalendarIndex = 0;
