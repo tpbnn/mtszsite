@@ -7342,3 +7342,12 @@ body.light-mode #page-tournament .power-ranking-desc{
   gap:12px !important;
   flex-wrap:nowrap !important;
 }
+
+
+body.light-mode #page-tournament .power-player-name{
+  color:#18233a !important;
+}
+
+body.light-mode #page-tournament .power-player{
+  color:#18233a !important;
+}
