@@ -7,6 +7,472 @@
   <link rel="icon" href="./favicon.png" type="image/png" />
   <link rel="stylesheet" href="common-ncauction.css" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+/* 파워랭킹 신규 구조 보정 */
+.power-panel{display:flex;flex-direction:column;gap:18px;}
+.power-mode-tabs,.power-tabs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.power-mode-tab,.power-tab{height:48px;padding:0 20px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:var(--text);font-weight:1000;cursor:pointer;}
+.power-mode-tab.active,.power-tab.active{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-color:transparent;box-shadow:0 10px 24px rgba(3,86,254,.25);}
+.power-filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.power-filter{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:1000;color:var(--text);}
+.power-filter select{height:46px;min-width:180px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:var(--text);padding:0 16px;font-weight:900;}
+.power-ranking-desc{margin-top:4px;margin-bottom:6px;color:var(--text);font-size:16px;font-weight:800;opacity:.9;}
+body.light-mode .power-mode-tab,body.light-mode .power-tab,body.light-mode .power-filter select{background:#eef3ff;color:#23304f;border:1px solid #d7e2ff;}
+body.light-mode .power-mode-tab.active,body.light-mode .power-tab.active{background:linear-gradient(135deg,#178bff,#45b8ff);color:#fff;border-color:transparent;}
+body.light-mode .power-ranking-desc{color:#23304f;opacity:1;}
+</style>
+<!-- 
+<style id="power-tonemanner-final">
+
+/* =========================================================
+   파워랭킹 톤앤매너 최종 보정
+   - 기존 대형 방송용 카드 → 사이트 전체와 맞는 기록형 카드
+   - 반드시 파일 맨 아래에 위치
+========================================================= */
+#page-tournament #powerView{
+  max-width:1396px !important;
+  margin:0 auto !important;
+}
+
+/* #page-tournament .power-ranking-list{
+  gap:10px !important;
+}
+
+#page-tournament .power-ranking-row,
+#page-tournament .power-ranking-row.is-value{
+  display:grid !important;
+  grid-template-columns:74px minmax(180px,1fr) 150px 230px 158px !important;
+  align-items:center !important;
+  gap:16px !important;
+
+  min-height:74px !important;
+  padding:12px 20px !important;
+
+  border-radius:16px !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  background:
+    linear-gradient(90deg, rgba(0,162,255,.10), transparent 18%),
+    linear-gradient(180deg, rgba(255,255,255,.060), rgba(255,255,255,.028)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 8px 22px rgba(0,0,0,.14) !important;
+} */
+
+#page-tournament .power-ranking-row:hover{
+  transform:translateY(-1px) !important;
+  border-color:rgba(0,162,255,.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 10px 26px rgba(0,162,255,.10) !important;
+}
+
+#page-tournament .power-rank{
+  justify-content:center !important;
+  gap:5px !important;
+  font-size:30px !important;
+  font-weight:1000 !important;
+  letter-spacing:-.04em !important;
+}
+
+#page-tournament .power-rank span{
+  min-width:30px !important;
+}
+
+#page-tournament .power-rank.is-top::before,
+#page-tournament .power-rank.is-top::after{
+  font-size:28px !important;
+  text-shadow:0 0 10px rgba(255,216,107,.35) !important;
+}
+
+#page-tournament .power-player{
+  font-size:24px !important;
+  font-weight:1000 !important;
+  letter-spacing:-.04em !important;
+  text-shadow:0 1px 8px rgba(0,0,0,.20) !important;
+}
+
+#page-tournament .power-tier-badge{
+  min-width:118px !important;
+  height:36px !important;
+  padding:0 14px !important;
+  border-radius:999px !important;
+  font-size:15px !important;
+  font-weight:1000 !important;
+}
+
+#page-tournament .power-games,
+#page-tournament .power-ranking-row.is-value .power-games{
+  min-width:0 !important;
+  width:100% !important;
+  height:40px !important;
+  padding:0 16px !important;
+  gap:8px !important;
+  border-radius:999px !important;
+}
+
+#page-tournament .power-games-icon{
+  font-size:18px !important;
+}
+
+#page-tournament .power-games strong{
+  font-size:16px !important;
+  font-weight:900 !important;
+  letter-spacing:-.025em !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+#page-tournament .power-winrate{
+  min-width:0 !important;
+  gap:7px !important;
+}
+
+#page-tournament .power-winrate span{
+  font-size:14px !important;
+  font-weight:1000 !important;
+}
+
+#page-tournament .power-winrate strong{
+  font-size:30px !important;
+  font-weight:1000 !important;
+  letter-spacing:-.05em !important;
+  text-shadow:0 0 16px rgba(0,162,255,.28) !important;
+}
+
+#page-tournament .power-ranking-row.is-value .power-winrate strong{
+  font-size:28px !important;
+}
+
+/* 필터/설명도 같은 톤으로 정리 */
+#page-tournament .power-mode-tabs{
+  margin-bottom:16px !important;
+}
+
+#page-tournament .power-tabs{
+  margin-bottom:18px !important;
+}
+
+#page-tournament .power-mode-tab{
+  min-height:50px !important;
+  padding:0 26px !important;
+  font-size:18px !important;
+}
+
+#page-tournament .power-tab{
+  min-height:44px !important;
+  padding:0 18px !important;
+  font-size:15px !important;
+}
+
+#page-tournament .power-filter-row{
+  margin-bottom:18px !important;
+}
+
+#page-tournament .power-filter span{
+  font-size:14px !important;
+}
+
+#page-tournament .power-filter select{
+  min-width:180px !important;
+  height:44px !important;
+  font-size:15px !important;
+  padding:0 16px !important;
+}
+
+#page-tournament .power-ranking-desc{
+  margin:2px 0 14px !important;
+  font-size:16px !important;
+  font-weight:800 !important;
+  line-height:1.45 !important;
+}
+
+/* 라이트모드 */
+body.light-mode #page-tournament .power-ranking-row,
+body.light-mode #page-tournament .power-ranking-row.is-value{
+  background:
+    linear-gradient(90deg, rgba(23,139,255,.075), transparent 18%),
+    #ffffff !important;
+  border:1px solid #d7def0 !important;
+  box-shadow:0 8px 22px rgba(30,50,90,.065) !important;
+}
+
+body.light-mode #page-tournament .power-player,
+body.light-mode #page-tournament .power-rank,
+body.light-mode #page-tournament .power-rank span{
+  color:#111827 !important;
+  text-shadow:none !important;
+}
+
+body.light-mode #page-tournament .power-games{
+  background:#f4f7ff !important;
+  border:1px solid #d7def0 !important;
+}
+
+body.light-mode #page-tournament .power-games strong{
+  color:#111827 !important;
+}
+
+body.light-mode #page-tournament .power-ranking-desc{
+  color:#334155 !important;
+}
+
+/* 태블릿 */
+@media(max-width:1100px){
+  #page-tournament .power-ranking-row,
+  #page-tournament .power-ranking-row.is-value{
+    grid-template-columns:64px minmax(160px,1fr) 138px 1fr 138px !important;
+    gap:12px !important;
+  }
+
+  #page-tournament .power-player{
+    font-size:22px !important;
+  }
+
+  #page-tournament .power-games strong{
+    font-size:15px !important;
+  }
+
+  #page-tournament .power-winrate strong{
+    font-size:26px !important;
+  }
+}
+
+/* 모바일 */
+@media(max-width:768px){
+  #page-tournament .power-ranking-row,
+  #page-tournament .power-ranking-row.is-value{
+    grid-template-columns:52px 1fr !important;
+    gap:10px 12px !important;
+    min-height:auto !important;
+    padding:16px !important;
+  }
+
+  #page-tournament .power-rank{
+    grid-row:1 / span 2;
+    justify-content:flex-start !important;
+    font-size:28px !important;
+  }
+
+  #page-tournament .power-player{
+    font-size:23px !important;
+  }
+
+  #page-tournament .power-tier-badge{
+    justify-self:start !important;
+    height:34px !important;
+    font-size:14px !important;
+  }
+
+  #page-tournament .power-games,
+  #page-tournament .power-ranking-row.is-value .power-games{
+    grid-column:1 / -1;
+    height:38px !important;
+  }
+
+  #page-tournament .power-winrate{
+    grid-column:1 / -1;
+    justify-content:flex-start !important;
+  }
+
+  #page-tournament .power-winrate strong{
+    font-size:28px !important;
+  }
+}
+
+
+
+/* =========================================================
+   파워랭킹 필터/설명 레이아웃 최종 보정
+   - 설명은 왼쪽, 드롭다운은 오른쪽 정렬
+   - 상단 빈 공간 압축
+========================================================= */
+#page-tournament .power-subbar{
+  display:flex !important;
+  align-items:flex-end !important;
+  justify-content:space-between !important;
+  gap:20px !important;
+  margin:6px 0 18px !important;
+}
+
+#page-tournament .power-filter-toolbar{
+  display:flex !important;
+  justify-content:flex-end !important;
+  align-items:flex-end !important;
+  margin:0 !important;
+  flex:0 0 auto !important;
+}
+
+#page-tournament .power-filter-row{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:12px !important;
+  flex-wrap:wrap !important;
+  margin:0 !important;
+}
+
+#page-tournament .power-filter{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:auto !important;
+  margin:0 !important;
+}
+
+#page-tournament .power-filter span{
+  white-space:nowrap !important;
+  color:rgba(250,248,255,.82) !important;
+}
+
+#page-tournament .power-ranking-desc{
+  flex:1 1 auto !important;
+  margin:0 !important;
+  min-height:44px !important;
+  display:flex !important;
+  align-items:center !important;
+  color:rgba(250,248,255,.82) !important;
+}
+
+#page-tournament #powerRankingContent{
+  margin-top:0 !important;
+}
+
+body.light-mode #page-tournament .power-filter span,
+body.light-mode #page-tournament .power-ranking-desc{
+  color:#334155 !important;
+}
+
+@media(max-width:768px){
+  #page-tournament .power-subbar{
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:12px !important;
+  }
+
+  #page-tournament .power-filter-toolbar,
+  #page-tournament .power-filter-row{
+    justify-content:flex-start !important;
+  }
+
+  #page-tournament .power-filter{
+    width:100% !important;
+  }
+
+  #page-tournament .power-filter select{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+  }
+
+  #page-tournament .power-ranking-desc{
+    min-height:0 !important;
+    display:block !important;
+  }
+}
+
+</style>
+<style id="power-toolbar-final">
+
+/* =========================================================
+   파워랭킹 필터/설명 레이아웃 최종 보정
+   - 설명은 왼쪽, 드롭다운은 오른쪽 정렬
+   - 상단 빈 공간 압축
+========================================================= */
+#page-tournament .power-subbar{
+  display:flex !important;
+  align-items:flex-end !important;
+  justify-content:space-between !important;
+  gap:20px !important;
+  margin:6px 0 18px !important;
+}
+
+#page-tournament .power-filter-toolbar{
+  display:flex !important;
+  justify-content:flex-end !important;
+  align-items:flex-end !important;
+  margin:0 !important;
+  flex:0 0 auto !important;
+}
+
+#page-tournament .power-filter-row{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:12px !important;
+  flex-wrap:wrap !important;
+  margin:0 !important;
+}
+
+#page-tournament .power-filter{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  width:auto !important;
+  margin:0 !important;
+}
+
+#page-tournament .power-filter span{
+  white-space:nowrap !important;
+  color:rgba(250,248,255,.82) !important;
+}
+
+#page-tournament .power-ranking-desc{
+  flex:1 1 auto !important;
+  margin:0 !important;
+  min-height:44px !important;
+  display:flex !important;
+  align-items:center !important;
+  color:rgba(250,248,255,.82) !important;
+}
+
+#page-tournament #powerRankingContent{
+  margin-top:0 !important;
+}
+
+body.light-mode #page-tournament .power-filter span,
+body.light-mode #page-tournament .power-ranking-desc{
+  color:#334155 !important;
+}
+
+@media(max-width:768px){
+  #page-tournament .power-subbar{
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:12px !important;
+  }
+
+  #page-tournament .power-filter-toolbar,
+  #page-tournament .power-filter-row{
+    justify-content:flex-start !important;
+  }
+
+  #page-tournament .power-filter{
+    width:100% !important;
+  }
+
+  #page-tournament .power-filter select{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+  }
+
+  #page-tournament .power-ranking-desc{
+    min-height:0 !important;
+    display:block !important;
+  }
+}
+</style> -->
+
+<style id="power-ranking-final-overrides">
+/* 파워랭킹 최종 구조: 순위 | 선수명 | 팀 | 티어·종족 | 전적/몸값 | 승률/가성비 */
+
+</style>
+
+
+
+
 </head>
 
 <body data-page="tournament">
@@ -1070,68 +1536,548 @@ function renderTeamDetail(teamName){
   `;
 }
 
-let currentPowerTab = "overall";
+let currentPowerScope = "tournament";
+let currentPowerMetric = "overall";
+let currentPowerTeam = "전체";
+let currentPowerTier = "전체";
+let currentPowerPlayerRace = "전체";
+let currentPowerMap = "전체";
+let currentPowerRace = "전체";
+
+const POWER_SCOPE_LABELS = {
+  tournament: "대회 성적",
+  scrim: "스크림 성적"
+};
+
+const POWER_METRIC_LABELS = {
+  overall: "종합 성적",
+  map: "종합 성적",
+  race: "종족별 성적",
+  value: "시장 가치"
+};
 
 const POWER_DESC = {
-  overall: "전체 경기 승률 기준 랭킹입니다.",
-  ace: "가장 많은 승리를 기록한 선수 랭킹입니다.",
-  savior: "팀이 패배 위기일 때 승리를 기록한 해결사 랭킹입니다.",
-  firstPick: "선픽으로 출전했을 때 가장 좋은 성적을 기록한 선수 랭킹입니다.",
-  secondPick: "후픽으로 출전했을 때 가장 좋은 성적을 기록한 선수 랭킹입니다.",
-  loseContinue: "팀의 연패 상황에서 가장 많이 출전한 선수 랭킹입니다.",
-  winBreak: "상대팀의 연승 흐름을 가장 많이 끊어낸 선수 랭킹입니다.",
-  opener: "선봉으로 출전하여 가장 좋은 성적을 기록한 선수 랭킹입니다.",
-  clutch: "승부를 결정짓는 마지막 세트 승리를 가장 많이 기록한 선수 랭킹입니다.",
-  winStreak: "개인 최다 연승 기록 기준 랭킹입니다.",
-  loseStreak: "개인 최다 연패 기록 기준 랭킹입니다.",
-  comeback: "팀이 밀리는 상황에서 승리를 만들어낸 역전의 신 랭킹입니다.",
-  mvp: "승리·클러치·역전승 등을 종합 반영한 MVP 지수 랭킹입니다."
+  tournament: {
+    overall: "ℹ️ 공식 대회 성적 기준 총 승패와 승률 랭킹입니다.",
+    // map: "대회 기준 총 전적과 승률 랭킹입니다.",
+    // race: "상대 종족 기준 대회 승패와 승률 랭킹입니다.",
+    value: "ℹ️ 선수들의 경매가를 기반으로 팀 기여도 등 주요 상황 가중치를 반영한 기대치 대비 활약도 랭킹입니다."
+  },
+  scrim: {
+    overall: "ℹ️ 스크림 결과 기준 총 승패와 승률 랭킹입니다.",
+    // map: "스크림 기준 총 전적과 승률 랭킹입니다.",
+    // race: "상대 종족 기준 연습경기 승패와 승률 랭킹입니다.",
+    value: "ℹ️ 선수들의 경매가를 기반으로 팀 기여도 등 주요 상황 가중치를 반영한 기대치 대비 활약도 랭킹입니다."
+  }
+  };
+
+  const VALUE_BONUS = {
+  스타트: 3,
+  커터: 8,
+  연승: 5,
+  동점: 6,
+  역전: 10,
+  마무리: 8
 };
+
+function toNumber(value){
+  const cleaned = String(value ?? "")
+    .replace(/,/g, "")
+    .replace(/[^0-9.-]/g, "")
+    .trim();
+
+  const num = Number(cleaned);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function getPlayerInfoMap(){
+  const map = {};
+
+  TOURNAMENT_ROWS.forEach(row => {
+    const name = String(row["이름"] || "").trim();
+    if(!name) return;
+
+    map[name] = {
+      name,
+      team: String(row["소속"] || "").trim(),
+      race: String(row["종족"] || "").trim(),
+      tier: String(row["티어"] || "").trim(),
+      price: toNumber(row["선수 몸값"])
+    };
+  });
+
+  return map;
+}
+
+// function makePowerRecord({ scope, playerA, playerB, winner, map, raceA, raceB }){
+function makePowerRecord({
+  scope,
+  playerA,
+  playerB,
+  winner,
+  map,
+  raceA,
+  raceB,
+  weight
+}){
+  const a = String(playerA || "").trim();
+  const b = String(playerB || "").trim();
+  const w = String(winner || "").trim();
+
+  if(!a || !b || !w || w === "미정") return null;
+  if(w !== a && w !== b) return null;
+
+return {
+  scope,
+  a,
+  b,
+  winner: w,
+  loser: w === a ? b : a,
+  map: String(map || "").trim(),
+  aRace: String(raceA || "").trim(),
+  bRace: String(raceB || "").trim(),
+  weight: String(weight || "").trim()
+};
+}
+
+function buildTournamentPowerRecords(){
+  const infoMap = getPlayerInfoMap();
+  const records = [];
+
+  MATCHES.forEach(match => {
+    match.sets.forEach(set => {
+      const a = String(set.세트A || "").trim();
+      const b = String(set.세트B || "").trim();
+
+      const record = makePowerRecord({
+        scope: "tournament",
+        playerA: a,
+        playerB: b,
+        winner: set.세트승자,
+        map: set.맵,
+        raceA: set.세트A종족 || infoMap[a]?.race || "",
+        raceB: set.세트B종족 || infoMap[b]?.race || ""
+      });
+
+      if(record) records.push(record);
+    });
+  });
+
+  return records;
+}
+
+function buildScrimPowerRecords(){
+  const infoMap = getPlayerInfoMap();
+  const records = [];
+
+  TOURNAMENT_ROWS.forEach(row => {
+    const a = String(row["연습경기선수A"] || "").trim();
+    const b = String(row["연습경기선수B"] || "").trim();
+
+const record = makePowerRecord({
+  scope: "scrim",
+  playerA: a,
+  playerB: b,
+  winner: row["연습경기승리선수"],
+  map: row["연습경기맵"],
+  raceA: infoMap[a]?.race || "",
+  raceB: infoMap[b]?.race || "",
+  weight: row["연습가중치"] || ""
+});
+
+    if(record) records.push(record);
+  });
+
+  return records;
+}
+
+function buildAllPowerRecords(scope){
+  return scope === "scrim"
+    ? buildScrimPowerRecords()
+    : buildTournamentPowerRecords();
+}
+
+function getPowerMaps(scope){
+  const maps = buildAllPowerRecords(scope)
+    .map(record => record.map)
+    .filter(Boolean);
+
+  return ["전체", ...Array.from(new Set(maps)).sort((a, b) => a.localeCompare(b))];
+}
+
+function getPowerRaces(){
+  return ["전체", "P", "T", "Z"];
+}
+
+function getPowerRaceLabel(race){
+  if(race === "전체") return "전체";
+  if(["P", "T", "Z"].includes(race)) return `vs ${race}`;
+  return race;
+}
+
+function getPowerTeams(){
+  const infoMap = getPlayerInfoMap();
+  const teams = Object.values(infoMap)
+    .map(p => p.team)
+    .filter(Boolean);
+
+  return ["전체", ...Array.from(new Set(teams)).sort((a, b) => a.localeCompare(b))];
+}
+
+function getPowerTiers(){
+  const infoMap = getPlayerInfoMap();
+  const tierOrder = ["God", "King", "Jack", "Joker", "Spade", "0티어", "1티어", "2티어", "3티어", "4티어", "5티어", "6티어", "7티어", "Baby"];
+  const tiers = Object.values(infoMap)
+    .map(p => p.tier)
+    .filter(Boolean);
+
+  const unique = Array.from(new Set(tiers));
+  unique.sort((a, b) => {
+    const ai = tierOrder.indexOf(a);
+    const bi = tierOrder.indexOf(b);
+    if(ai !== -1 || bi !== -1){
+      if(ai === -1) return 1;
+      if(bi === -1) return -1;
+      return ai - bi;
+    }
+    return a.localeCompare(b);
+  });
+
+  return ["전체", ...unique];
+}
+
+function getPowerPlayerRaces(){
+  return ["전체", "P", "T", "Z"];
+}
+
+function getPowerFilteredRecords(){
+  return buildAllPowerRecords(currentPowerScope);
+}
+
+
+
+
+
+function initPowerPlayer(players, name, infoMap){
+  if(!name || name === "미정") return;
+
+  if(!players[name]){
+    const info = infoMap[name] || {};
+
+    players[name] = {
+      name,
+      team: info.team || "",
+      tier: info.tier || "-",
+      race: info.race || "-",
+      price: toNumber(info.price),
+
+      games: 0,
+      win: 0,
+      lose: 0,
+
+      // 몸값 대비 활약도는 100을 기준값으로 시작합니다.
+      // 100 = 기대치 수준, 100 이상 = 몸값 이상 활약, 100 미만 = 기대 이하
+      eloValue: 0,
+
+      winRate: 0,
+      activityScore: 0,
+      valueScore: 0
+    };
+  }
+}
+
+function buildPlayerPowerRanking(){
+  const infoMap = getPlayerInfoMap();
+  const players = {};
+  const records = getPowerFilteredRecords();
+
+  const useBasicPlayerFilters =
+    currentPowerMetric === "overall" ||
+    currentPowerMetric === "value";
+
+  const useTeamFilter =
+    useBasicPlayerFilters &&
+    currentPowerTeam !== "전체";
+
+  const useTierFilter =
+    useBasicPlayerFilters &&
+    currentPowerTier !== "전체";
+
+  const usePlayerRaceFilter =
+    useBasicPlayerFilters &&
+    currentPowerPlayerRace !== "전체";
+
+  const useMapFilter =
+    currentPowerMetric === "overall" &&
+    currentPowerMap !== "전체";
+
+  const useOpponentRaceFilter =
+    currentPowerMetric === "overall" &&
+    currentPowerRace !== "전체";
+
+  const K = 32;
+
+  const canApplyPlayer = (name, opponentRace) => {
+    const info = infoMap[name] || {};
+
+    if(useTeamFilter && info.team !== currentPowerTeam) return false;
+    if(useTierFilter && info.tier !== currentPowerTier) return false;
+    if(usePlayerRaceFilter && info.race !== currentPowerPlayerRace) return false;
+    if(useOpponentRaceFilter && opponentRace !== currentPowerRace) return false;
+
+    return true;
+  };
+
+  records.forEach(record => {
+    if(useMapFilter && record.map !== currentPowerMap) return;
+
+    initPowerPlayer(players, record.a, infoMap);
+    initPowerPlayer(players, record.b, infoMap);
+
+    const aOpponentRace = record.bRace || infoMap[record.b]?.race || "";
+    const bOpponentRace = record.aRace || infoMap[record.a]?.race || "";
+
+    const playerA = players[record.a];
+    const playerB = players[record.b];
+
+    const priceA = Math.max(1, toNumber(infoMap[record.a]?.price));
+    const priceB = Math.max(1, toNumber(infoMap[record.b]?.price));
+
+    const expectedA = priceA / (priceA + priceB);
+    const expectedB = priceB / (priceA + priceB);
+    const bonus = VALUE_BONUS[record.weight] || 0;
+
+    if(playerA && canApplyPlayer(record.a, aOpponentRace)){
+      const won = record.winner === record.a;
+
+      playerA.games++;
+
+if(won){
+  playerA.win++;
+  playerA.eloValue +=
+    (K * (1 - expectedA)) + bonus;
+} else {
+  playerA.lose++;
+  playerA.eloValue +=
+    (K * (0 - expectedA)) - bonus;
+}
+    }
+
+    if(playerB && canApplyPlayer(record.b, bOpponentRace)){
+      const won = record.winner === record.b;
+
+      playerB.games++;
+if(won){
+  playerB.win++;
+  playerB.eloValue +=
+    (K * (1 - expectedB)) + bonus;
+} else {
+  playerB.lose++;
+  playerB.eloValue +=
+    (K * (0 - expectedB)) - bonus;
+}
+    }
+  });
+
+  let list = Object.values(players).filter(p => p.games > 0);
+
+  list.forEach(p => {
+    p.winRate = p.games ? Math.round((p.win / p.games) * 100) : 0;
+    p.activityScore = Math.round(p.eloValue);
+    p.valueScore = Math.round(p.eloValue);
+  });
+
+  if(currentPowerMetric === "value"){
+    list = list.filter(p => p.price > 0);
+
+    return list.sort((a, b) => {
+      if(b.valueScore !== a.valueScore) return b.valueScore - a.valueScore;
+      if(b.winRate !== a.winRate) return b.winRate - a.winRate;
+      if(b.win !== a.win) return b.win - a.win;
+      if(a.lose !== b.lose) return a.lose - b.lose;
+      if(b.games !== a.games) return b.games - a.games;
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  return list.sort((a, b) => {
+    if(b.winRate !== a.winRate) return b.winRate - a.winRate;
+    if(b.win !== a.win) return b.win - a.win;
+    if(a.lose !== b.lose) return a.lose - b.lose;
+    if(b.games !== a.games) return b.games - a.games;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function getPowerDescription(){
+  return POWER_DESC[currentPowerScope]?.[currentPowerMetric] || "";
+}
 
 function renderPowerRanking(){
   const box = document.getElementById("powerView");
   if(!box) return;
 
-  const tabs = [
-    ["overall", "종합 승률"],
-    // ["ace", "에이스"],
-    // ["savior", "해결사"],
-    // ["firstPick", "선픽"],
-    // ["secondPick", "후픽"],
-    // ["loseContinue", "연패 지속"],
-    // ["winBreak", "연승 끊김"],
-    // ["opener", "선봉장"],
-    // ["clutch", "클러치"],
-    // ["winStreak", "최다 연승"],
-    // ["loseStreak", "최다 연패"],
-    // ["comeback", "역전의 신"],
-    // ["mvp", "MVP 지수"]
+  const scopeTabs = [
+    ["tournament", "대회 성적"],
+    ["scrim", "스크림 성적"]
   ];
 
+  const metricTabs = [
+    ["overall", "종합 성적"],
+    ["value", "시장 가치 대비"]
+  ];
+
+  const teamOptions = getPowerTeams();
+  const tierOptions = getPowerTiers();
+  const playerRaceOptions = getPowerPlayerRaces();
+  const mapOptions = getPowerMaps(currentPowerScope);
+  const opponentRaceOptions = getPowerRaces();
+
+  if(!teamOptions.includes(currentPowerTeam)) currentPowerTeam = "전체";
+  if(!tierOptions.includes(currentPowerTier)) currentPowerTier = "전체";
+  if(!playerRaceOptions.includes(currentPowerPlayerRace)) currentPowerPlayerRace = "전체";
+  if(!mapOptions.includes(currentPowerMap)) currentPowerMap = "전체";
+  if(!opponentRaceOptions.includes(currentPowerRace)) currentPowerRace = "전체";
+
   box.innerHTML = `
-    <div class="power-tabs">
-      ${tabs.map(([key, label]) => `
-        <button
-          class="power-tab ${currentPowerTab === key ? "active" : ""}"
-          data-power="${key}"
-        >
-          ${label}
-        </button>
-      `).join("")}
+    <div class="power-panel">
+      <div class="power-mode-tabs">
+        ${scopeTabs.map(([key, label]) => `
+          <button
+            class="power-mode-tab ${currentPowerScope === key ? "active" : ""}"
+            data-scope="${key}"
+          >
+            ${label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="power-tabs">
+        ${metricTabs.map(([key, label]) => `
+          <button
+            class="power-tab ${currentPowerMetric === key ? "active" : ""}"
+            data-metric="${key}"
+          >
+            ${label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="power-subbar ${currentPowerMetric === "overall" ? "has-filters" : "no-filters"}">
+        <div id="powerRankingDesc" class="power-ranking-desc"></div>
+
+        ${currentPowerMetric === "overall" || currentPowerMetric === "value" ? `
+          <div class="power-filter-toolbar">
+            <div class="power-filter-row">
+
+              <label class="power-filter">
+                <span>팀</span>
+                <select id="powerTeamSelect">
+                  ${teamOptions.map(team => `
+                    <option value="${esc(team)}" ${currentPowerTeam === team ? "selected" : ""}>
+                      ${esc(team)}
+                    </option>
+                  `).join("")}
+                </select>
+              </label>
+
+              <label class="power-filter">
+                <span>티어</span>
+                <select id="powerTierSelect">
+                  ${tierOptions.map(tier => `
+                    <option value="${esc(tier)}" ${currentPowerTier === tier ? "selected" : ""}>
+                      ${esc(tier)}
+                    </option>
+                  `).join("")}
+                </select>
+              </label>
+
+              <label class="power-filter">
+                <span>종족</span>
+                <select id="powerPlayerRaceSelect">
+                  ${playerRaceOptions.map(race => `
+                    <option value="${esc(race)}" ${currentPowerPlayerRace === race ? "selected" : ""}>
+                      ${esc(race)}
+                    </option>
+                  `).join("")}
+                </select>
+              </label>
+
+              ${currentPowerMetric === "overall" ? `
+                <label class="power-filter">
+                  <span>맵</span>
+                  <select id="powerMapSelect">
+                    ${mapOptions.map(map => `
+                      <option value="${esc(map)}" ${currentPowerMap === map ? "selected" : ""}>
+                        ${esc(map)}
+                      </option>
+                    `).join("")}
+                  </select>
+                </label>
+
+                <label class="power-filter">
+                  <span>상대 종족</span>
+                  <select id="powerRaceSelect">
+                    ${opponentRaceOptions.map(race => `
+                      <option value="${esc(race)}" ${currentPowerRace === race ? "selected" : ""}>
+                        ${esc(getPowerRaceLabel(race))}
+                      </option>
+                    `).join("")}
+                  </select>
+                </label>
+              ` : ""}
+
+            </div>
+          </div>
+        ` : ""}
+      </div>
+
+      <div id="powerRankingContent"></div>
     </div>
-
-<div id="powerRankingDesc" class="power-ranking-desc"></div>
-
-
-
-<div id="powerRankingContent"></div>
   `;
+
+  document.querySelectorAll(".power-mode-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentPowerScope = btn.dataset.scope;
+      currentPowerTeam = "전체";
+      currentPowerTier = "전체";
+      currentPowerPlayerRace = "전체";
+      currentPowerMap = "전체";
+      currentPowerRace = "전체";
+      renderPowerRanking();
+    });
+  });
 
   document.querySelectorAll(".power-tab").forEach(btn => {
     btn.addEventListener("click", () => {
-      currentPowerTab = btn.dataset.power;
+      currentPowerMetric = btn.dataset.metric;
       renderPowerRanking();
     });
+  });
+
+  document.getElementById("powerTeamSelect")?.addEventListener("change", e => {
+    currentPowerTeam = e.target.value;
+    renderPowerRankingContent();
+  });
+
+  document.getElementById("powerTierSelect")?.addEventListener("change", e => {
+    currentPowerTier = e.target.value;
+    renderPowerRankingContent();
+  });
+
+  document.getElementById("powerPlayerRaceSelect")?.addEventListener("change", e => {
+    currentPowerPlayerRace = e.target.value;
+    renderPowerRankingContent();
+  });
+
+  document.getElementById("powerMapSelect")?.addEventListener("change", e => {
+    currentPowerMap = e.target.value;
+    renderPowerRankingContent();
+  });
+
+  document.getElementById("powerRaceSelect")?.addEventListener("change", e => {
+    currentPowerRace = e.target.value;
+    renderPowerRankingContent();
   });
 
   renderPowerRankingContent();
@@ -1141,284 +2087,69 @@ function renderPowerRankingContent(){
   const descEl = document.getElementById("powerRankingDesc");
 
   if(descEl){
-    descEl.textContent = POWER_DESC[currentPowerTab] || "";
+    const scopeLabel = POWER_SCOPE_LABELS[currentPowerScope] || "";
+    const metricLabel = POWER_METRIC_LABELS[currentPowerMetric] || "";
+    descEl.textContent = `${scopeLabel} > ${metricLabel} : ${getPowerDescription()}`;
   }
 
   const box = document.getElementById("powerRankingContent");
   if(!box) return;
 
-  const ranking = buildPlayerPowerRanking(currentPowerTab);
+  const ranking = buildPlayerPowerRanking();
 
   if(!ranking.length){
     box.innerHTML = `<div class="tournament-empty">파워랭킹 데이터가 없습니다.</div>`;
     return;
   }
 
-  const isOverall = currentPowerTab === "overall";
-
   box.innerHTML = `
-    <div class="power-ranking-list ${isOverall ? "is-overall" : ""}">
+    <div class="power-ranking-list">
       ${ranking.map((p, index) => {
         const rankNo = index + 1;
-        const recordText = isOverall
-          ? `${p.games}전 ${p.win}승 ${p.lose}패`
-          : `${esc(p.label)} ${p.score}`;
+        const recordText = `${p.games}전 ${p.win}승 ${p.lose}패`;
+const price = Number(p.price || 0);
 
+const valueText = price > 0
+  ? `시장 가치 : ${Math.round(price).toLocaleString()}`
+  : `몸값 미등록 · 기준 100`;
         return `
-          <div class="power-ranking-row ${isOverall ? "is-overall" : ""}">
+          <div class="power-ranking-row ${currentPowerMetric === "value" ? "is-value" : ""}">
             <div class="power-rank ${rankNo === 1 ? "is-top" : ""}">
               <span>${rankNo}</span>
             </div>
 
-            <div class="power-player">
-              ${esc(p.name)}
-            </div>
+<div class="power-player">
+  <span class="power-player-name">
+    ${esc(p.name)}
+  </span>
+</div>
+
+<div class="power-team">
+  ${p.team ? `
+    <span class="power-team-badge">
+      ${esc(p.team)}
+    </span>
+  ` : "-"}
+</div>
 
             <div class="power-tier-badge race-${esc(p.race || "")}">
-              
               <span>${esc(p.tier || "-")} · ${esc(p.race || "-")}</span>
             </div>
 
             <div class="power-games">
-              <span class="power-games-icon">⚔</span>
-              <strong>${recordText}</strong>
+              
+              <strong>${currentPowerMetric === "value" ? valueText : recordText}</strong>
             </div>
 
             <div class="power-winrate">
-              <span>승률</span>
-              <strong>${p.winRate}%</strong>
+              <span>${currentPowerMetric === "value" ? "활약도" : "승률"}</span>
+              <strong>${currentPowerMetric === "value" ? p.valueScore : `${p.winRate}%`}</strong>
             </div>
           </div>
         `;
       }).join("")}
     </div>
   `;
-}
-
-function buildPlayerPowerRanking(type){
-  const players = {};
-
-  function initPlayer(name, tier, race){
-    if(!name || name === "미정") return;
-
-    if(!players[name]){
-      players[name] = {
-        name,
-        tier: tier || "",
-        race: race || "",
-        games: 0,
-        win: 0,
-        lose: 0,
-        firstPick: 0,
-        firstPickWin: 0,
-        secondPick: 0,
-        secondPickWin: 0,
-        opener: 0,
-        openerWin: 0,
-        clutch: 0,
-        clutchWin: 0,
-        winStreak: 0,
-        loseStreak: 0,
-        maxWinStreak: 0,
-        maxLoseStreak: 0,
-        winBreak: 0,
-        loseContinue: 0,
-        comeback: 0,
-        mvp: 0
-      };
-    }
-
-    if(tier && !players[name].tier) players[name].tier = tier;
-    if(race && !players[name].race) players[name].race = race;
-  }
-
-  MATCHES.forEach(match => {
-    let teamASetWins = 0;
-    let teamBSetWins = 0;
-
-    match.sets.forEach((set, idx) => {
-      const a = set.세트A;
-      const b = set.세트B;
-      const winner = set.세트승자;
-
-      initPlayer(a, set.세트A티어, set.세트A종족);
-      initPlayer(b, set.세트B티어, set.세트B종족);
-
-      if(!a || !b || !winner || winner === "미정") return;
-
-      const aWin = winner === a;
-      const bWin = winner === b;
-
-      const loser = aWin ? b : a;
-
-      players[a].games++;
-      players[b].games++;
-
-      if(aWin){
-        players[a].win++;
-        players[b].lose++;
-      }
-
-      if(bWin){
-        players[b].win++;
-        players[a].lose++;
-      }
-
-      // 선픽 / 후픽: 홈팀 Y열, 원정팀 Z열 모두 참조
-      const aPick = String(set.홈픽 || "");
-      const bPick = String(set.원정픽 || "");
-
-      if(aPick.includes("선픽")){
-        players[a].firstPick++;
-        if(aWin) players[a].firstPickWin++;
-      }
-
-      if(aPick.includes("후픽")){
-        players[a].secondPick++;
-        if(aWin) players[a].secondPickWin++;
-      }
-
-      if(bPick.includes("선픽")){
-        players[b].firstPick++;
-        if(bWin) players[b].firstPickWin++;
-      }
-
-      if(bPick.includes("후픽")){
-        players[b].secondPick++;
-        if(bWin) players[b].secondPickWin++;
-      }
-
-      // 선봉장: 1세트 출전
-      if(idx === 0){
-        players[a].opener++;
-        players[b].opener++;
-        if(aWin) players[a].openerWin++;
-        if(bWin) players[b].openerWin++;
-      }
-
-      // 클러치: 마지막 세트 출전 후 승리
-      if(idx === match.sets.length - 1){
-        if(aWin){
-          players[a].clutch++;
-          players[a].clutchWin++;
-        }
-
-        if(bWin){
-          players[b].clutch++;
-          players[b].clutchWin++;
-        }
-      }
-
-      // 역전의 신: 팀이 지고 있는 상황에서 승리
-      if(teamASetWins < teamBSetWins && aWin){
-        players[a].comeback++;
-      }
-
-      if(teamBSetWins < teamASetWins && bWin){
-        players[b].comeback++;
-      }
-
-      // 연승 끊김: 직전 세트까지 상대팀이 연승 중이고, 출전해서 패배
-      if(idx >= 1){
-        const prevSets = match.sets.slice(0, idx);
-        const prevWinners = prevSets.map(s => s.세트승자);
-
-        const prevAllA = prevWinners.every(w => w === a || w === match.sets[idx - 1].세트A);
-        const prevAllB = prevWinners.every(w => w === b || w === match.sets[idx - 1].세트B);
-
-        if(loser === a && teamBSetWins >= 2){
-          players[a].winBreak++;
-        }
-
-        if(loser === b && teamASetWins >= 2){
-          players[b].winBreak++;
-        }
-      }
-
-      // 개인 연승/연패
-      [a, b].forEach(name => {
-        const p = players[name];
-        const won = name === winner;
-
-        if(won){
-          p.winStreak++;
-          p.loseStreak = 0;
-        } else {
-          p.loseStreak++;
-          p.winStreak = 0;
-        }
-
-        p.maxWinStreak = Math.max(p.maxWinStreak, p.winStreak);
-        p.maxLoseStreak = Math.max(p.maxLoseStreak, p.loseStreak);
-      });
-
-      if(aWin) teamASetWins++;
-      if(bWin) teamBSetWins++;
-    });
-  });
-
-  let list = Object.values(players).filter(p => p.games > 0);
-
-  list.forEach(p => {
-    p.winRate = p.games ? Math.round((p.win / p.games) * 100) : 0;
-
-    if(type === "overall"){
-      p.score = p.winRate;
-      p.label = "승률";
-    } else if(type === "ace"){
-      p.score = p.win;
-      p.label = "승수";
-    } else if(type === "firstPick"){
-      p.score = p.firstPickWin;
-      p.label = "선픽승";
-    } else if(type === "secondPick"){
-      p.score = p.secondPickWin;
-      p.label = "후픽승";
-    } else if(type === "opener"){
-      p.score = p.openerWin;
-      p.label = "선봉승";
-    } else if(type === "clutch"){
-      p.score = p.clutchWin;
-      p.label = "클러치승";
-    } else if(type === "winStreak"){
-      p.score = p.maxWinStreak;
-      p.label = "최다연승";
-    } else if(type === "loseStreak"){
-      p.score = p.maxLoseStreak;
-      p.label = "최다연패";
-    } else if(type === "comeback"){
-      p.score = p.comeback;
-      p.label = "역전승";
-    } else if(type === "winBreak"){
-      p.score = p.winBreak;
-      p.label = "연승끊김";
-    } else if(type === "loseContinue"){
-      p.score = p.maxLoseStreak;
-      p.label = "연패지속";
-    } else if(type === "mvp"){
-      p.score =
-        p.win * 3 +
-        p.clutchWin * 2 +
-        p.comeback * 2 +
-        p.firstPickWin +
-        p.secondPickWin -
-        p.lose;
-      p.label = "MVP";
-    } else {
-      p.score = p.winRate;
-      p.label = "점수";
-    }
-  });
-
-  return list
-    .filter(p => p.score > 0)
-    .sort((a, b) => {
-      if(b.score !== a.score) return b.score - a.score;
-      if(b.winRate !== a.winRate) return b.winRate - a.winRate;
-      if(b.win !== a.win) return b.win - a.win;
-      if(a.lose !== b.lose) return a.lose - b.lose;
-      return a.name.localeCompare(b.name);
-    });
 }
 
 // function renderPowerRanking(){
