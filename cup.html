@@ -1895,7 +1895,12 @@ function buildPlayerPowerRanking(){
   list.forEach(p => {
     p.winRate = p.games ? Math.round((p.win / p.games) * 100) : 0;
     p.activityScore = Math.round(p.eloValue);
-    p.valueScore = Math.round(p.eloValue);
+    p.valueScore = Math.round(
+  p.eloValue +
+  (p.win * 5) -
+  (p.lose * 3) +
+  (p.winRate * 0.5)
+);
   });
 
   if(currentPowerMetric === "value"){
