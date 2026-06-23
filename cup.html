@@ -1104,22 +1104,32 @@ function renderMatchList(openKey = ""){
 }
 
 function playerWithBadges(name, tier, race, note, winner, side){
+  const winnerName = String(winner || "").trim();
+
+  const hasResult =
+    winnerName &&
+    winnerName !== "미정";
+
   const isWinner =
+    hasResult &&
     name &&
-    winner &&
-    String(name).trim() === String(winner).trim();
+    String(name).trim() === winnerName;
+
+  const resultClass = hasResult
+    ? (isWinner ? "is-winner" : "is-loser")
+    : "";
 
   return `
-    <div class="set-player-box ${side} ${isWinner ? "is-winner" : "is-loser"}">
+    <div class="set-player-box ${side} ${resultClass}">
       <div class="set-player-name-line">
         <strong>${esc(name || "미정")}</strong>
       </div>
 
-<div class="set-player-badge-line">
-  ${tier ? `<span class="player-badge tier">${esc(tier)}</span>` : ""}
-  ${race ? `<span class="player-badge race race-${esc(race)}">${esc(race)}</span>` : ""}
-  ${note ? `<span class="player-badge note">${esc(note)}</span>` : ""}
-</div>
+      <div class="set-player-badge-line">
+        ${tier ? `<span class="player-badge tier">${esc(tier)}</span>` : ""}
+        ${race ? `<span class="player-badge race race-${esc(race)}">${esc(race)}</span>` : ""}
+        ${note ? `<span class="player-badge note">${esc(note)}</span>` : ""}
+      </div>
     </div>
   `;
 }
