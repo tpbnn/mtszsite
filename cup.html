@@ -705,6 +705,7 @@ map.get(matchKey).sets.push({
   세트B: row["세트B선수"],
   세트승자: row["세트승자"],
   맵: row["맵"],
+  대회가중치: row["대회가중치"] || "",
 
   세트A티어: row["선수A티어"] || "",
   세트A종족: row["선수A종족"] || "",
@@ -1650,15 +1651,16 @@ function buildTournamentPowerRecords(){
       const a = String(set.세트A || "").trim();
       const b = String(set.세트B || "").trim();
 
-      const record = makePowerRecord({
-        scope: "tournament",
-        playerA: a,
-        playerB: b,
-        winner: set.세트승자,
-        map: set.맵,
-        raceA: set.세트A종족 || infoMap[a]?.race || "",
-        raceB: set.세트B종족 || infoMap[b]?.race || ""
-      });
+const record = makePowerRecord({
+  scope: "tournament",
+  playerA: a,
+  playerB: b,
+  winner: set.세트승자,
+  map: set.맵,
+  raceA: set.세트A종족 || infoMap[a]?.race || "",
+  raceB: set.세트B종족 || infoMap[b]?.race || "",
+  weight: set.대회가중치 || ""
+});
 
       if(record) records.push(record);
     });
