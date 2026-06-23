@@ -2646,7 +2646,7 @@ body.light-mode #page-records .match-item{
   grid-template-columns: 1.2fr 1.4fr 240px;
   align-items: center;
   background: #fff;
-  color: #000;
+  /* color: #000; */
   border: 2px solid #999;
   margin-bottom: 16px;
   padding: 18px 22px;
@@ -3892,9 +3892,9 @@ body.light-mode .tournament-breadcrumb{
   background:#22c76a;
 }
 
-#tableView .losing-score{
+/* #tableView .losing-score{
   color:rgba(255,255,255,.38) !important;
-}
+} */
 
 #tableView .tm-detail-btn{
   width:190px;
@@ -4722,11 +4722,7 @@ body.light-mode .tournament-breadcrumb{
   filter:none !important;
 }
 
-/* 승자여도 배지는 색상 변경 안 함 */
-.inline-detail .set-player-box.is-winner .player-badge{
-  filter:none !important;
-  background:transparent !important;
-}
+
 
 .jm-calendar-nav button{
   display:flex;
@@ -7375,3 +7371,20 @@ body.light-mode #page-tournament .power-player{
   border-color:transparent;
 }
 
+
+/* 승자 : 원래 색 유지 */
+.set-player-box.is-winner .player-badge{
+  opacity:1 !important;
+  filter:none !important;
+}
+
+/* 패자 : 흐리게 */
+.set-player-box.is-loser .player-badge{
+  opacity:.35 !important;
+  filter:grayscale(100%) !important;
+}
+
+/* 패자 이름도 살짝 흐리게 */
+.set-player-box.is-loser .set-player-name-line{
+  opacity:.55 !important;
+}
