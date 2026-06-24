@@ -2779,7 +2779,7 @@ body.light-mode #page-records .match-item{
 }
 
 
-
+/* 
 @media (max-width: 768px) {
   .tournament-match-card {
     grid-template-columns: 1fr !important;
@@ -2813,7 +2813,7 @@ body.light-mode #page-records .match-item{
     grid-template-columns: 1fr !important;
     gap: 8px !important;
   }
-}
+} */
 
 
 .team-dropdown{
@@ -3840,7 +3840,7 @@ body.light-mode .tournament-breadcrumb{
 #tableView .tm-team{
   display:flex !important;
   align-items:center !important;
-  gap:8px !important;
+  gap:2px !important;
   color:#fff;
   font-size:23px;
   font-weight:1000;
@@ -4117,7 +4117,7 @@ body.light-mode .tournament-breadcrumb{
 .set-vs{
   font-size:18px;
   font-weight:800;
-  opacity:.45;
+  opacity:1;
   text-align:center;
 }
 
@@ -4192,7 +4192,7 @@ body.light-mode .tournament-breadcrumb{
 
 .inline-detail .detail-head h2{
   margin:0px 0 10px !important;
-  font-size:32px !important;
+  font-size:16px !important;
   font-weight:1000 !important;
   color:#fff !important;
 }
@@ -5631,7 +5631,7 @@ body.light-mode .tournament-breadcrumb{
 
 #page-tournament .team-title{
   color:#fff !important;
-  font-size:48px !important;
+  font-size:24px !important;
   font-weight:1000 !important;
 }
 
@@ -7181,8 +7181,8 @@ body.light-mode #page-tournament .power-ranking-desc{
 #page-tournament .power-games,
 #page-tournament .power-ranking-row.is-value .power-games{
   justify-self:center !important;
-  width:36% !important;
-  min-width:0 !important;
+  width:100% !important;
+  /* min-width:0 !important; */
   height:40px !important;
   padding:0 14px !important;
   gap:8px !important;
@@ -7291,7 +7291,7 @@ body.light-mode #page-tournament .power-ranking-desc{
   #page-tournament .power-ranking-row,
   #page-tournament .power-ranking-row.is-value{
     grid-template-columns:52px 1fr !important;
-    gap:10px 12px !important;
+    gap:4px 12px !important;
     min-height:auto !important;
     padding:16px !important;
   }
@@ -7916,7 +7916,7 @@ body.light-mode #page-tournament .power-player{
   }
 }
 
-
+/* 
 @media (max-width:768px){
 
   .jm-calendar{
@@ -7974,7 +7974,7 @@ body.light-mode #page-tournament .power-player{
     border-radius:10px !important;
     word-break:keep-all !important;
   }
-}
+} */
 
 @media (max-width:768px){
 
@@ -8048,4 +8048,1859 @@ body.light-mode #page-tournament .power-player{
   margin-top:14px;
 }
 
+}
+
+/* =========================
+   NCAUCTION 모바일 캘린더 최종 UI
+   - 모바일: 작은 달력 + 선택 날짜 경기 목록
+   - common-ncauction.css 맨 아래에 붙여넣기
+========================= */
+@media (max-width:768px){
+
+  #page-tournament #calendarGrid{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    overflow:visible !important;
+  }
+
+  #page-tournament .mobile-calendar-wrap{
+    width:100% !important;
+    max-width:100% !important;
+    padding:18px 0 0 !important;
+    color:#fff !important;
+  }
+
+  #page-tournament .mobile-calendar-header{
+    display:grid !important;
+    grid-template-columns:44px minmax(0,1fr) 44px !important;
+    align-items:center !important;
+    gap:10px !important;
+    margin:0 0 14px !important;
+  }
+
+  #page-tournament .mobile-calendar-header button{
+    width:44px !important;
+    height:44px !important;
+    border-radius:50% !important;
+    border:1px solid rgba(255,255,255,.16) !important;
+    background:rgba(255,255,255,.08) !important;
+    color:#fff !important;
+    font-size:24px !important;
+    font-weight:1000 !important;
+    cursor:pointer !important;
+  }
+
+  #page-tournament .mobile-calendar-header button:disabled{
+    opacity:.35 !important;
+    cursor:not-allowed !important;
+  }
+
+  #page-tournament .mobile-calendar-title{
+    min-width:0 !important;
+    text-align:center !important;
+    font-size:30px !important;
+    line-height:1 !important;
+    font-weight:1000 !important;
+    letter-spacing:-.04em !important;
+    color:#fff !important;
+    white-space:nowrap !important;
+  }
+
+  #page-tournament .mobile-calendar-weekdays,
+  #page-tournament .mobile-calendar-grid{
+    display:grid !important;
+    grid-template-columns:repeat(7, minmax(0,1fr)) !important;
+    gap:6px !important;
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  #page-tournament .mobile-calendar-weekdays{
+    margin:10px 0 6px !important;
+  }
+
+  #page-tournament .mobile-calendar-weekdays span{
+    height:26px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    color:rgba(255,255,255,.72) !important;
+    font-size:12px !important;
+    font-weight:1000 !important;
+  }
+
+  #page-tournament .mobile-calendar-weekdays .sun{
+    color:#ff5c7a !important;
+  }
+
+  #page-tournament .mobile-calendar-weekdays .sat{
+    color:#55a7ff !important;
+  }
+
+  #page-tournament .mobile-calendar-day{
+    position:relative !important;
+    width:100% !important;
+    min-width:0 !important;
+    height:42px !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:12px !important;
+    background:rgba(255,255,255,.08) !important;
+    color:#fff !important;
+    font-size:14px !important;
+    font-weight:1000 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    cursor:pointer !important;
+  }
+
+  #page-tournament .mobile-calendar-day.is-empty{
+    background:transparent !important;
+    pointer-events:none !important;
+  }
+
+  #page-tournament .mobile-calendar-day.active{
+    background:linear-gradient(135deg,var(--brand),var(--brand2)) !important;
+    color:#fff !important;
+    box-shadow:0 8px 18px rgba(3,86,254,.22) !important;
+  }
+
+  #page-tournament .mobile-calendar-day .dot{
+    position:absolute !important;
+    bottom:5px !important;
+    left:50% !important;
+    transform:translateX(-50%) !important;
+    width:6px !important;
+    height:6px !important;
+    border-radius:50% !important;
+    background:#22d66b !important;
+  }
+
+  #page-tournament .mobile-selected-date{
+    margin:18px 0 10px !important;
+    color:rgba(255,255,255,.72) !important;
+    font-size:14px !important;
+    font-weight:1000 !important;
+  }
+
+  #page-tournament .mobile-match-card{
+    width:100% !important;
+    margin:12px 0 0 !important;
+    padding:18px !important;
+    border-radius:20px !important;
+    background:rgba(255,255,255,.08) !important;
+    border:1px solid rgba(255,255,255,.14) !important;
+    color:#fff !important;
+    box-shadow:0 10px 26px rgba(0,0,0,.18) !important;
+  }
+
+  #page-tournament .mobile-match-time{
+    font-size:15px !important;
+    color:rgba(255,255,255,.72) !important;
+    font-weight:900 !important;
+  }
+
+  #page-tournament .mobile-match-round{
+    margin-top:6px !important;
+    font-size:20px !important;
+    line-height:1.25 !important;
+    font-weight:1000 !important;
+    word-break:keep-all !important;
+  }
+
+  #page-tournament .mobile-match-teams{
+    margin-top:16px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:6px !important;
+    text-align:center !important;
+    font-size:22px !important;
+    line-height:1.25 !important;
+    font-weight:1000 !important;
+    word-break:keep-all !important;
+  }
+
+  #page-tournament .mobile-match-teams div{
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  #page-tournament .mobile-match-teams span{
+    color:#00a2ff !important;
+    font-size:14px !important;
+    font-weight:1000 !important;
+  }
+
+  #page-tournament .mobile-match-detail{
+    width:100% !important;
+    height:46px !important;
+    margin-top:16px !important;
+    border:0 !important;
+    border-radius:14px !important;
+    background:linear-gradient(135deg,var(--brand),var(--brand2)) !important;
+    color:#fff !important;
+    font-size:16px !important;
+    font-weight:1000 !important;
+    cursor:pointer !important;
+  }
+
+  #page-tournament .mobile-empty{
+    margin-top:18px !important;
+    padding:20px !important;
+    border-radius:16px !important;
+    background:rgba(255,255,255,.06) !important;
+    color:rgba(255,255,255,.75) !important;
+    text-align:center !important;
+    font-weight:900 !important;
+  }
+
+  body.light-mode #page-tournament .mobile-calendar-wrap{
+    color:#111827 !important;
+  }
+
+  body.light-mode #page-tournament .mobile-calendar-title{
+    color:#111827 !important;
+  }
+
+  body.light-mode #page-tournament .mobile-calendar-header button,
+  body.light-mode #page-tournament .mobile-calendar-day,
+  body.light-mode #page-tournament .mobile-match-card,
+  body.light-mode #page-tournament .mobile-empty{
+    background:#ffffff !important;
+    color:#111827 !important;
+    border:1px solid #d7e2ff !important;
+  }
+
+  body.light-mode #page-tournament .mobile-calendar-day.active,
+  body.light-mode #page-tournament .mobile-match-detail{
+    background:linear-gradient(135deg,#178bff,#45b8ff) !important;
+    color:#fff !important;
+    border-color:transparent !important;
+  }
+
+  body.light-mode #page-tournament .mobile-calendar-weekdays span,
+  body.light-mode #page-tournament .mobile-selected-date,
+  body.light-mode #page-tournament .mobile-match-time{
+    color:#64748b !important;
+  }
+}
+
+@media (max-width:768px){
+
+  #page-tournament #mobileMatchList .mobile-match-card{
+    display:none !important;
+  }
+
+  #page-tournament #mobileMatchList .tournament-match-block{
+    width:100% !important;
+    margin-top:16px !important;
+    margin-bottom:18px !important;
+  }
+
+  #page-tournament #mobileMatchList .tournament-match-card{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:18px !important;
+    width:100% !important;
+    padding:22px 18px !important;
+    border-radius:24px !important;
+    overflow:hidden !important;
+
+    background:linear-gradient(
+      180deg,
+      rgba(255,255,255,.075),
+      rgba(255,255,255,.04)
+    ) !important;
+
+    border:1px solid rgba(255,255,255,.10) !important;
+    box-shadow:0 18px 42px rgba(0,0,0,.28) !important;
+    color:#fff !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-left strong{
+    font-size:22px !important;
+    color:#fff !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-left span{
+    margin-top:6px !important;
+    font-size:18px !important;
+    color:rgba(255,255,255,.68) !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-score{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto auto auto minmax(0,1fr) !important;
+    align-items:center !important;
+    gap:8px !important;
+    width:100% !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-team{
+    min-width:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:8px !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-team-a{
+    justify-content:flex-start !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-team-b{
+    justify-content:flex-end !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-team span{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:22px !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-team-logo{
+    width:34px !important;
+    height:34px !important;
+    object-fit:contain !important;
+    flex:0 0 auto !important;
+  }
+
+  #page-tournament #mobileMatchList .score-a,
+  #page-tournament #mobileMatchList .score-b,
+  #page-tournament #mobileMatchList .score-colon{
+    font-size:22px !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+    white-space:nowrap !important;
+  }
+
+  #page-tournament #mobileMatchList .score-colon{
+    color:rgba(255,255,255,.72) !important;
+  }
+
+  #page-tournament #mobileMatchList .tm-detail-btn{
+    width:100% !important;
+    height:54px !important;
+    border:0 !important;
+    border-radius:16px !important;
+    background:linear-gradient(135deg,#0356fe,#00a2ff) !important;
+    color:#fff !important;
+    font-size:20px !important;
+    font-weight:1000 !important;
+  }
+
+  #page-tournament #mobileMatchList .inline-detail{
+    margin-top:12px !important;
+    padding:20px 16px !important;
+    border-radius:24px !important;
+    background:linear-gradient(
+      180deg,
+      rgba(255,255,255,.065),
+      rgba(255,255,255,.035)
+    ) !important;
+    border:1px solid rgba(255,255,255,.10) !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament #mobileMatchList .inline-detail .detail-score{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto auto auto minmax(0,1fr) !important;
+    gap:8px !important;
+    width:100% !important;
+    max-width:100% !important;
+    margin:20px 0 !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament #mobileMatchList .inline-detail .detail-score strong{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:22px !important;
+  }
+
+  #page-tournament #mobileMatchList .inline-detail .tournament-set-row{
+    grid-template-columns:38px minmax(0,1fr) !important;
+    width:100% !important;
+    padding:18px 14px !important;
+    border-radius:20px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament #mobileMatchList .inline-detail .set-vs{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #page-tournament #mobileMatchList .inline-detail .set-player-box{
+    min-width:0 !important;
+    width:100% !important;
+  }
+
+  #page-tournament #mobileMatchList .inline-detail .set-player-name-line strong{
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:18px !important;
+  }
+}
+
+/* =========================================================
+   모바일 캘린더 / 일정 카드 / 상세 엔트리 최종 수정
+========================================================= */
+
+@media(max-width:768px){
+
+  #page-tournament{
+    padding:0 10px 60px !important;
+    overflow:hidden !important;
+  }
+
+  #calendarGrid,
+  #calendarView,
+  .mobile-calendar-wrap{
+    width:100% !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  .mobile-calendar-wrap{
+    padding:18px 14px !important;
+    border-radius:26px !important;
+    background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035)) !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+  }
+
+  .mobile-calendar-header{
+    display:grid !important;
+    grid-template-columns:52px 1fr 52px !important;
+    align-items:center !important;
+    margin-bottom:22px !important;
+  }
+
+  .mobile-calendar-header button{
+    width:46px !important;
+    height:46px !important;
+    border-radius:50% !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+    background:rgba(255,255,255,.08) !important;
+    color:#fff !important;
+    font-size:28px !important;
+    font-weight:1000 !important;
+  }
+
+  .mobile-calendar-title{
+    text-align:center !important;
+    font-size:34px !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+  }
+
+  .mobile-calendar-weekdays,
+  .mobile-calendar-grid{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    display:grid !important;
+    grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+    gap:7px !important;
+  }
+
+  .mobile-calendar-weekdays{
+    margin-bottom:10px !important;
+  }
+
+  .mobile-calendar-weekdays span{
+    text-align:center !important;
+    font-size:15px !important;
+    font-weight:1000 !important;
+    color:rgba(255,255,255,.78) !important;
+  }
+
+  .mobile-calendar-weekdays .sun{
+    color:#ff5b7c !important;
+  }
+
+  .mobile-calendar-weekdays .sat{
+    color:#2f8cff !important;
+  }
+
+  .mobile-calendar-day{
+    min-width:0 !important;
+    width:100% !important;
+    aspect-ratio:1.15 / 1 !important;
+    border:0 !important;
+    border-radius:14px !important;
+    background:rgba(255,255,255,.07) !important;
+    color:#fff !important;
+    font-size:18px !important;
+    font-weight:1000 !important;
+    position:relative !important;
+    overflow:hidden !important;
+  }
+
+  .mobile-calendar-day.is-empty{
+    background:transparent !important;
+  }
+
+  .mobile-calendar-day.active{
+    background:linear-gradient(135deg,#0356fe,#00a2ff) !important;
+    box-shadow:0 10px 26px rgba(0,162,255,.34) !important;
+  }
+
+  .mobile-calendar-day .dot{
+    position:absolute !important;
+    left:50% !important;
+    bottom:7px !important;
+    transform:translateX(-50%) !important;
+    width:7px !important;
+    height:7px !important;
+    border-radius:50% !important;
+    background:#22db72 !important;
+  }
+
+  .mobile-selected-date{
+    margin:24px 0 12px !important;
+    font-size:19px !important;
+    font-weight:1000 !important;
+    color:#dbeafe !important;
+  }
+
+  .mobile-schedule-card{
+    width:100% !important;
+    max-width:100% !important;
+    margin:0 0 16px !important;
+    padding:18px 14px !important;
+    border-radius:24px !important;
+    overflow:hidden !important;
+    background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035)) !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+    box-shadow:0 16px 36px rgba(0,0,0,.22) !important;
+  }
+
+  .mobile-schedule-head{
+    display:flex !important;
+    justify-content:space-between !important;
+    align-items:flex-start !important;
+    gap:12px !important;
+    margin-bottom:18px !important;
+  }
+
+  .mobile-schedule-time{
+    font-size:22px !important;
+    font-weight:1000 !important;
+    color:#00a2ff !important;
+  }
+
+  .mobile-schedule-round{
+    margin-top:5px !important;
+    font-size:16px !important;
+    font-weight:900 !important;
+    color:rgba(255,255,255,.62) !important;
+  }
+
+  .mobile-schedule-toggle{
+    flex:0 0 auto !important;
+    min-width:96px !important;
+    height:42px !important;
+    border:0 !important;
+    border-radius:12px !important;
+    background:linear-gradient(135deg,#0356fe,#00a2ff) !important;
+    color:#fff !important;
+    font-size:15px !important;
+    font-weight:1000 !important;
+  }
+
+  .mobile-schedule-score{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 28px 16px 28px minmax(0,1fr) !important;
+    align-items:center !important;
+    gap:7px !important;
+    width:100% !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  .mobile-team{
+    min-width:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:6px !important;
+  }
+
+  .mobile-team.left{
+    justify-content:flex-start !important;
+  }
+
+  .mobile-team.right{
+    justify-content:flex-end !important;
+  }
+
+  .mobile-team span{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:10px !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+  }
+
+  .mobile-team img{
+    width:28px !important;
+    height:28px !important;
+    object-fit:contain !important;
+    flex:0 0 auto !important;
+  }
+
+  .mobile-score,
+  .mobile-schedule-score b{
+    text-align:center !important;
+    font-size:22px !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+    white-space:nowrap !important;
+  }
+
+  .mobile-inline-detail{
+    width:100% !important;
+    max-width:100% !important;
+    margin-top:18px !important;
+    padding:18px 12px !important;
+    border-radius:22px !important;
+    overflow:hidden !important;
+    background:rgba(0,0,0,.14) !important;
+    border:1px solid rgba(255,255,255,.10) !important;
+  }
+
+  .mobile-inline-detail h2,
+  .mobile-inline-detail h3{
+    font-size:25px !important;
+    line-height:1.2 !important;
+    margin:0 0 8px !important;
+    color:#fff !important;
+  }
+
+  .mobile-inline-detail .detail-score{
+    width:100% !important;
+    max-width:100% !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 50px minmax(0,1fr) !important;
+    gap:7px !important;
+    align-items:center !important;
+    margin:22px 0 !important;
+    overflow:hidden !important;
+  }
+
+  .mobile-inline-detail .detail-score strong,
+  .mobile-inline-detail .detail-score .team-name{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:20px !important;
+    color:#fff !important;
+  }
+
+  .mobile-inline-detail .tournament-set-row{
+    width:100% !important;
+    max-width:100% !important;
+    display:grid !important;
+    grid-template-columns:34px minmax(0,1fr) !important;
+    gap:10px !important;
+    padding:14px 10px !important;
+    margin-bottom:10px !important;
+    border-radius:16px !important;
+    overflow:hidden !important;
+    background:rgba(255,255,255,.055) !important;
+    border:1px solid rgba(255,255,255,.10) !important;
+  }
+
+  .mobile-inline-detail .set-vs{
+    grid-column:2 !important;
+    width:100% !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    gap:10px !important;
+  }
+
+  .mobile-inline-detail .vs-text{
+    display:none !important;
+  }
+
+  .mobile-inline-detail .set-player-box{
+    width:100% !important;
+    min-width:0 !important;
+    text-align:left !important;
+  }
+
+  .mobile-inline-detail .set-player-name-line strong{
+    display:block !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:17px !important;
+  }
+
+  .mobile-inline-detail .set-player-badge-line{
+    justify-content:flex-start !important;
+    gap:5px !important;
+  }
+
+  .mobile-inline-detail .player-badge{
+    height:23px !important;
+    padding:0 8px !important;
+    font-size:11px !important;
+  }
+
+  .mobile-inline-detail .set-map{
+    grid-column:2 !important;
+    justify-self:start !important;
+    max-width:100% !important;
+    height:30px !important;
+    font-size:12px !important;
+  }
+}
+
+/* =========================================================
+   NCAUCTION 모바일 캘린더/일정/상세 엔트리 최종 수정본
+   - 기존 .mobile-* / .jm-* 중복 스타일과 충돌 방지를 위해 nc-* 전용 클래스 사용
+========================================================= */
+@media(max-width:768px){
+
+  html,
+  body{
+    width:100% !important;
+    max-width:100% !important;
+    overflow-x:hidden !important;
+  }
+
+  .app{
+    width:100% !important;
+    max-width:100% !important;
+    padding:14px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament,
+  #page-tournament .tournament-wrap,
+  #page-tournament #matchView,
+  #page-tournament #calendarView,
+  #page-tournament #calendarGrid{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .jm-calendar-scroll,
+  #page-tournament .jm-calendar,
+  #page-tournament .jm-calendar-grid,
+  #page-tournament .mobile-calendar-wrap,
+  #page-tournament .mobile-calendar-grid,
+  #page-tournament .mobile-schedule-card,
+  #page-tournament .mobile-inline-detail{
+    min-width:0 !important;
+    max-width:100% !important;
+    width:100% !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-mobile-calendar{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    padding:18px 12px !important;
+    border-radius:24px !important;
+    background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035)) !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+    box-shadow:0 18px 42px rgba(0,0,0,.22) !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-cal-head{
+    display:grid !important;
+    grid-template-columns:44px minmax(0,1fr) 44px !important;
+    align-items:center !important;
+    gap:8px !important;
+    margin-bottom:18px !important;
+  }
+
+  #page-tournament .nc-cal-head button{
+    width:44px !important;
+    height:44px !important;
+    border-radius:50% !important;
+    border:1px solid rgba(255,255,255,.14) !important;
+    background:rgba(255,255,255,.08) !important;
+    color:#fff !important;
+    font-size:26px !important;
+    font-weight:1000 !important;
+    cursor:pointer !important;
+  }
+
+  #page-tournament .nc-cal-head button:disabled{
+    opacity:.35 !important;
+    cursor:not-allowed !important;
+  }
+
+  #page-tournament .nc-cal-head strong{
+    min-width:0 !important;
+    text-align:center !important;
+    font-size:32px !important;
+    line-height:1 !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:clip !important;
+  }
+
+  #page-tournament .nc-cal-week,
+  #page-tournament .nc-cal-days{
+    display:grid !important;
+    grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+    gap:6px !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+  }
+
+  #page-tournament .nc-cal-week{
+    margin-bottom:10px !important;
+  }
+
+  #page-tournament .nc-cal-week span{
+    min-width:0 !important;
+    text-align:center !important;
+    font-size:13px !important;
+    font-weight:1000 !important;
+    color:rgba(255,255,255,.7) !important;
+  }
+
+  #page-tournament .nc-cal-week .sun{color:#ff5b7c !important;}
+  #page-tournament .nc-cal-week .sat{color:#2f8cff !important;}
+
+  #page-tournament .nc-cal-day{
+    width:100% !important;
+    min-width:0 !important;
+    height:44px !important;
+    border:0 !important;
+    border-radius:12px !important;
+    background:rgba(255,255,255,.08) !important;
+    color:#fff !important;
+    font-size:15px !important;
+    line-height:1 !important;
+    font-weight:1000 !important;
+    position:relative !important;
+    overflow:hidden !important;
+    cursor:pointer !important;
+  }
+
+  #page-tournament .nc-cal-day.empty{
+    background:transparent !important;
+    pointer-events:none !important;
+  }
+
+  #page-tournament .nc-cal-day.active{
+    background:linear-gradient(135deg,#0356fe,#00a2ff) !important;
+    box-shadow:0 10px 24px rgba(0,162,255,.30) !important;
+  }
+
+  #page-tournament .nc-cal-day i{
+    position:absolute !important;
+    left:50% !important;
+    bottom:5px !important;
+    transform:translateX(-50%) !important;
+    width:6px !important;
+    height:6px !important;
+    border-radius:50% !important;
+    background:#24db73 !important;
+  }
+
+  #page-tournament .nc-selected-date{
+    margin:22px 0 12px !important;
+    font-size:18px !important;
+    line-height:1.3 !important;
+    font-weight:1000 !important;
+    color:#dbeafe !important;
+  }
+
+  #page-tournament .nc-mobile-empty{
+    margin-top:16px !important;
+    padding:18px !important;
+    border-radius:18px !important;
+    background:rgba(255,255,255,.055) !important;
+    border:1px solid rgba(255,255,255,.10) !important;
+    color:rgba(255,255,255,.72) !important;
+    font-weight:900 !important;
+    text-align:center !important;
+  }
+
+  #page-tournament .nc-match-card{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 0 14px !important;
+    padding:18px 14px !important;
+    border-radius:22px !important;
+    background:linear-gradient(180deg,#001133),rgba(255,255,255,.035) !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+    box-shadow:0px 16px 36px rgba(0,0,0,.22) !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-match-info b{
+    display:block !important;
+    font-size:24px !important;
+    line-height:1.1 !important;
+    font-weight:1000 !important;
+    color:#00a2ff !important;
+  }
+
+  #page-tournament .nc-match-info span{
+    display:block !important;
+    margin-top:5px !important;
+    font-size:16px !important;
+    line-height:1.35 !important;
+    color:rgba(255,255,255,.64) !important;
+    font-weight:900 !important;
+  }
+
+  #page-tournament .nc-match-score{
+    margin-top:18px !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 30px 16px 30px minmax(0,1fr) !important;
+    align-items:center !important;
+    gap:7px !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-team{
+    min-width:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:6px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-team.left{justify-content:flex-start !important;}
+  #page-tournament .nc-team.right{justify-content:flex-end !important;}
+
+  #page-tournament .nc-team span{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    word-break:keep-all !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+  }
+
+  #page-tournament .nc-team img{
+    width:28px !important;
+    height:28px !important;
+    object-fit:contain !important;
+    flex:0 0 auto !important;
+  }
+
+  #page-tournament .nc-match-score strong,
+  #page-tournament .nc-match-score em{
+    text-align:center !important;
+    font-size:22px !important;
+    line-height:1 !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+    font-style:normal !important;
+    white-space:nowrap !important;
+  }
+
+  #page-tournament .nc-match-score strong.win{
+    color:#24db73 !important;
+    text-decoration:underline !important;
+    text-decoration-thickness:3px !important;
+    text-underline-offset:8px !important;
+  }
+
+  #page-tournament .nc-detail-btn{
+    width:100% !important;
+    height:52px !important;
+    margin-top:18px !important;
+    border:0 !important;
+    border-radius:15px !important;
+    background:linear-gradient(135deg,#0356fe,#00a2ff) !important;
+    color:#fff !important;
+    font-size:19px !important;
+    line-height:1 !important;
+    font-weight:1000 !important;
+    cursor:pointer !important;
+  }
+
+  #page-tournament .nc-detail{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin-top:18px !important;
+    padding:16px 10px !important;
+    border-radius:20px !important;
+    background:rgba(0,0,0,.016) !important;
+    border:0px solid rgba(255,255,255,.010) !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-detail .detail-head h2{
+    font-size:24px !important;
+    line-height:1.2 !important;
+    margin:0 0 8px !important;
+    color:#fff !important;
+  }
+
+  #page-tournament .nc-detail .detail-head p{
+    font-size:14px !important;
+    line-height:1.45 !important;
+    margin:0 !important;
+    color:rgba(255,255,255,.58) !important;
+  }
+
+  #page-tournament .nc-detail .detail-score{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) !important;
+    align-items:center !important;
+    gap:8px !important;
+    margin:20px 0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-detail .detail-score strong{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:20px !important;
+    line-height:1.2 !important;
+    color:#fff !important;
+  }
+
+  #page-tournament .nc-detail .detail-score strong:first-child{text-align:left !important;}
+  #page-tournament .nc-detail .detail-score strong:last-child{text-align:right !important;}
+
+  #page-tournament .nc-detail .detail-score b{
+    font-size:20px !important;
+    line-height:1 !important;
+    color:#fff !important;
+    white-space:nowrap !important;
+  }
+
+  #page-tournament .nc-detail .set-list{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    gap:10px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-detail .tournament-set-row,
+  #page-tournament .nc-detail .set-row{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:32px minmax(0,1fr) !important;
+    gap:10px !important;
+    align-items:center !important;
+    padding:14px 10px !important;
+    margin:0 !important;
+    border-radius:16px !important;
+    background:rgba(255,255,255,.0055) !important;
+    border:0px solid rgba(255,255,255,.10) !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-detail .set-num{
+    grid-column:1 !important;
+    grid-row:1 / span 2 !important;
+    align-self:center !important;
+    font-size:18px !important;
+    font-weight:1000 !important;
+    color:#fff !important;
+  }
+
+  #page-tournament .nc-detail .set-vs{
+    grid-column:2 !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    gap:10px !important;
+    align-items:start !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-detail .vs-text{
+    display:none !important;
+  }
+
+  #page-tournament .nc-detail .set-player-box{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    padding:4 !important;
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    overflow:hidden !important;
+    opacity:1 !important;
+    filter:none !important;
+  }
+
+  #page-tournament .nc-detail .set-player-name-line{
+    width:100% !important;
+    min-width:0 !important;
+    display:block !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .nc-detail .set-player-name-line strong{
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    word-break:keep-all !important;
+    font-size:17px !important;
+    line-height:1.25 !important;
+    color:#fff !important;
+  }
+
+  #page-tournament .nc-detail .set-player-box.is-winner .set-player-name-line strong{
+    color:#24db73 !important;
+  }
+
+  #page-tournament .nc-detail .set-player-badge-line{
+    display:flex !important;
+    justify-content:flex-start !important;
+    gap:5px !important;
+    flex-wrap:wrap !important;
+    margin-top:6px !important;
+  }
+
+  #page-tournament .nc-detail .player-badge{
+    min-width:0 !important;
+    height:23px !important;
+    padding:0 8px !important;
+    border-radius:8px !important;
+    font-size:11px !important;
+    font-weight:1000 !important;
+    line-height:23px !important;
+  }
+
+  #page-tournament .nc-detail .set-map{
+    grid-column:2 !important;
+    justify-self:stretch !important;
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    height:30px !important;
+    margin-top:2px !important;
+    border-radius:999px !important;
+    background:rgba(52,120,229,.18) !important;
+    border:1px solid rgba(88,166,255,.35) !important;
+    color:#dbeafe !important;
+    font-size:12px !important;
+    font-weight:1000 !important;
+    line-height:15px !important;
+    text-align:center !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  body.light-mode #page-tournament .nc-mobile-calendar,
+  body.light-mode #page-tournament .nc-match-card,
+  body.light-mode #page-tournament .nc-detail{
+    background:#ffffff !important;
+    border:1px solid #d7def0 !important;
+    box-shadow:0 10px 30px rgba(30,50,90,.08) !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-head strong,
+  body.light-mode #page-tournament .nc-team span,
+  body.light-mode #page-tournament .nc-match-score strong,
+  body.light-mode #page-tournament .nc-match-score em,
+  body.light-mode #page-tournament .nc-detail .detail-head h2,
+  body.light-mode #page-tournament .nc-detail .detail-score strong,
+  body.light-mode #page-tournament .nc-detail .detail-score b,
+  body.light-mode #page-tournament .nc-detail .set-num,
+  body.light-mode #page-tournament .nc-detail .set-player-name-line strong{
+    color:#111827 !important;
+  }
+}
+
+
+/* =========================
+   조별예선 모바일 대응
+========================= */
+@media (max-width:768px){
+
+  #page-tournament #groupStandingBox{
+    width:100% !important;
+    max-width:100% !important;
+    gap:22px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .group-standing-card{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+    border-radius:18px !important;
+  }
+
+  #page-tournament .group-standing-table{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    table-layout:fixed !important;
+  }
+
+  #page-tournament .group-standing-table th,
+  #page-tournament .group-standing-table td{
+    height:54px !important;
+    padding:8px 6px !important;
+    font-size:14px !important;
+  }
+
+  #page-tournament .group-standing-table th:first-child{
+    width:auto !important;
+    min-width:0 !important;
+    padding-left:14px !important;
+    font-size:12px !important;
+  }
+
+  #page-tournament .group-standing-table td.standing-team-cell{
+    width:auto !important;
+    min-width:0 !important;
+    padding-left:12px !important;
+  }
+
+  #page-tournament .standing-team-inner{
+    min-width:0 !important;
+    gap:6px !important;
+  }
+
+  #page-tournament .standing-rank{
+    min-width:30px !important;
+    font-size:12px !important;
+  }
+
+  #page-tournament .standing-team-logo{
+    width:20px !important;
+    height:20px !important;
+  }
+
+  #page-tournament .standing-team-name{
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:20px !important;
+  }
+
+  #page-tournament .group-standing-table td:last-child{
+    font-size:20px !important;
+  }
+}
+
+@media (max-width:768px){
+
+  #page-tournament .group-standing-table{
+    table-layout:fixed !important;
+  }
+
+  /* 첫 번째 칸: 순위 + 로고 + 팀명 */
+  #page-tournament .group-standing-table th:first-child,
+  #page-tournament .group-standing-table td.standing-team-cell{
+    width:38% !important;
+    min-width:38% !important;
+    max-width:38% !important;
+  }
+
+  /* 나머지 수치 칸 */
+  #page-tournament .group-standing-table th:not(:first-child),
+  #page-tournament .group-standing-table td:not(.standing-team-cell){
+    width:auto !important;
+    padding-left:4px !important;
+    padding-right:4px !important;
+    font-size:12px !important;
+  }
+
+  #page-tournament .standing-team-inner{
+    display:flex !important;
+    align-items:center !important;
+    gap:5px !important;
+    min-width:0 !important;
+    width:100% !important;
+  }
+
+  #page-tournament .standing-rank{
+    flex:0 0 28px !important;
+    min-width:28px !important;
+    font-size:12px !important;
+  }
+
+  #page-tournament .standing-team-logo{
+    flex:0 0 18px !important;
+    width:18px !important;
+    height:18px !important;
+    object-fit:contain !important;
+  }
+
+  #page-tournament .standing-team-name{
+    display:block !important;
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:15px !important;
+    line-height:1.2 !important;
+    color:#fff !important;
+  }
+}
+
+/* =========================
+   팀/참가자 모바일 대응
+========================= */
+@media(max-width:768px){
+
+  #page-tournament #teamView{
+    width:100% !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    margin-top:18px !important;
+  }
+
+  #page-tournament .team-tabs{
+    width:100% !important;
+    max-width:100% !important;
+    overflow-x:auto !important;
+    gap:8px !important;
+    padding:8px 0 !important;
+    margin:16px 0 18px !important;
+    border-radius:0 !important;
+    background:transparent !important;
+  }
+
+  #page-tournament .team-tab{
+    flex:0 0 auto !important;
+    min-width:112px !important;
+    max-width:132px !important;
+    height:44px !important;
+    padding:0 14px !important;
+    font-size:16px !important;
+    line-height:1.1 !important;
+    white-space:normal !important;
+    word-break:keep-all !important;
+  }
+
+  #page-tournament .team-profile-head{
+    display:grid !important;
+    grid-template-columns:112px minmax(0,1fr) !important;
+    gap:18px !important;
+    align-items:center !important;
+    margin:18px 0 20px !important;
+  }
+
+  #page-tournament .team-logo-box{
+    width:112px !important;
+    height:112px !important;
+    margin:0 !important;
+    border-radius:22px !important;
+  }
+
+  #page-tournament .team-logo-box img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:contain !important;
+  }
+
+  #page-tournament .team-profile-title,
+  #page-tournament .team-name-title,
+  #page-tournament .team-detail-title{
+    min-width:0 !important;
+    max-width:100% !important;
+    font-size:42px !important;
+    line-height:1.05 !important;
+    letter-spacing:-.06em !important;
+    word-break:keep-all !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #page-tournament .team-roster-title{
+    margin:8px 0 12px !important;
+    font-size:20px !important;
+    text-align:left !important;
+  }
+
+  #page-tournament .team-member-grid{
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+    gap:14px !important;
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  #page-tournament .team-member-card{
+    min-width:0 !important;
+    width:100% !important;
+    padding:12px !important;
+    border-radius:20px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .team-member-image{
+    width:100% !important;
+    aspect-ratio:1 / 1 !important;
+    height:auto !important;
+    border-radius:16px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .team-member-image img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+  }
+
+  #page-tournament .team-member-card strong,
+  #page-tournament .team-member-name{
+    display:block !important;
+    margin-top:12px !important;
+    font-size:26px !important;
+    line-height:1.15 !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  #page-tournament .team-member-meta,
+  #page-tournament .team-member-badges{
+    display:flex !important;
+    justify-content:center !important;
+    gap:6px !important;
+    flex-wrap:wrap !important;
+    margin-top:8px !important;
+  }
+
+  #page-tournament .team-member-tier,
+  #page-tournament .team-member-race,
+  #page-tournament .team-member-card span{
+    height:30px !important;
+    padding:0 12px !important;
+    border-radius:999px !important;
+    font-size:15px !important;
+    line-height:30px !important;
+  }
+}
+
+/* =========================
+   대회 상단 메뉴 모바일 짤림 방지
+========================= */
+@media(max-width:768px){
+
+  #page-tournament .tournament-menu{
+    width:100% !important;
+    max-width:100% !important;
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    gap:0 !important;
+    overflow:visible !important;
+  }
+
+  #page-tournament .tournament-menu-item{
+    width:100% !important;
+    min-width:0 !important;
+    height:72px !important;
+    padding:0 8px !important;
+    font-size:22px !important;
+    white-space:nowrap !important;
+    overflow:visible !important;
+  }
+
+  #page-tournament .tournament-dropdown{
+    left:0 !important;
+    right:auto !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    border-radius:0 0 18px 18px !important;
+    overflow:hidden !important;
+    z-index:9999 !important;
+  }
+
+  #page-tournament .tournament-dropdown button{
+    width:100% !important;
+    height:58px !important;
+    font-size:19px !important;
+    white-space:nowrap !important;
+  }
+}
+
+
+/* =========================
+   파워랭킹 모바일 대응
+========================= */
+@media(max-width:768px){
+
+  #page-tournament #powerView{
+    width:100% !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .power-panel{
+    width:100% !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .power-mode-tabs,
+  #page-tournament .power-tabs{
+    display:flex !important;
+    gap:10px !important;
+    flex-wrap:wrap !important;
+    margin-bottom:14px !important;
+  }
+
+  #page-tournament .power-mode-tab,
+  #page-tournament .power-tab{
+    flex:1 1 calc(50% - 5px) !important;
+    min-width:0 !important;
+    height:54px !important;
+    padding:0 10px !important;
+    border-radius:18px !important;
+    font-size:18px !important;
+    line-height:1.15 !important;
+  }
+
+  #page-tournament .power-subbar{
+    display:block !important;
+    margin:14px 0 18px !important;
+  }
+
+  #page-tournament .power-ranking-desc{
+    display:block !important;
+    width:100% !important;
+    margin:0 0 16px !important;
+    font-size:10px !important;
+    line-height:1.55 !important;
+    word-break:keep-all !important;
+  }
+
+  #page-tournament .power-filter-row{
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+    gap:10px !important;
+    width:100% !important;
+  }
+
+  #page-tournament .power-filter{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:6px !important;
+    width:100% !important;
+  }
+
+  #page-tournament .power-filter span{
+    font-size:13px !important;
+    text-align:center !important;
+  }
+
+  #page-tournament .power-filter select{
+    width:100% !important;
+    min-width:0 !important;
+    height:24px !important;
+    padding:0 12px !important;
+    border-radius:16px !important;
+    font-size:10px !important;
+  }
+
+  #page-tournament .power-sort-buttons{
+    grid-column:1 / -1 !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+    width:100% !important;
+  }
+
+  #page-tournament .power-sort-btn{
+    height:44px !important;
+    border-radius:15px !important;
+    font-size:15px !important;
+  }
+
+  #page-tournament .power-ranking-list{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:14px !important;
+    width:100% !important;
+  }
+
+  #page-tournament .power-ranking-row{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+
+    display:grid !important;
+    grid-template-columns:56px minmax(0,1fr) !important;
+    grid-template-areas:
+      "rank player"
+      "rank team"
+      "rank tier"
+      "rank games"
+      "rank rate" !important;
+
+    gap:8px 14px !important;
+    padding:22px 18px !important;
+    border-radius:22px !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .power-rank{
+    grid-area:rank !important;
+    align-self:center !important;
+    justify-self:center !important;
+    font-size:38px !important;
+  }
+
+  #page-tournament .power-player{
+    grid-area:player !important;
+    min-width:0 !important;
+  }
+
+  #page-tournament .power-player-name{
+    display:block !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:28px !important;
+    line-height:1.15 !important;
+  }
+
+  #page-tournament .power-team{
+    grid-area:team !important;
+    min-width:0 !important;
+  }
+
+  #page-tournament .power-team-badge{
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:14px !important;
+  }
+
+  #page-tournament .power-tier-badge{
+    grid-area:tier !important;
+    justify-self:start !important;
+    min-width:120px !important;
+    height:44px !important;
+    font-size:18px !important;
+  }
+
+  #page-tournament .power-games{
+    grid-area:games !important;
+    width:100% !important;
+    max-width:100% !important;
+    height:44px !important;
+    justify-content:flex-start !important;
+    overflow:hidden !important;
+  }
+
+  #page-tournament .power-games strong{
+    display:block !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:15px !important;
+  }
+
+  #page-tournament .power-winrate{
+    grid-area:rate !important;
+    justify-content:flex-start !important;
+    gap:10px !important;
+  }
+
+  #page-tournament .power-winrate span{
+    font-size:16px !important;
+  }
+
+  #page-tournament .power-winrate strong{
+    font-size:34px !important;
+  }
+}
+
+
+/* =========================
+   파워랭킹 모바일 압축형
+========================= */
+@media(max-width:768px){
+
+  #page-tournament .power-mode-tabs,
+  #page-tournament .power-tabs{
+    gap:8px !important;
+    margin-bottom:10px !important;
+  }
+
+  #page-tournament .power-mode-tab,
+  #page-tournament .power-tab{
+    height:42px !important;
+    border-radius:14px !important;
+    font-size:15px !important;
+    padding:0 8px !important;
+  }
+
+  #page-tournament .power-ranking-desc{
+    margin:6px 0 10px !important;
+    font-size:13px !important;
+    line-height:1.4 !important;
+  }
+
+  #page-tournament .power-filter-row{
+    grid-template-columns:repeat(5, minmax(0,1fr)) !important;
+    gap:6px !important;
+  }
+
+  #page-tournament .power-filter{
+    gap:4px !important;
+  }
+
+  #page-tournament .power-filter span{
+    font-size:11px !important;
+  }
+
+  #page-tournament .power-filter select{
+    height:34px !important;
+    border-radius:10px !important;
+    font-size:12px !important;
+    padding:0 6px !important;
+  }
+
+  #page-tournament .power-sort-buttons{
+    grid-column:1 / -1 !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+    margin-top:4px !important;
+  }
+
+  #page-tournament .power-sort-btn{
+    height:38px !important;
+    border-radius:12px !important;
+    font-size:14px !important;
+  }
+
+  #page-tournament .power-ranking-list{
+    gap:10px !important;
+    margin-top:12px !important;
+  }
+
+  #page-tournament .power-ranking-row{
+    grid-template-columns:46px minmax(0,1fr) auto !important;
+    grid-template-areas:
+      "rank player rate"
+      "rank team rate"
+      "rank tier games" !important;
+
+    gap:6px 10px !important;
+    padding:16px 14px !important;
+    border-radius:18px !important;
+    min-height:128px !important;
+  }
+
+  #page-tournament .power-rank{
+    font-size:30px !important;
+  }
+
+  #page-tournament .power-player-name{
+    font-size:24px !important;
+  }
+
+  #page-tournament .power-team-badge{
+    height:26px !important;
+    padding:0 10px !important;
+    font-size:12px !important;
+  }
+
+  #page-tournament .power-tier-badge{
+    height:32px !important;
+    min-width:92px !important;
+    padding:0 10px !important;
+    font-size:14px !important;
+  }
+
+  #page-tournament .power-games{
+    height:32px !important;
+    padding:0 10px !important;
+  }
+
+  #page-tournament .power-games strong{
+    font-size:12px !important;
+  }
+
+  #page-tournament .power-winrate{
+    align-self:center !important;
+    justify-self:end !important;
+    flex-direction:column !important;
+    gap:2px !important;
+    min-width:74px !important;
+  }
+
+  #page-tournament .power-winrate span{
+    font-size:12px !important;
+  }
+
+  #page-tournament .power-winrate strong{
+    font-size:28px !important;
+    line-height:1 !important;
+  }
 }
