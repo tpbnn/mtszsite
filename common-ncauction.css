@@ -9942,3 +9942,96 @@ body.light-mode #page-tournament .power-player{
     min-width:0 !important;
   }
 }
+
+
+/* =========================
+   라이트모드 - 모바일 캘린더 대응
+========================= */
+@media(max-width:768px){
+
+  body.light-mode #page-tournament .nc-mobile-calendar{
+    background:linear-gradient(180deg,#ffffff,#f8fbff) !important;
+    border:1px solid #d8e5ff !important;
+    box-shadow:0 16px 36px rgba(30,64,175,.08) !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-head strong{
+    color:#0f172a !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-head button{
+    background:#f1f5ff !important;
+    border:1px solid #d8e5ff !important;
+    color:#64748b !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-week span{
+    color:#334155 !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-week .sun{
+    color:#ff4d67 !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-week .sat{
+    color:#178bff !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-day{
+    background:#f8fafc !important;
+    border:1px solid #dbe4f5 !important;
+    color:#0f172a !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-day.empty{
+    background:transparent !important;
+    border:0 !important;
+  }
+
+  body.light-mode #page-tournament .nc-cal-day.active{
+    background:linear-gradient(135deg,#0356fe,#00a2ff) !important;
+    color:#fff !important;
+    border:0 !important;
+  }
+
+  body.light-mode #page-tournament .nc-selected-date{
+    color:#334155 !important;
+  }
+
+  body.light-mode #page-tournament .nc-match-card{
+    background:#ffffff !important;
+    border:1px solid #d8e5ff !important;
+    box-shadow:0 12px 28px rgba(30,64,175,.08) !important;
+  }
+
+  body.light-mode #page-tournament .nc-match-info b{
+    color:#008cff !important;
+  }
+
+  body.light-mode #page-tournament .nc-match-info span{
+    color:#64748b !important;
+  }
+
+  body.light-mode #page-tournament .nc-team span,
+  body.light-mode #page-tournament .nc-match-score strong,
+  body.light-mode #page-tournament .nc-match-score em{
+    color:#0f172a !important;
+  }
+
+  body.light-mode #page-tournament .nc-match-score strong.win{
+    color:#0356fe !important;
+  }
+
+  body.light-mode #page-tournament .nc-detail{
+    background:#f8fbff !important;
+    border:1px solid #d8e5ff !important;
+  }
+
+  body.light-mode #page-tournament .nc-detail *{
+    color:#0f172a !important;
+  }
+
+  body.light-mode #page-tournament .nc-detail-btn{
+    box-shadow:none !important;
+  }
+}
