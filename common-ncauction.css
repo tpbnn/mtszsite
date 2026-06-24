@@ -6959,7 +6959,7 @@ body.light-mode #page-tournament .power-team-badge{
 #page-tournament .power-games,
 #page-tournament .power-ranking-row.is-value .power-games{
   justify-self:center !important;
-  width:36% !important;
+  width:100% !important;
   min-width:0 !important;
   height:40px !important;
   padding:0 14px !important;
