@@ -6526,7 +6526,7 @@ body.light-mode #page-tournament .power-games-icon{
 #page-tournament .power-games,
 #page-tournament .power-ranking-row.is-value .power-games{
   min-width:0 !important;
-  width:36% !important;
+  width:100% !important;
   height:40px !important;
   padding:0 16px !important;
   gap:8px !important;
