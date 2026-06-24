@@ -6526,7 +6526,7 @@ body.light-mode #page-tournament .power-games-icon{
 #page-tournament .power-games,
 #page-tournament .power-ranking-row.is-value .power-games{
   min-width:0 !important;
-  width:100% !important;
+  width:36% !important;
   height:40px !important;
   padding:0 16px !important;
   gap:8px !important;
@@ -9902,5 +9902,18 @@ body.light-mode #page-tournament .power-player{
   #page-tournament .power-winrate strong{
     font-size:28px !important;
     line-height:1 !important;
+  }
+}
+
+
+/* PC */
+#page-tournament .power-games{
+  width:36% !important;
+}
+
+/* 모바일 */
+@media (max-width:768px){
+  #page-tournament .power-games{
+    width:100% !important;
   }
 }
