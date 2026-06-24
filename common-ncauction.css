@@ -9917,3 +9917,28 @@ body.light-mode #page-tournament .power-player{
     width:100% !important;
   }
 }
+
+
+/* PC */
+#page-tournament .power-games{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  flex:0 0 36% !important;
+  width:36% !important;
+  max-width:36% !important;
+
+  min-width:0 !important;
+}
+
+/* 모바일 */
+@media (max-width:768px){
+  #page-tournament .power-games{
+    flex:0 0 100% !important;
+    width:100% !important;
+    max-width:100% !important;
+
+    min-width:0 !important;
+  }
+}
