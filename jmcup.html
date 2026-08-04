@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K-중만컵</title>
+  <link rel="icon" href="./teamlogo/kjm.png" type="image/png" />
+  <link rel="stylesheet" href="common-jmcup.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+/* ===== 스타 세이버메트릭스 기록실 ===== */
+#page-tournament #powerView{min-width:0}
+#page-tournament .sab-wrap{display:flex;flex-direction:column;gap:14px}
+#page-tournament .sab-tabs{display:flex;gap:8px;flex-wrap:wrap}
+#page-tournament .sab-tab{border:1px solid rgba(148,163,184,.28);background:rgba(15,23,42,.72);color:#cbd5e1;border-radius:10px;padding:10px 15px;font-weight:800;cursor:pointer}
+#page-tournament .sab-tab.active{background:#00a2ff;color:#fff;border-color:#00a2ff;box-shadow:0 8px 24px rgba(0,162,255,.22)}
+#page-tournament .sab-toolbar{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px;border:1px solid rgba(148,163,184,.22);background:rgba(7,17,38,.72);border-radius:14px}
+#page-tournament .sab-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+#page-tournament .sab-field{display:flex;flex-direction:column;gap:5px;min-width:112px}
+#page-tournament .sab-field label{font-size:12px;color:#94a3b8;font-weight:700}
+#page-tournament .sab-field select,#page-tournament .sab-field input{height:38px;padding:0 11px;border-radius:9px;border:1px solid rgba(148,163,184,.28);background:#0d1930;color:#fff;outline:none}
+#page-tournament .sab-field.search{min-width:190px}
+#page-tournament .sab-help{border:0;background:transparent;color:#7dd3fc;font-weight:800;cursor:pointer;padding:8px}
+#page-tournament .sab-desc{padding:13px 15px;border-radius:12px;background:rgba(0,162,255,.08);border:1px solid rgba(0,162,255,.2);color:#cbd5e1;line-height:1.65}
+#page-tournament .sab-table-wrap{overflow:auto;border:1px solid rgba(148,163,184,.22);border-radius:14px;background:rgba(7,17,38,.72)}
+#page-tournament .sab-table{width:100%;min-width:920px;border-collapse:collapse;white-space:nowrap}
+#page-tournament .sab-table th,#page-tournament .sab-table td{padding:13px 12px;border-bottom:1px solid rgba(148,163,184,.15);text-align:center}
+#page-tournament .sab-table th{position:sticky;top:0;z-index:2;background:#101f39;color:#e2e8f0;font-size:12px}
+#page-tournament .sab-table th.sortable{cursor:pointer;user-select:none}
+#page-tournament .sab-table th.sortable:hover{background:#172a49}
+#page-tournament .sab-th-main{display:block;font-size:12px;font-weight:900}
+#page-tournament .sab-th-sub{display:block;margin-top:3px;color:#7dd3fc;font-size:10px;font-weight:800}
+#page-tournament .sab-table tbody tr:hover{background:rgba(0,162,255,.07)}
+#page-tournament .sab-table tbody tr:last-child td{border-bottom:0}
+#page-tournament .sab-rank{font-weight:900;color:#94a3b8}
+#page-tournament .sab-rank.top{color:#fbbf24}
+#page-tournament .sab-player{text-align:left!important;min-width:126px}
+#page-tournament .sab-player strong{display:block;color:#fff;font-size:14px}
+#page-tournament .sab-player span{display:block;margin-top:3px;color:#94a3b8;font-size:11px}
+#page-tournament .sab-team{text-align:left!important;color:#cbd5e1}
+#page-tournament .sab-positive{color:#4ade80;font-weight:900}
+#page-tournament .sab-negative{color:#fb7185;font-weight:900}
+#page-tournament .sab-primary{color:#7dd3fc;font-weight:900}
+#page-tournament .sab-empty{padding:34px;text-align:center;color:#94a3b8}
+#page-tournament .sab-legend{display:none;padding:15px;border-radius:12px;border:1px solid rgba(148,163,184,.22);background:#0d1930}
+#page-tournament .sab-legend.open{display:block}
+#page-tournament .sab-legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+#page-tournament .sab-legend-item{padding:10px 12px;border-radius:9px;background:rgba(255,255,255,.035);color:#cbd5e1;line-height:1.5}
+#page-tournament .sab-legend-item b{color:#fff}
+#page-tournament .sab-footnote{font-size:12px;color:#94a3b8;line-height:1.6}
+body.light #page-tournament,body.light-mode #page-tournament .sab-tab{background:#fff;color:#334155;border-color:#cbd5e1}
+body.light #page-tournament,body.light-mode #page-tournament .sab-tab.active{background:#00a2ff;color:#fff;border-color:#00a2ff}
+body.light #page-tournament,body.light-mode #page-tournament .sab-toolbar,body.light #page-tournament,body.light-mode #page-tournament .sab-table-wrap{background:#fff;border-color:#dbe3ee}
+body.light #page-tournament,body.light-mode #page-tournament .sab-field select,body.light #page-tournament,body.light-mode #page-tournament .sab-field input{background:#fff;color:#0f172a;border-color:#cbd5e1}
+body.light #page-tournament,body.light-mode #page-tournament .sab-table th{background:#edf4fb;color:#0f172a}
+body.light #page-tournament,body.light-mode #page-tournament .sab-table th.sortable:hover{background:#e1edf8}
+body.light #page-tournament,body.light-mode #page-tournament .sab-player strong{color:#0f172a}
+body.light #page-tournament,body.light-mode #page-tournament .sab-team,body.light #page-tournament,body.light-mode #page-tournament .sab-desc{color:#334155}
+body.light #page-tournament,body.light-mode #page-tournament .sab-legend{background:#fff;border-color:#dbe3ee}
+body.light #page-tournament,body.light-mode #page-tournament .sab-legend-item{background:#f8fafc;color:#334155}
+body.light #page-tournament,body.light-mode #page-tournament .sab-legend-item b{color:#0f172a}
+@media(max-width:768px){
+  #page-tournament .sab-tabs{display:grid;grid-template-columns:repeat(3,1fr)}
+  #page-tournament .sab-tab{padding:9px 6px;font-size:12px}
+  #page-tournament .sab-toolbar{align-items:stretch}
+  #page-tournament .sab-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  #page-tournament .sab-field,#page-tournament .sab-field.search{min-width:0}
+  #page-tournament .sab-table th,#page-tournament .sab-table td{padding:11px 9px}
+}
+</style>
+
+</head>
+
+<body data-page="tournament">
+
+<div class="app">
+
+<header class="topbar">
+  <a class="logo">
+    <img src="./teamlogo/kjm.png" width="100px"><div>K-중만컵</div></a>
+  <nav class="nav">
+    <!-- <a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="playlist" href="playlist.html">영상 모음</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a>
+    <a data-page="multiview" href="multiview.html">멀티뷰</a>
+    <a data-page="tournament" href="tournament.html" class="active">대회정보</a> -->
+    <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+  </nav>
+</header>
+
+
+<main id="page-tournament" class="page">
+  <section class="tournament-wrap">
+
+    
+    
+
+<div class="tournament-menu">
+
+  
+  <div class="tournament-menu-item active" data-main="match">
+    일정
+    <span>▼</span>
+
+    <div class="tournament-dropdown">
+      <button data-view="calendar">캘린더로 보기</button>
+      <button data-view="table">테이블로 보기</button>
+    </div>
+  </div>
+
+  <div class="tournament-menu-item" data-main="record">
+    조/대진표
+    <span>▼</span>
+
+    <div class="tournament-dropdown">
+      <button data-record="group">조별예선</button>
+      <button data-record="bracket">토너먼트</button>
+    </div>
+  </div>
+
+  <div class="tournament-menu-item" data-main="team">
+    팀/참가자
+  </div>
+
+  <div class="tournament-menu-item" data-main="power">
+    파워랭킹
+  </div>
+
+</div>
+
+<div id="tournamentBreadcrumb" class="tournament-breadcrumb">
+  🏆 대회 정보 > 일정 > 테이블
+</div>
+
+<section id="matchView" class="main-view">
+
+
+  <section id="calendarView" class="tournament-view">
+    <div id="calendarGrid" class="jm-calendar-grid"></div>
+  </section>
+
+  <section id="tableView" class="tournament-view active">
+    <div class="jm-table-filter">
+      <div class="team-dropdown" id="teamDropdown">
+        <button id="teamDropdownBtn" class="team-dropdown-btn">전체보기 ▼</button>
+        <div id="teamDropdownList" class="team-dropdown-list"></div>
+      </div>
+    </div>
+
+    <div id="matchList" class="tournament-match-list"></div>
+  </section>
+</section>
+
+<section id="recordView" class="main-view hidden">
+
+
+  <section id="groupStandingView">
+    <div id="groupStandingBox"></div>
+  </section>
+
+  <section id="bracketView" class="hidden">
+    <div id="bracketBox"></div>
+  </section>
+</section>
+
+<section id="teamView" class="main-view hidden"></section>
+<section id="powerView" class="main-view hidden"></section>
+
+  </section>
+</main>
+
+</div>
+
+
+
+<script src="./theme.js?v=3"></script>
+
+<script>
+const SHEET_ID = "1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo";
+const SHEET_NAME = "JMCUP";
+
+let TOURNAMENT_ROWS = [];
+let MATCHES = [];
+let currentView = "table";
+let currentTeam = "전체";
+let calendarMonths = [];
+let currentCalendarIndex = 0;
+
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[s]));
+}
+
+function sheetUrl(){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+}
+
+function normalizeDate(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+
+  // 구글시트/엑셀 날짜 숫자 처리
+  if(/^\d+(\.\d+)?$/.test(raw)){
+    const serial = Number(raw);
+    const utcDays = Math.floor(serial - 25569);
+    const utcValue = utcDays * 86400 * 1000;
+    const date = new Date(utcValue);
+
+    const y = date.getUTCFullYear();
+    const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(date.getUTCDate()).padStart(2, "0");
+
+    return `${y}-${m}-${d}`;
+  }
+
+  const parts = raw.match(/\d+/g);
+  if(!parts || parts.length < 3) return raw;
+
+  const y = parts[0];
+  const m = String(parts[1]).padStart(2, "0");
+  const d = String(parts[2]).padStart(2, "0");
+
+  return `${y}-${m}-${d}`;
+}
+
+async function loadTournamentSheet(){
+  const res = await fetch(sheetUrl());
+
+  if(!res.ok){
+    throw new Error("JMCUP 시트를 불러오지 못했습니다.");
+  }
+
+  const csvText = await res.text();
+  const workbook = XLSX.read(csvText, { type:"string" });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+  TOURNAMENT_ROWS = XLSX.utils.sheet_to_json(sheet, { defval:"" });
+
+buildMatches();
+buildCalendarMonths();
+renderTeamFilter();
+renderCalendar();
+renderMatchList();
+renderGroupStanding();
+renderBracket();
+renderTeamView();
+renderPowerRanking();
+}
+
+function toBool(value){
+  return value === true || ["TRUE", "1", "Y", "YES"].includes(String(value ?? "").trim().toUpperCase());
+}
+
+function numOrBlank(value){
+  const raw = String(value ?? "").trim();
+  if(raw === "") return null;
+  const n = Number(raw.replace(/,/g, ""));
+  return Number.isFinite(n) ? n : null;
+}
+
+function buildMatches(){
+  const map = new Map();
+
+  TOURNAMENT_ROWS.forEach((row, rowIndex) => {
+    if(!row["화면구분"] && !row["경기명"] && !row["MatchID"]) return;
+
+    const matchId = String(row["MatchID"] || "").trim();
+    const fallbackKey = [
+      row["화면구분"], row["경기구분"], row["조"], row["라운드"],
+      row["경기명"], row["날짜"], row["시간"], row["팀A"], row["팀B"]
+    ].join("|");
+    const matchKey = matchId || fallbackKey;
+
+    if(!map.has(matchKey)){
+      map.set(matchKey, {
+        key: matchKey,
+        MatchID: matchId,
+        화면구분: row["화면구분"], 경기구분: row["경기구분"],
+        조: row["조"], 라운드: row["라운드"], 경기명: row["경기명"],
+        날짜: normalizeDate(row["날짜"]), 원본날짜: row["날짜"], 시간: row["시간"],
+        상태: row["상태"], 팀A: row["팀A"], 팀B: row["팀B"],
+        점수A: row["점수A"], 점수B: row["점수B"], 승리팀: row["승리팀"],
+        sets: [], _rowIndex: rowIndex
+      });
+    }
+
+    const match = map.get(matchKey);
+    // 같은 MatchID의 뒤쪽 행에만 값이 있어도 보완
+    ["화면구분","경기구분","조","라운드","경기명","시간","상태","팀A","팀B","승리팀"].forEach(k => {
+      if(!match[k] && row[k] !== "") match[k] = row[k];
+    });
+    if(!match.점수A && row["점수A"] !== "") match.점수A = row["점수A"];
+    if(!match.점수B && row["점수B"] !== "") match.점수B = row["점수B"];
+
+    const setNo = numOrBlank(row["세트"]);
+    const hasSetData = setNo !== null || row["세트A선수"] || row["세트B선수"] || row["세트승자"];
+    if(!hasSetData) return;
+
+    match.sets.push({
+      세트: setNo ?? row["세트"],
+      세트A: String(row["세트A선수"] || "").trim(),
+      세트B: String(row["세트B선수"] || "").trim(),
+      세트승자: String(row["세트승자"] || "").trim(),
+      세트승리팀: String(row["세트승리팀"] || "").trim(),
+      맵: row["맵"],
+      팀A점수전: numOrBlank(row["팀A점수(전)"]),
+      팀B점수전: numOrBlank(row["팀B점수(전)"]),
+      에이스전: toBool(row["에이스전"]),
+      세트A티어: row["선수A티어"] || "",
+      세트A종족: row["선수A종족"] || "",
+      세트B티어: row["선수B티어"] || "",
+      세트B종족: row["선수B종족"] || "",
+      세트A비고: row["선수A비고"] || "",
+      세트B비고: row["선수B비고"] || "",
+      홈픽: row["선수A비고"] || "",
+      원정픽: row["선수B비고"] || "",
+      _rowIndex: rowIndex
+    });
+  });
+
+  MATCHES = [...map.values()].map(match => {
+    match.sets.sort((a,b) => {
+      const an = Number(a.세트), bn = Number(b.세트);
+      if(Number.isFinite(an) && Number.isFinite(bn)) return an - bn;
+      return a._rowIndex - b._rowIndex;
+    });
+    return match;
+  }).sort((a, b) => {
+    if(a.날짜 !== b.날짜) return String(a.날짜).localeCompare(String(b.날짜));
+    const timeA = String(a.시간 || "").trim();
+    const timeB = String(b.시간 || "").trim();
+    const fixedA = /^\d{1,2}:\d{2}$/.test(timeA);
+    const fixedB = /^\d{1,2}:\d{2}$/.test(timeB);
+    if(fixedA && !fixedB) return -1;
+    if(!fixedA && fixedB) return 1;
+    if(fixedA && fixedB) return timeA.localeCompare(timeB);
+    return a._rowIndex - b._rowIndex;
+  });
+}
+
+function getFilteredMatches(){
+  if(currentTeam === "전체") return MATCHES;
+
+  return MATCHES.filter(m =>
+    m.팀A === currentTeam ||
+    m.팀B === currentTeam
+  );
+}
+
+function getTeamList(){
+  return TOURNAMENT_ROWS
+    .map(row => ({
+      name: String(row["팀명리스트"] || "").trim(),
+      logo: String(row["팀로고 이미지 경로"] || "").trim()
+    }))
+    .filter(team => team.name);
+}
+
+function getTeamMembers(teamName){
+  return TOURNAMENT_ROWS
+    .map(row => ({
+      name: String(row["이름"] || "").trim(),
+      team: String(row["소속"] || "").trim(),
+      race: String(row["종족"] || "").trim(),
+      tier: String(row["티어"] || "").trim(),
+      stationId: String(row["방송국ID"] || "").trim()
+    }))
+    .filter(player => player.name && player.team === teamName);
+}
+
+function renderTeamFilter(){
+
+  const dropdownList =
+    document.getElementById("teamDropdownList");
+
+  const dropdownBtn =
+    document.getElementById("teamDropdownBtn");
+
+  const dropdown =
+    document.getElementById("teamDropdown");
+
+  const teams = getTeamList();
+
+  dropdownList.innerHTML = `
+    <div class="team-option" data-team="전체">
+      전체보기
+    </div>
+
+    ${teams.map(team => `
+      <div
+        class="team-option"
+        data-team="${team.name}"
+      >
+        ${team.name}
+      </div>
+    `).join("")}
+  `;
+
+  dropdownBtn.onclick = () => {
+    dropdown.classList.toggle("open");
+  };
+
+  dropdownList
+    .querySelectorAll(".team-option")
+    .forEach(item => {
+
+      item.onclick = () => {
+
+        currentTeam =
+          item.dataset.team;
+
+        dropdownBtn.textContent =
+          item.textContent + " ▼";
+
+        dropdown.classList.remove("open");
+
+        renderMatchList();
+
+      };
+
+    });
+
+}
+
+function getTeamLogo(teamName){
+  const team = getTeamList().find(t => t.name === teamName);
+  if(!team || !team.logo) return "";
+
+  return `./teamlogo/${team.logo}`;
+}
+
+
+function buildCalendarMonths(){
+  const validDates = MATCHES
+    .map(m => m.날짜)
+    .filter(Boolean)
+    .sort();
+
+  if(!validDates.length){
+    calendarMonths = [];
+    return;
+  }
+
+  const first = validDates[0].slice(0, 7);
+  const last = validDates[validDates.length - 1].slice(0, 7);
+
+  const [startY, startM] = first.split("-").map(Number);
+  const [endY, endM] = last.split("-").map(Number);
+
+  calendarMonths = [];
+
+  let y = startY;
+  let m = startM;
+
+  while(y < endY || (y === endY && m <= endM)){
+    calendarMonths.push({
+      year: y,
+      month: m
+    });
+
+    m++;
+
+    if(m > 12){
+      m = 1;
+      y++;
+    }
+  }
+
+  currentCalendarIndex = 0;
+}
+
+function renderCalendar(){
+  const box = document.getElementById("calendarGrid");
+
+  if(!MATCHES.length){
+    box.innerHTML = `<div class="tournament-empty">등록된 일정이 없습니다.</div>`;
+    return;
+  }
+
+  if(!calendarMonths.length){
+    buildCalendarMonths();
+  }
+
+  const current = calendarMonths[currentCalendarIndex];
+
+  if(!current){
+    box.innerHTML = `<div class="tournament-empty">날짜 형식을 확인해주세요.</div>`;
+    return;
+  }
+
+  const year = current.year;
+  const month = current.month;
+
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDate = new Date(year, month, 0).getDate();
+  const startDay = firstDay.getDay();
+
+  const monthTitle = `${year}.${String(month).padStart(2, "0")}`;
+
+  let html = `
+    <div class="jm-calendar">
+<div class="jm-calendar-nav">
+  <button id="calendarPrevBtn" ${currentCalendarIndex === 0 ? "disabled" : ""}>
+  <span class="calendar-arrow">‹</span>
+</button>
+  <div class="jm-calendar-title">${monthTitle}</div>
+  <button id="calendarNextBtn" ${currentCalendarIndex === calendarMonths.length - 1 ? "disabled" : ""}>
+  <span class="calendar-arrow">›</span>
+</button>
+</div>
+
+      <div class="jm-calendar-week">
+        <div class="sun">일</div>
+        <div>월</div>
+        <div>화</div>
+        <div>수</div>
+        <div>목</div>
+        <div>금</div>
+        <div class="sat">토</div>
+      </div>
+
+      <div class="jm-calendar-days">
+  `;
+
+  for(let i = 0; i < startDay; i++){
+    html += `<div class="jm-day empty"></div>`;
+  }
+
+  for(let day = 1; day <= lastDate; day++){
+    const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const dayMatches = MATCHES.filter(m => m.날짜 === dateKey);
+
+    html += `
+      <div class="jm-day">
+        <div class="jm-day-num">${day}</div>
+        ${dayMatches.map(m => `
+          <button class="jm-calendar-event" data-key="${esc(m.key)}">
+            ${esc(m.시간 || "미정")} ${esc(m.경기명 || m.라운드)}<br>
+${esc(m.팀A || "미정")} vs ${esc(m.팀B || "미정")}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  html += `
+      </div>
+    </div>
+  `;
+
+  box.innerHTML = html;
+
+  document.getElementById("calendarPrevBtn")?.addEventListener("click", () => {
+    if(currentCalendarIndex <= 0) return;
+    currentCalendarIndex--;
+    renderCalendar();
+  });
+
+  document.getElementById("calendarNextBtn")?.addEventListener("click", () => {
+    if(currentCalendarIndex >= calendarMonths.length - 1) return;
+    currentCalendarIndex++;
+    renderCalendar();
+  });
+
+  document.querySelectorAll(".jm-calendar-event").forEach(btn => {
+    btn.addEventListener("click", () => {
+      switchView("table");
+
+      const target = MATCHES.find(m => m.key === btn.dataset.key);
+      if(!target) return;
+
+      currentTeam = "전체";
+      renderMatchList(target.key);
+    });
+  });
+}
+
+
+function renderMatchList(openKey = ""){
+  const box = document.getElementById("matchList");
+  const list = getFilteredMatches();
+
+  if(!list.length){
+    box.innerHTML = `<div class="tournament-empty">표시할 경기 데이터가 없습니다.</div>`;
+    return;
+  }
+
+  box.innerHTML = list.map((m) => {
+    const logoA = getTeamLogo(m.팀A);
+    const logoB = getTeamLogo(m.팀B);
+
+    return `
+      <article class="tournament-match-block" data-key="${esc(m.key)}">
+        <div class="tournament-match-card">
+
+          <div class="tm-left">
+            <strong>${esc(m.날짜)} · ${esc(m.시간 || "미정")}</strong>
+            <span>${esc(m.경기명 || m.라운드)}</span>
+          </div>
+
+          <div class="tm-score">
+
+            <div class="tm-team tm-team-a">
+              <span>${esc(m.팀A || "미정")}</span>
+              ${
+                logoA
+                  ? `<img class="tm-team-logo" src="${logoA}" alt="">`
+                  : ""
+              }
+            </div>
+
+            <span class="score-a ${
+              Number(m.점수A) > Number(m.점수B)
+                ? "winning-score"
+                : Number(m.점수A) < Number(m.점수B)
+                  ? "losing-score"
+                  : ""
+            }">
+              ${esc(m.점수A || "-")}
+            </span>
+
+            <span class="score-colon"> : </span>
+
+            <span class="score-b ${
+              Number(m.점수B) > Number(m.점수A)
+                ? "winning-score"
+                : Number(m.점수B) < Number(m.점수A)
+                  ? "losing-score"
+                  : ""
+            }">
+              ${esc(m.점수B || "-")}
+            </span>
+
+            <div class="tm-team tm-team-b">
+              ${
+                logoB
+                  ? `<img class="tm-team-logo" src="${logoB}" alt="">`
+                  : ""
+              }
+              <span>${esc(m.팀B || "미정")}</span>
+            </div>
+
+          </div>
+
+          <button class="tm-detail-btn" type="button">
+            ${openKey === m.key ? "접기 ▲" : "상세 엔트리"}
+          </button>
+
+        </div>
+
+        <div class="inline-detail ${openKey === m.key ? "" : "hidden"}">
+          ${renderInlineDetail(m)}
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  document.querySelectorAll(".tm-detail-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      const block = btn.closest(".tournament-match-block");
+      const key = block.dataset.key;
+      const isOpen = !block.querySelector(".inline-detail").classList.contains("hidden");
+
+      renderMatchList(isOpen ? "" : key);
+    });
+  });
+}
+
+function playerWithBadges(name, tier, race, note, winner, side){
+  const isWinner =
+    name &&
+    winner &&
+    String(name).trim() === String(winner).trim();
+
+  return `
+    <div class="set-player-box ${side} ${isWinner ? "is-winner" : "is-loser"}">
+      <div class="set-player-name-line">
+        <strong>${esc(name || "미정")}</strong>
+      </div>
+
+<div class="set-player-badge-line">
+  ${tier ? `<span class="player-badge tier">${esc(tier)}</span>` : ""}
+  ${race ? `<span class="player-badge race race-${esc(race)}">${esc(race)}</span>` : ""}
+  ${note ? `<span class="player-badge note">${esc(note)}</span>` : ""}
+</div>
+    </div>
+  `;
+}
+
+function renderInlineDetail(match){
+  return `
+    <div class="detail-head">
+      <h2>${esc(match.경기명)}</h2>
+      <p>${esc(match.날짜)} ${esc(match.시간 || "미정")} · ${esc(match.상태 || "상태 미정")}</p>
+    </div>
+
+    <div class="detail-score">
+      <strong>${esc(match.팀A || "미정")}</strong>
+      <b>${esc(match.점수A || "-")} : ${esc(match.점수B || "-")}</b>
+      <strong>${esc(match.팀B || "미정")}</strong>
+    </div>
+
+    <div class="set-list">
+      ${match.sets.map(set => `
+        <div class="set-row tournament-set-row">
+          <div class="set-num">${set.에이스전 ? "ACE" : esc(set.세트 || "미정")}</div>
+
+          <div class="set-vs">
+${playerWithBadges(
+  set.세트A,
+  set.세트A티어,
+  set.세트A종족,
+  set.세트A비고,
+  set.세트승자,
+  "left"
+)}
+
+<span class="vs-text">VS</span>
+
+${playerWithBadges(
+  set.세트B,
+  set.세트B티어,
+  set.세트B종족,
+  set.세트B비고,
+  set.세트승자,
+  "right"
+)}
+          </div>
+
+          <div class="set-map">${esc(set.맵 || "미정")}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+// 주석 : 아래 이름 들어간 팀은 조별예선에 미포함
+// function isRealTeamName(name){
+//   const value = String(name || "").trim();
+
+//   if(!value) return false;
+
+//   if(value.includes("승리팀")) return false;
+//   if(value.includes("패배팀")) return false;
+//   if(value.includes("승자")) return false;
+//   if(value.includes("패자")) return false;
+//   if(value === "미정") return false;
+
+//   return true;
+// }
+
+
+
+
+function renderGroupStanding(){
+
+  const box = document.getElementById("groupStandingBox");
+  if(!box) return;
+
+  const groups = {};
+
+  const realTeams = new Set(
+    getTeamList().map(team => team.name)
+  );
+
+  MATCHES.forEach(match => {
+    if(match.화면구분 !== "조별예선") return;
+
+    const group = String(match.조 || "기타").trim();
+    if(!groups[group]) groups[group] = {};
+
+    const teamA = String(match.팀A || "").trim();
+    const teamB = String(match.팀B || "").trim();
+
+    const hasTeamA = realTeams.has(teamA);
+    const hasTeamB = realTeams.has(teamB);
+
+    if(!hasTeamA && !hasTeamB) return;
+
+    if(hasTeamA && !groups[group][teamA]){
+      groups[group][teamA] = {
+        team: teamA,
+        games:0,
+        win:0,
+        lose:0,
+        gf:0,
+        ga:0,
+        gd:0,
+        points:0
+      };
+    }
+
+    if(hasTeamB && !groups[group][teamB]){
+      groups[group][teamB] = {
+        team: teamB,
+        games:0,
+        win:0,
+        lose:0,
+        gf:0,
+        ga:0,
+        gd:0,
+        points:0
+      };
+    }
+
+    const aScore = Number(match.점수A || 0);
+    const bScore = Number(match.점수B || 0);
+    const winTeam = String(match.승리팀 || "").trim();
+    const hasResult = winTeam && winTeam !== "미정";
+
+if(hasResult){
+
+  if(hasTeamA){
+    groups[group][teamA].games++;
+    groups[group][teamA].gf += aScore;
+    groups[group][teamA].ga += bScore;
+    groups[group][teamA].gd =
+      groups[group][teamA].gf - groups[group][teamA].ga;
+  }
+
+  if(hasTeamB){
+    groups[group][teamB].games++;
+    groups[group][teamB].gf += bScore;
+    groups[group][teamB].ga += aScore;
+    groups[group][teamB].gd =
+      groups[group][teamB].gf - groups[group][teamB].ga;
+  }
+
+}
+
+    if(hasResult && hasTeamA && winTeam === teamA){
+      groups[group][teamA].win++;
+      groups[group][teamA].points += 5;
+
+      if(hasTeamB){
+        groups[group][teamB].lose++;
+      }
+    }
+
+    if(hasResult && hasTeamB && winTeam === teamB){
+      groups[group][teamB].win++;
+      groups[group][teamB].points += 5;
+
+      if(hasTeamA){
+        groups[group][teamA].lose++;
+      }
+    }
+  });
+
+  const groupOrder = ["A조", "B조", "C조", "D조"];
+
+  const visibleGroups = groupOrder.filter(group => {
+    const teams = groups[group] || {};
+    return Object.keys(teams).length > 0;
+  });
+
+  if(visibleGroups.length === 0){
+    box.innerHTML = `
+      <div class="tournament-empty">
+        <center><h3>조 추첨이 이루어지지 않았습니다.</h3></center>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = visibleGroups.map(group => {
+
+    const teams = groups[group] || {};
+
+    const ranking = Object.values(teams).sort((a,b) => {
+      if(b.points !== a.points) return b.points - a.points;
+      if(b.win !== a.win) return b.win - a.win;
+      if(b.gd !== a.gd) return b.gd - a.gd;
+      if(b.gf !== a.gf) return b.gf - a.gf;
+      return a.team.localeCompare(b.team);
+    });
+
+    return `
+      <div class="group-standing-card">
+        <table class="group-standing-table">
+          <thead>
+            <tr>
+              <th>${esc(group)}</th>
+              <th>경기</th>
+              <th>W</th>
+              <th>L</th>
+              <th>득점</th>
+              <th>실점</th>
+              <th>득실</th>
+              <th>승점</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${ranking.map((team, idx) => `
+              <tr>
+                <td class="standing-team-cell">
+                  <div class="standing-team-inner">
+                    <span class="standing-rank">${idx + 1}위</span>
+
+                    ${
+                      getTeamLogo(team.team)
+                        ? `<img class="standing-team-logo" src="${getTeamLogo(team.team)}" alt="${esc(team.team)}">`
+                        : `<span class="standing-team-logo empty"></span>`
+                    }
+
+                    <span class="standing-team-name">${esc(team.team)}</span>
+                  </div>
+                </td>
+
+                <td>${team.games}</td>
+                <td>${team.win}</td>
+                <td>${team.lose}</td>
+                <td>${team.gf}</td>
+                <td>${team.ga}</td>
+                <td>${team.gd > 0 ? "+" : ""}${team.gd}</td>
+                <td>${team.points}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }).join("");
+}
+
+
+
+
+
+
+
+
+
+function renderBracket(){
+  const box = document.getElementById("bracketBox");
+  if(!box) return;
+
+  const rounds = ["8강", "4강", "결승"];
+
+  const visibleRounds = rounds.filter(round => {
+    return MATCHES.some(m => m.경기구분 === round);
+  });
+
+  if(visibleRounds.length === 0){
+    box.innerHTML = `
+      <div class="tournament-empty">
+        <center><h3>토너먼트 대진이 등록되지 않았습니다.</h3></center>
+      </div>
+    `;
+    return;
+  }
+
+  const roundHtml = visibleRounds.map(round => {
+    const matches = MATCHES.filter(m => m.경기구분 === round);
+
+    return `
+      <div class="bracket-round">
+        <h2>${round}</h2>
+
+        <div class="bracket-match-list">
+          ${matches.map(m => `
+            <div class="bracket-match-card">
+              <div class="bracket-match-title">
+                <strong>${esc(m.경기명 || m.라운드)}</strong>
+                <span>
+                  ${esc(m.날짜 || "날짜 미정")}
+                  ${m.시간 ? `· ${esc(m.시간)}` : ""}
+                </span>
+              </div>
+
+              <div class="bracket-team ${m.승리팀 === m.팀A ? "winner" : ""}">
+                <span class="bracket-team-name">
+                  ${
+                    getTeamLogo(m.팀A)
+                      ? `<img class="bracket-team-logo" src="${getTeamLogo(m.팀A)}" alt="${esc(m.팀A)}">`
+                      : ""
+                  }
+                  <b>${esc(m.팀A || "미정")}</b>
+                </span>
+                <strong>${esc(m.점수A || "-")}</strong>
+              </div>
+
+              <div class="bracket-team ${m.승리팀 === m.팀B ? "winner" : ""}">
+                <span class="bracket-team-name">
+                  ${
+                    getTeamLogo(m.팀B)
+                      ? `<img class="bracket-team-logo" src="${getTeamLogo(m.팀B)}" alt="${esc(m.팀B)}">`
+                      : ""
+                  }
+                  <b>${esc(m.팀B || "미정")}</b>
+                </span>
+                <strong>${esc(m.점수B || "-")}</strong>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  box.innerHTML = `
+    <div class="bracket-wrap">
+      ${roundHtml}
+    </div>
+  `;
+}
+
+function renderTeamView(){
+  const box = document.getElementById("teamView");
+  if(!box) return;
+
+  const teams = getTeamList();
+
+  box.innerHTML = `
+    <div class="team-tabs">
+      ${teams.map((team, index) => `
+        <button class="team-tab ${index === 0 ? "active" : ""}" data-team="${esc(team.name)}">
+          ${esc(team.name)}
+        </button>
+      `).join("")}
+    </div>
+
+    <div id="teamDetailBox"></div>
+  `;
+
+  document.querySelectorAll(".team-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".team-tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderTeamDetail(btn.dataset.team);
+    });
+  });
+
+  if(teams[0]){
+    renderTeamDetail(teams[0].name);
+  }
+}
+
+function getSoopProfileImage(stationId){
+  const id = String(stationId || "").trim();
+  if(!id) return "./images/default-profile.png";
+
+  return `https://profile.img.sooplive.co.kr/LOGO/${id.slice(0, 2)}/${id}/${id}.jpg`;
+}
+
+function getSoopStationUrl(stationId){
+  const id = String(stationId || "").trim();
+  if(!id) return "#";
+
+  return `https://www.sooplive.com/station/${id}`;
+}
+
+function renderTeamDetail(teamName){
+  const box = document.getElementById("teamDetailBox");
+  const team = getTeamList().find(t => t.name === teamName);
+  const members = getTeamMembers(teamName);
+
+  const logo = team?.logo ? `./teamlogo/${team.logo}` : "";
+
+  box.innerHTML = `
+  <div class="team-profile-head">
+    <div class="team-logo-box">
+      ${logo ? `<img src="${esc(logo)}" alt="${esc(teamName)}">` : `<span>로고</span>`}
+    </div>
+
+    <div class="team-title-box">
+      <div class="team-title">${esc(teamName)}</div>
+      <div class="team-subtitle">TEAM ROSTER</div>
+    </div>
+  </div>
+
+  <div class="team-member-grid">
+      ${
+        members.length
+          ? members.map(player => `
+            <a
+              class="team-member-card"
+              href="${getSoopStationUrl(player.stationId)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div class="team-member-image">
+                <img
+                  src="${getSoopProfileImage(player.stationId)}"
+                  alt="${esc(player.name)}"
+                  onerror="this.src='./images/default-profile.png'"
+                >
+              </div>
+
+              <div class="team-member-name">${esc(player.name)}</div>
+
+              <div class="team-member-meta">
+                ${esc(player.tier || "-")} ${esc(player.race || "-")}
+              </div>
+            </a>
+          `).join("")
+          : `<div class="tournament-empty">등록된 팀원이 없습니다.</div>`
+      }
+    </div>
+  `;
+}
+
+let currentPowerTab = "overall";
+let powerSort = { key:"PI", dir:"desc" };
+let powerFilters = { team:"전체", tier:"전체", race:"전체", minSet:0, search:"" };
+
+const POWER_TAB_CONFIG = {
+  overall: {
+    label:"종합",
+    desc:"핵심 성적과 상대 난이도, 기대 초과 성과, 자체 종합 지표를 함께 비교합니다.",
+    defaultSort:"PI",
+    columns:["rank","player","team","SET","record","WR","SOS","WAE","VPI","PI"]
+  },
+  basic: {
+    label:"기본 기록",
+    desc:"팀 매치 출전, 개인 세트 출전, 승·패·승률을 보여줍니다.",
+    defaultSort:"W",
+    columns:["rank","player","team","GP","SET","W","L","WR"]
+  },
+  situation: {
+    label:"상황 기록",
+    desc:"마무리승, 매치포인트 방어, 동점승, 연패 탈출승, 에이스 결정전 승을 집계합니다.",
+    defaultSort:"situationScore",
+    columns:["rank","player","team","CL","MP","EQ","ES","ACE","CPI"]
+  },
+  expected: {
+    label:"기대치 기록",
+    desc:"선수 종합 점수를 기준으로 상대 난이도와 경기별 기대 승률을 계산합니다.",
+    defaultSort:"WAE",
+    columns:["rank","player","team","SET","SOS","SOSW","SOSL","EXP","xW","WAE","UPR","FAV"]
+  },
+  advanced: {
+    label:"고급 기록",
+    desc:"중요 상황 성과, 팀 승리 확률 변화, 선수 종합 점수 대비 효율과 종합 활약도를 보여줍니다.",
+    defaultSort:"PI",
+    columns:["rank","player","team","CPI","WPA","VPI","PI"]
+  }
+};
+
+const POWER_COLUMNS = {
+  rank:{label:"순위", short:"", sortable:false},
+  player:{label:"선수", short:"", sortable:false},
+  team:{label:"소속팀", short:"", sortable:false},
+  GP:{label:"팀 경기 출전",short:"GP",tip:"선수가 한 세트 이상 출전한 팀 매치 수",fmt:v=>intFmt(v)},
+  SET:{label:"세트 출전",short:"SET",tip:"결과가 확정된 개인전 출전 수",fmt:v=>intFmt(v)},
+  W:{label:"승",short:"W",tip:"세트 승리 수",fmt:v=>intFmt(v)},
+  L:{label:"패",short:"L",tip:"세트 패배 수",fmt:v=>intFmt(v)},
+  record:{label:"전적",short:"W-L",sortable:false,fmt:(v,p)=>`${p.W}승 ${p.L}패`},
+  WR:{label:"승률",short:"WR",tip:"승 ÷ 세트 출전 × 100",fmt:v=>pctFmt(v)},
+  CL:{label:"마무리승",short:"CL",tip:"해당 승리로 팀 매치 승리가 확정된 횟수",fmt:v=>intFmt(v)},
+  MP:{label:"매치포인트 방어",short:"MP",tip:"패배 시 팀 패배가 확정되는 상황에서 이긴 횟수",fmt:v=>intFmt(v)},
+  EQ:{label:"동점승",short:"EQ",tip:"팀이 뒤진 상황에서 승리해 세트 스코어를 동점으로 만든 횟수",fmt:v=>intFmt(v)},
+  ES:{label:"연패 탈출승",short:"ES",tip:"팀이 2세트 이상 연속 패배한 뒤 연패를 끊은 횟수",fmt:v=>intFmt(v)},
+  ACE:{label:"에이스전 승",short:"ACE",tip:"에이스 결정전 승리 수",fmt:v=>intFmt(v)},
+  SOS:{label:"상대 난이도",short:"SOS",tip:"상대한 선수들의 평균 종합 점수",fmt:v=>numFmt(v,1)},
+  SOSW:{label:"승리 상대 난이도",short:"SOSW",tip:"승리한 상대 선수들의 평균 종합 점수",fmt:v=>numFmt(v,1)},
+  SOSL:{label:"패배 상대 난이도",short:"SOSL",tip:"패배한 상대 선수들의 평균 종합 점수",fmt:v=>numFmt(v,1)},
+  EXP:{label:"평균 기대 승률",short:"EXP",tip:"선수 종합 점수로 계산한 경기별 기대 승률의 평균",fmt:v=>pctFmt(v)},
+  xW:{label:"기대 승수",short:"xW",tip:"각 세트 기대 승률의 합계",fmt:v=>numFmt(v,2)},
+  WAE:{label:"기대 초과 승수",short:"WAE",tip:"실제 승수 − 기대 승수",fmt:v=>signedFmt(v,2)},
+  UPR:{label:"언더독 승률",short:"UPR",tip:"자신보다 종합 점수가 높은 상대를 만난 경기의 승률",fmt:(v,p)=>rateWithGames(v,p.underdogG,p.underdogW)},
+  FAV:{label:"우세 경기 승률",short:"FAV",tip:"자신보다 종합 점수가 낮은 상대를 만난 경기의 승률",fmt:(v,p)=>rateWithGames(v,p.favoriteG,p.favoriteW)},
+  CPI:{label:"클러치 지수",short:"CPI",tip:"중요 상황 기회에서 실제로 승리한 비율을 가중 계산한 지수",fmt:v=>numFmt(v,1)},
+  WPA:{label:"승리 확률 기여도",short:"WPA",tip:"각 세트 전후 팀 매치 승리 확률 변화의 누적값",fmt:v=>signedFmt(v,2)},
+  VPI:{label:"선수 랭킹 대비 활약",short:"VPI",tip:"100을 선수 종합 점수 기준 기대 수준으로 둔 효율 지수",fmt:v=>numFmt(v,1)},
+  PI:{label:"종합 활약도",short:"PI",tip:"승패, 상황 기록, 기대 초과 승수와 WPA를 반영한 자체 누적 지표",fmt:v=>numFmt(v,1)},
+  situationScore:{label:"상황 기여",short:"",sortable:true,fmt:v=>numFmt(v,1)}
+};
+
+function intFmt(v){ return Number.isFinite(v) ? String(Math.round(v)) : "-"; }
+function numFmt(v,d=1){ return Number.isFinite(v) ? Number(v).toFixed(d).replace(/\.0$/,"") : "-"; }
+function pctFmt(v){ return Number.isFinite(v) ? `${Number(v).toFixed(1)}%` : "-"; }
+function signedFmt(v,d=2){
+  if(!Number.isFinite(v)) return "-";
+  const n = Number(v);
+  return `${n > 0 ? "+" : ""}${n.toFixed(d)}`;
+}
+function rateWithGames(rate,games,wins){
+  if(!games) return "-";
+  return `${wins}승/${games}전 · ${pctFmt(rate)}`;
+}
+function valueClass(key,value){
+  if(!Number.isFinite(value)) return "";
+  if(["WAE","WPA"].includes(key)) return value > 0 ? "sab-positive" : value < 0 ? "sab-negative" : "";
+  if(["PI","VPI","WR","CPI"].includes(key)) return "sab-primary";
+  return "";
+}
+
+function getPlayerMasterMap(){
+  const map = new Map();
+  TOURNAMENT_ROWS.forEach(row => {
+    const name = String(row["이름"] || "").trim();
+    if(!name) return;
+    const current = map.get(name) || {name,team:"",tier:"",race:"",value:null};
+    current.team = current.team || String(row["소속"] || "").trim();
+    current.tier = current.tier || String(row["티어"] || "").trim();
+    current.race = current.race || String(row["종족"] || "").trim();
+    const value = numOrBlank(row["몸값"]);
+    if(value !== null) current.value = value;
+    map.set(name,current);
+  });
+  return map;
+}
+
+function expectedWinProbability(ownValue,oppValue){
+  if(!(ownValue > 0) || !(oppValue > 0)) return null;
+  return ownValue / (ownValue + oppValue);
+}
+
+function matchWinProbability(a,b,target,memo=new Map()){
+  if(a >= target) return 1;
+  if(b >= target) return 0;
+  const key = `${a}|${b}|${target}`;
+  if(memo.has(key)) return memo.get(key);
+  const result = 0.5 * matchWinProbability(a+1,b,target,memo) + 0.5 * matchWinProbability(a,b+1,target,memo);
+  memo.set(key,result);
+  return result;
+}
+
+function getPowerRankingTierNumber(tier){
+  const match = String(tier || "").trim().match(/\d+/);
+  if(!match) return null;
+
+  const tierNumber = Number(match[0]);
+  return Number.isFinite(tierNumber) ? tierNumber : null;
+}
+
+function isPowerRankingTier(tier){
+  const tierNumber = getPowerRankingTierNumber(tier);
+  return tierNumber !== null && tierNumber >= 2 && tierNumber <= 8;
+}
+
+function buildSabermetrics(){
+  const masters = getPlayerMasterMap();
+  const players = new Map();
+
+  function init(name,team){
+    name = String(name || "").trim();
+    if(!name || name === "미정") return null;
+    if(!players.has(name)){
+      const m = masters.get(name) || {};
+      players.set(name,{
+        name, team:m.team || team || "", tier:m.tier || "", race:m.race || "", value:m.value ?? null,
+        matchIds:new Set(), SET:0,W:0,L:0, CL:0,MP:0,EQ:0,ES:0,ACE:0,
+        valueGames:0,oppValueSum:0,winOppValueSum:0,winValueGames:0,lossOppValueSum:0,lossValueGames:0,
+        xW:0,underdogG:0,underdogW:0,favoriteG:0,favoriteW:0,
+        clutchOpp:0,clutchEarned:0,WPA:0
+      });
+    }
+    const p = players.get(name);
+    if(!p.team && team) p.team = team;
+    return p;
+  }
+
+  MATCHES.forEach(match => {
+    const finalA = Number(match.점수A || 0);
+    const finalB = Number(match.점수B || 0);
+    const derivedMax = match.sets.reduce((mx,s)=>Math.max(mx,Number(s.팀A점수전 || 0)+1,Number(s.팀B점수전 || 0)+1),0);
+    const target = Math.max(finalA,finalB,derivedMax);
+    if(target <= 0) return;
+
+    let streakTeam = "";
+    let streakCount = 0;
+
+    match.sets.forEach(set => {
+      const aName = set.세트A, bName = set.세트B, winner = set.세트승자;
+      if(!aName || !bName || !winner || winner === "미정") return;
+      const a = init(aName,match.팀A), b = init(bName,match.팀B);
+      if(!a || !b) return;
+
+      const aWin = winner === aName || set.세트승리팀 === "팀A";
+      const bWin = winner === bName || set.세트승리팀 === "팀B";
+      if(!aWin && !bWin) return;
+
+      const preA = Number.isFinite(set.팀A점수전) ? set.팀A점수전 : 0;
+      const preB = Number.isFinite(set.팀B점수전) ? set.팀B점수전 : 0;
+      const postA = preA + (aWin ? 1 : 0);
+      const postB = preB + (bWin ? 1 : 0);
+      const winningSide = aWin ? "팀A" : "팀B";
+
+      [a,b].forEach(p => { p.SET++; p.matchIds.add(match.key); });
+      if(aWin){ a.W++; b.L++; } else { b.W++; a.L++; }
+
+      const aExp = expectedWinProbability(a.value,b.value);
+      const bExp = aExp === null ? null : 1-aExp;
+      [[a,b.value,aExp,aWin],[b,a.value,bExp,bWin]].forEach(([p,oppValue,exp,won]) => {
+        if(exp === null || !(oppValue > 0)) return;
+        p.valueGames++;
+        p.oppValueSum += oppValue;
+        p.xW += exp;
+        if(won){ p.winOppValueSum += oppValue; p.winValueGames++; }
+        else { p.lossOppValueSum += oppValue; p.lossValueGames++; }
+        if(p.value < oppValue){ p.underdogG++; if(won) p.underdogW++; }
+        else if(p.value > oppValue){ p.favoriteG++; if(won) p.favoriteW++; }
+      });
+
+      const beforePA = matchWinProbability(preA,preB,target);
+      const afterPA = matchWinProbability(postA,postB,target);
+      const deltaA = afterPA-beforePA;
+      a.WPA += deltaA;
+      b.WPA -= deltaA;
+
+      const oppWasStreakingAgainstA = streakTeam === "팀B" && streakCount >= 2;
+      const oppWasStreakingAgainstB = streakTeam === "팀A" && streakCount >= 2;
+
+      function situationFor(p,won,ownPre,oppPre,ownPost,isEsOpp){
+        const clOpp = ownPre === target-1;
+        const mpOpp = oppPre === target-1;
+        const eqOpp = ownPre < oppPre && ownPost === oppPre;
+        const aceOpp = set.에이스전;
+        const weights = {cl:1.5,mp:1.5,eq:1,es:1,ace:1.5};
+        p.clutchOpp += (clOpp?weights.cl:0)+(mpOpp?weights.mp:0)+(eqOpp?weights.eq:0)+(isEsOpp?weights.es:0)+(aceOpp?weights.ace:0);
+        if(!won) return;
+        if(clOpp){ p.CL++; p.clutchEarned += weights.cl; }
+        if(mpOpp){ p.MP++; p.clutchEarned += weights.mp; }
+        if(eqOpp){ p.EQ++; p.clutchEarned += weights.eq; }
+        if(isEsOpp){ p.ES++; p.clutchEarned += weights.es; }
+        if(aceOpp){ p.ACE++; p.clutchEarned += weights.ace; }
+      }
+      situationFor(a,aWin,preA,preB,postA,oppWasStreakingAgainstA);
+      situationFor(b,bWin,preB,preA,postB,oppWasStreakingAgainstB);
+
+      if(streakTeam === winningSide) streakCount++;
+      else { streakTeam = winningSide; streakCount = 1; }
+    });
+  });
+
+  return [...players.values()].map(p => {
+    p.GP = p.matchIds.size;
+    p.WR = p.SET ? p.W/p.SET*100 : null;
+    p.SOS = p.valueGames ? p.oppValueSum/p.valueGames : null;
+    p.SOSW = p.winValueGames ? p.winOppValueSum/p.winValueGames : null;
+    p.SOSL = p.lossValueGames ? p.lossOppValueSum/p.lossValueGames : null;
+    p.EXP = p.valueGames ? p.xW/p.valueGames*100 : null;
+    p.WAE = p.valueGames ? p.W-p.xW : null;
+    p.UPR = p.underdogG ? p.underdogW/p.underdogG*100 : null;
+    p.FAV = p.favoriteG ? p.favoriteW/p.favoriteG*100 : null;
+    p.CPI = p.clutchOpp ? p.clutchEarned/p.clutchOpp*100 : null;
+    p.situationScore = p.CL*1.5+p.MP*1.5+p.EQ+p.ES+p.ACE*1.5;
+    p.VPI = p.valueGames ? 100+(p.WAE/p.valueGames*100) : null;
+    const waePart = Number.isFinite(p.WAE) ? p.WAE*3 : 0;
+    p.PI = p.W*3-p.L+p.situationScore+waePart+p.WPA*5;
+    return p;
+  }).filter(p =>
+    p.SET > 0 &&
+    isPowerRankingTier(p.tier)
+  );
+}
+
+function renderPowerRanking(){
+  const box = document.getElementById("powerView");
+  if(!box) return;
+  const cfg = POWER_TAB_CONFIG[currentPowerTab];
+  const all = buildSabermetrics();
+  const teams = [...new Set(all.map(p=>p.team).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const tiers = [...new Set(all.map(p=>p.tier).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  const races = [...new Set(all.map(p=>p.race).filter(Boolean))].sort();
+
+  box.innerHTML = `
+    <div class="sab-wrap">
+      <div class="sab-tabs">
+        ${Object.entries(POWER_TAB_CONFIG).map(([key,item])=>`<button class="sab-tab ${key===currentPowerTab?"active":""}" data-sab-tab="${key}">${item.label}</button>`).join("")}
+      </div>
+      <div class="sab-toolbar">
+        <div class="sab-filters">
+          ${filterSelect("팀","sabTeam",["전체",...teams],powerFilters.team)}
+          ${filterSelect("티어","sabTier",["전체",...tiers],powerFilters.tier)}
+          ${filterSelect("종족","sabRace",["전체",...races],powerFilters.race)}
+          ${filterSelect("최소 출전","sabMinSet",["0","1","2","3","5","10"],String(powerFilters.minSet),v=>v==="0"?"전체":`${v}세트`)}
+          <div class="sab-field search"><label for="sabSearch">선수 검색</label><input id="sabSearch" value="${esc(powerFilters.search)}" placeholder="선수명 입력"></div>
+        </div>
+        <button id="sabHelpBtn" class="sab-help" type="button">지표 설명 ⓘ</button>
+      </div>
+      <div class="sab-desc">${cfg.desc}</div>
+      <div id="sabLegend" class="sab-legend">${renderMetricLegend()}</div>
+      <div id="sabTableArea"></div>
+      <div class="sab-footnote">※ EXP·xW·WAE·SOS·UPR·FAV·VPI는 양 선수의 종합 점수가 모두 등록된 세트만 계산합니다. VPI는 100이 기대 수준입니다. PI와 CPI는 본 사이트의 자체 지표입니다.</div>
+    </div>`;
+
+  document.querySelectorAll("[data-sab-tab]").forEach(btn=>btn.onclick=()=>{
+    currentPowerTab=btn.dataset.sabTab;
+    powerSort={key:POWER_TAB_CONFIG[currentPowerTab].defaultSort,dir:"desc"};
+    renderPowerRanking();
+  });
+  document.getElementById("sabHelpBtn").onclick=()=>document.getElementById("sabLegend").classList.toggle("open");
+  bindPowerFilter("sabTeam","team"); bindPowerFilter("sabTier","tier"); bindPowerFilter("sabRace","race");
+  document.getElementById("sabMinSet").onchange=e=>{powerFilters.minSet=Number(e.target.value||0);renderPowerTable();};
+  document.getElementById("sabSearch").oninput=e=>{powerFilters.search=e.target.value;renderPowerTable();};
+  renderPowerTable();
+}
+
+function filterSelect(label,id,options,current,labeler=v=>v){
+  return `<div class="sab-field"><label for="${id}">${label}</label><select id="${id}">${options.map(v=>`<option value="${esc(v)}" ${String(v)===String(current)?"selected":""}>${esc(labeler(v))}</option>`).join("")}</select></div>`;
+}
+function bindPowerFilter(id,key){ document.getElementById(id).onchange=e=>{powerFilters[key]=e.target.value;renderPowerTable();}; }
+
+function renderMetricLegend(){
+  const keys=["GP","SET","W","L","WR","CL","MP","EQ","ES","ACE","SOS","SOSW","SOSL","EXP","xW","WAE","UPR","FAV","CPI","WPA","VPI","PI"];
+  return `<div class="sab-legend-grid">${keys.map(k=>`<div class="sab-legend-item"><b>${POWER_COLUMNS[k].label} · ${k}</b><br>${POWER_COLUMNS[k].tip||""}</div>`).join("")}</div>`;
+}
+
+function renderPowerTable(){
+  const area=document.getElementById("sabTableArea");
+  if(!area) return;
+  const cfg=POWER_TAB_CONFIG[currentPowerTab];
+  let list=buildSabermetrics().filter(p=>{
+    if(powerFilters.team!=="전체"&&p.team!==powerFilters.team)return false;
+    if(powerFilters.tier!=="전체"&&p.tier!==powerFilters.tier)return false;
+    if(powerFilters.race!=="전체"&&p.race!==powerFilters.race)return false;
+    if(p.SET<powerFilters.minSet)return false;
+    if(powerFilters.search&&!p.name.toLowerCase().includes(powerFilters.search.trim().toLowerCase()))return false;
+    return true;
+  });
+  list.sort((a,b)=>compareMetric(a,b,powerSort.key,powerSort.dir));
+  if(!list.length){area.innerHTML='<div class="sab-empty">조건에 맞는 선수 기록이 없습니다.</div>';return;}
+
+  area.innerHTML=`<div class="sab-table-wrap"><table class="sab-table"><thead><tr>${cfg.columns.map(k=>renderPowerHeader(k)).join("")}</tr></thead><tbody>${list.map((p,i)=>`<tr>${cfg.columns.map(k=>renderPowerCell(k,p,i)).join("")}</tr>`).join("")}</tbody></table></div>`;
+  area.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{
+    const key=th.dataset.sort;
+    powerSort=powerSort.key===key?{key,dir:powerSort.dir==="desc"?"asc":"desc"}:{key,dir:"desc"};
+    renderPowerTable();
+  });
+}
+
+function compareMetric(a,b,key,dir){
+  let av=a[key],bv=b[key];
+  if(av===null||av===undefined||Number.isNaN(av)) av=dir==="desc"?-Infinity:Infinity;
+  if(bv===null||bv===undefined||Number.isNaN(bv)) bv=dir==="desc"?-Infinity:Infinity;
+  let result=0;
+  if(typeof av==="string") result=av.localeCompare(bv,undefined,{numeric:true}); else result=av-bv;
+  if(result!==0) return dir==="desc" ? -result : result;
+  return (b.W-a.W) || ((b.WR ?? -Infinity)-(a.WR ?? -Infinity)) || a.name.localeCompare(b.name);
+}
+
+function renderPowerHeader(key){
+  const c=POWER_COLUMNS[key]||{label:key,short:""};
+  const sortable=c.sortable!==false&&!['rank','player','team','record'].includes(key);
+  const arrow=powerSort.key===key?(powerSort.dir==="desc"?" ▼":" ▲"):"";
+  return `<th ${sortable?`class="sortable" data-sort="${key}"`:""} title="${esc(c.tip||c.label)}"><span class="sab-th-main">${esc(c.label)}${arrow}</span>${c.short?`<span class="sab-th-sub">${esc(c.short)}</span>`:""}</th>`;
+}
+
+function renderPowerCell(key,p,index){
+  if(key==="rank") return `<td class="sab-rank ${index<3?"top":""}">${index+1}</td>`;
+  if(key==="player") return `<td class="sab-player"><strong>${esc(p.name)}</strong><span>${esc([p.tier,p.race].filter(Boolean).join(" · ")||"-")}</span></td>`;
+  if(key==="team") return `<td class="sab-team">${esc(p.team||"-")}</td>`;
+  const c=POWER_COLUMNS[key];
+  const value=key==="record"?null:p[key];
+  const display=c&&c.fmt?c.fmt(value,p):(value??"-");
+  return `<td class="${valueClass(key,value)}">${esc(display)}</td>`;
+}
+
+function switchView(view){
+  currentView = view;
+
+  document.getElementById("calendarView").classList.toggle("active", view === "calendar");
+  document.getElementById("tableView").classList.toggle("active", view === "table");
+
+  updateBreadcrumb("match", view);
+}
+
+// document.querySelectorAll("#matchView .tournament-tab[data-view]").forEach(btn => {
+//   btn.addEventListener("click", () => {
+//     switchView(btn.dataset.view);
+//   });
+// });
+
+/* 메인 메뉴 */
+
+document.querySelectorAll(".tournament-menu-item").forEach(item => {
+
+  item.addEventListener("click", () => {
+
+    const main = item.dataset.main;
+
+    if(!main) return;
+
+    document.querySelectorAll(".tournament-menu-item").forEach(el => {
+      el.classList.toggle("active", el.dataset.main === main);
+    });
+switchMainView(main);
+
+if(main === "match"){
+  updateBreadcrumb("match", currentView);
+} else {
+  updateBreadcrumb(main);
+}
+  });
+
+});
+
+
+/* 경기 드롭다운 */
+
+document.querySelectorAll(".tournament-dropdown button[data-view]")
+.forEach(btn => {
+
+  btn.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    switchMainView("match");
+
+    switchView(btn.dataset.view);
+    updateBreadcrumb("match", btn.dataset.view);
+
+    document.querySelectorAll(".tournament-menu-item").forEach(el => {
+      el.classList.toggle(
+        "active",
+        el.dataset.main === "match"
+      );
+    });
+
+  });
+
+});
+
+
+/* 전적 드롭다운 */
+
+document.querySelectorAll(".tournament-dropdown button[data-record]")
+.forEach(btn => {
+
+  btn.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    switchMainView("record");
+
+    document.querySelectorAll(".tournament-menu-item").forEach(el => {
+      el.classList.toggle(
+        "active",
+        el.dataset.main === "record"
+      );
+    });
+
+    const record = btn.dataset.record;
+
+    updateBreadcrumb("record", record);
+
+    document
+      .getElementById("groupStandingView")
+      .classList.toggle("hidden", record !== "group");
+
+    document
+      .getElementById("bracketView")
+      .classList.toggle("hidden", record !== "bracket");
+
+  });
+
+});
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadTournamentSheet().catch(err => {
+    console.error(err);
+    document.getElementById("calendarGrid").innerHTML =
+      `<div class="tournament-empty">대회 데이터를 불러오지 못했습니다.</div>`;
+  });
+});
+
+
+function switchMainView(main){
+  document.querySelectorAll(".main-tabs .tournament-tab").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.main === main);
+  });
+
+  document.getElementById("matchView").classList.toggle("hidden", main !== "match");
+  document.getElementById("recordView").classList.toggle("hidden", main !== "record");
+  document.getElementById("teamView").classList.toggle("hidden", main !== "team");
+  document.getElementById("powerView").classList.toggle("hidden", main !== "power");
+}
+
+// document.querySelectorAll(".main-tabs .tournament-tab").forEach(btn => {
+//   btn.addEventListener("click", () => {
+//     switchMainView(btn.dataset.main);
+//   });
+// });
+
+// document.querySelectorAll(".sub-tabs .tournament-tab").forEach(btn => {
+//   btn.addEventListener("click", () => {
+//     const record = btn.dataset.record;
+
+//     document.querySelectorAll(".sub-tabs .tournament-tab").forEach(b => {
+//       b.classList.toggle("active", b.dataset.record === record);
+//     });
+
+//     document.getElementById("groupStandingView").classList.toggle("hidden", record !== "group");
+//     document.getElementById("bracketView").classList.toggle("hidden", record !== "bracket");
+//   });
+// });
+
+function updateBreadcrumb(main, sub){
+
+  const el =
+    document.getElementById("tournamentBreadcrumb");
+
+  let mainName = "";
+  let subName = "";
+
+  switch(main){
+
+    case "match":
+      mainName = "일정";
+
+      subName =
+        sub === "table"
+          ? "테이블"
+          : "캘린더";
+      break;
+
+    case "record":
+      mainName = "조/대진표";
+
+      subName =
+        sub === "bracket"
+          ? "토너먼트"
+          : "조별예선";
+      break;
+
+    case "team":
+      mainName = "팀/참가자";
+      break;
+
+    case "power":
+      mainName = "파워랭킹";
+      break;
+  }
+
+  let text =
+    `🏆 대회 정보 > ${mainName}`;
+
+  if(subName){
+    text += ` > ${subName}`;
+  }
+
+  el.textContent = text;
+}
+
+
+
+
+
+</script>
+
+
+
+<footer class="footer">
+
+  <div class="footer-copy">
+    © 2026 주니.킨콘. All Rights Reserved.
+  </div>
+
+  <div class="footer-links">
+
+    <a
+      href="https://www.sooplive.com/station/joony86"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/soop-logo.png"
+  alt="SOOP"
+/>
+    </a>
+
+    <a
+      href="https://www.youtube.com/@kinkonvv"
+      target="_blank"
+      class="footer-icon"
+    >
+      <img
+  src="icons/youtube-logo.png"
+  alt="YouTube"
+/>
+    </a>
+
+  </div>
+
+</footer>
+
+
+</body>
+</html>
