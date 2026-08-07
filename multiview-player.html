@@ -2,124 +2,768 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>멀티뷰 플레이어</title>
 
   <style>
+    * { box-sizing: border-box; }
+
     html,
     body {
       margin: 0;
-      padding: 0;
       width: 100%;
       height: 100%;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+      font-family: Arial, "Pretendard", sans-serif;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    #streams {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
       background: #000;
       overflow: hidden;
     }
 
-    #streams {
+    #streams.uniform-mode {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       align-content: center;
       justify-content: center;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
     }
 
-    #streams iframe {
-      flex-grow: 0;
+    .stream-tile {
+      position: absolute;
+      overflow: hidden;
+      background: #000;
+      min-width: 0;
+      min-height: 0;
+      transition: left .16s ease, top .16s ease, width .16s ease, height .16s ease;
+    }
+
+    .stream-tile iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
       border: 0;
       background: #000;
     }
+
+    /* 집중 레이아웃은 iframe DOM을 이동하지 않고 좌표만 변경 */
+    #streams.focus-mode {
+      position: relative;
+    }
+
+    .stream-label {
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      z-index: 3;
+      padding: 4px 7px;
+      border-radius: 6px;
+      background: rgba(0,0,0,.58);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      pointer-events: none;
+      opacity: .82;
+    }
+
+    /* 설정 열기 */
+    #settingsOpen {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 10001;
+      width: 42px;
+      height: 42px;
+      border: 1px solid #6ca0ff;
+      border-radius: 10px;
+      background: #1d66ff;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    #settingsOpen:hover {
+      background: #3478ff;
+    }
+
+    #settingsPanel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 10002;
+      width: min(390px, 92vw);
+      height: 100vh;
+      padding: 18px;
+      overflow-y: auto;
+      background: rgba(8,15,29,.97);
+      border-left: 1px solid rgba(255,255,255,.13);
+      box-shadow: -18px 0 44px rgba(0,0,0,.42);
+      transform: translateX(0);
+      transition: transform .18s ease;
+      backdrop-filter: blur(14px);
+    }
+
+    #settingsPanel.closed {
+      transform: translateX(102%);
+    }
+
+    .settings-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .settings-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .settings-close {
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      background: rgba(255,255,255,.07);
+      color: #fff;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .settings-section {
+      padding: 13px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 12px;
+      background: rgba(255,255,255,.045);
+    }
+
+    .settings-title {
+      margin-bottom: 9px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #a9bdd8;
+    }
+
+    .layout-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .layout-btn {
+      min-height: 42px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 9px;
+      background: rgba(255,255,255,.055);
+      color: #dce8f8;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .layout-btn.active {
+      background: #1d66ff;
+      border-color: #5c91ff;
+      color: #fff;
+    }
+
+    #streamControls {
+      display: grid;
+      gap: 8px;
+    }
+
+    .stream-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 9px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 10px;
+      background: rgba(0,0,0,.18);
+    }
+
+    .stream-control.focused {
+      border-color: rgba(82,145,255,.72);
+      box-shadow: inset 0 0 0 1px rgba(82,145,255,.24);
+    }
+
+    .stream-control-name {
+      min-width: 0;
+      font-size: 12px;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .stream-control-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 5px;
+    }
+
+    .control-btn {
+      min-width: 30px;
+      height: 30px;
+      padding: 0 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 7px;
+      background: rgba(255,255,255,.07);
+      color: #fff;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .control-btn:hover {
+      background: rgba(255,255,255,.14);
+    }
+
+    .control-btn.delete {
+      background: rgba(239,68,68,.14);
+      color: #ff9c9c;
+    }
+
+    .settings-note {
+      color: #8299b8;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .empty-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8290a7;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      #streams.focus-mode {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 2fr) minmax(140px, .8fr);
+      }
+
+      .focus-side {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    #streams.focus-mode .focus-side .stream-tile {
+      cursor: pointer;
+      outline: 1px solid rgba(255,255,255,.08);
+      transition: outline-color .15s ease, filter .15s ease;
+    }
+
+    #streams.focus-mode .focus-side .stream-tile:hover {
+      outline-color: rgba(92,145,255,.95);
+      filter: brightness(1.08);
+    }
+
+  
+    #focusPlaceholder {
+      position: absolute;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 7px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 36%, rgba(29,102,255,.18), transparent 36%),
+        #05070b;
+      border: 1px solid rgba(255,255,255,.09);
+      color: #fff;
+      transition: left .16s ease, top .16s ease, width .16s ease, height .16s ease;
+    }
+
+    #focusPlaceholder .focus-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1d66ff, #6c4cff);
+      box-shadow: 0 5px 18px rgba(29,102,255,.32);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    #focusPlaceholder .focus-name {
+      max-width: 92%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 900;
+      color: #dbeafe;
+    }
+
+    #streams.focus-mode .stream-tile.side-tile .stream-label {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    #streams.focus-mode .stream-tile.side-tile .stream-label:hover {
+      background: #1d66ff;
+      opacity: 1;
+    }
+
   </style>
 </head>
 
 <body>
-  <div id="streams"></div>
+  <div id="streams" class="focus-mode">
+    <div id="focusPlaceholder">
+      <div class="focus-logo" id="focusLogo">M</div>
+      <div class="focus-name" id="focusPlaceholderName"></div>
+    </div>
+  </div>
+
+  <button id="settingsOpen" type="button" aria-label="설정 열기">⚙</button>
+
+  <aside id="settingsPanel">
+    <div class="settings-head">
+      <h2>멀티뷰 설정</h2>
+      <button id="settingsClose" class="settings-close" type="button">설정 닫기</button>
+    </div>
+
+    <section class="settings-section">
+      <div class="settings-title">레이아웃 모드</div>
+      <div class="layout-options">
+        <button class="layout-btn" data-layout="uniform" type="button">그리드 모드</button>
+        <button class="layout-btn active" data-layout="focus" type="button">포커스 모드</button>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <div class="settings-title">방송 화면 설정</div>
+      <div id="streamControls"></div>
+    </section>
+
+    <div class="settings-note">
+      ▲▼ 버튼으로 방송 순서를 변경할 수 있습니다.<br>
+포커스 모드에서는 우측 방송의 이름을 클릭하면 해당 방송이 큰 화면으로 전환됩니다.
+    </div>
+  </aside>
 
   <script>
+    const MAX_PLAYERS = 8;
     const params = new URLSearchParams(location.search);
-    const ids = (params.get("ids") || "")
+
+    const initialIds = (params.get("ids") || "")
       .split(",")
       .map(id => id.trim())
       .filter(Boolean)
-      .slice(0, 4);
+      .slice(0, MAX_PLAYERS);
+
+    const initialNames = (params.get("names") || "")
+      .split(",")
+      .map(name => name.trim())
+      .slice(0, MAX_PLAYERS);
 
     const streams = document.getElementById("streams");
+    const focusPlaceholder = document.getElementById("focusPlaceholder");
+    const focusLogo = document.getElementById("focusLogo");
+    const focusPlaceholderName = document.getElementById("focusPlaceholderName");
+    const settingsPanel = document.getElementById("settingsPanel");
+    const settingsOpen = document.getElementById("settingsOpen");
+    const settingsClose = document.getElementById("settingsClose");
+    const streamControls = document.getElementById("streamControls");
 
-    streams.innerHTML = ids.map(id => `
-      <iframe
-        src="https://play.sooplive.com/${id}/direct?fromApi=1"
-        name="${id}"
-        frameborder="0"
-        scrolling="no"
-        allowfullscreen
-        allow="autoplay; fullscreen; encrypted-media; local-network-access; loopback-network"
-      ></iframe>
-    `).join("");
+    let layoutMode = "focus";
+    // let layoutMode = "uniform";
+    let focusedId = initialIds[0] || "";
+    let streamItems = [];
 
-    const iframes = streams.querySelectorAll("iframe");
-    const n = iframes.length;
+    function makeEmbedUrl(id) {
+      const url = new URL(`https://play.sooplive.com/${encodeURIComponent(id)}/embed`);
 
-    function adjustLayout() {
+      url.searchParams.set("quality", "1080p");
+      url.searchParams.set("resolution", "1080p");
+      url.searchParams.set("preferredQuality", "1080p");
+      url.searchParams.set("vq", "hd1080");
+      url.searchParams.set("hd", "1");
+
+      url.searchParams.set("showChat", "false");
+      url.searchParams.set("autoPlay", "true");
+
+      return url.toString();
+    }
+
+    function createStreamItem(id, index, name) {
+      const tile = document.createElement("div");
+      tile.className = "stream-tile";
+      tile.dataset.id = id;
+
+      const label = document.createElement("div");
+      label.className = "stream-label";
+      label.textContent = name || id;
+
+      const iframe = document.createElement("iframe");
+      iframe.name = id;
+      iframe.title = id;
+      iframe.src = makeEmbedUrl(id);
+      iframe.frameBorder = "0";
+      iframe.scrolling = "no";
+      iframe.allowFullscreen = true;
+      iframe.allow = "autoplay; fullscreen; picture-in-picture; encrypted-media; local-network-access; storage-access";
+
+      // 기존 8명 동시 재생 구조: 5번째부터 credentialless
+      if (index >= 4) {
+        try {
+          iframe.credentialless = true;
+          iframe.setAttribute("credentialless", "");
+        } catch (error) {
+          iframe.setAttribute("credentialless", "");
+        }
+      }
+
+      tile.append(label, iframe);
+      streams.appendChild(tile);
+
+      return {
+        id,
+        name: name || id,
+        tile,
+        iframe
+      };
+    }
+
+    function initStreams() {
+      streamItems = initialIds.map((id, index) =>
+        createStreamItem(id, index, initialNames[index] || id)
+      );
+      applyLayout();
+      renderSettings();
+    }
+
+    function getFocusedItem() {
+      return streamItems.find(item => item.id === focusedId) || streamItems[0] || null;
+    }
+
+    function setRect(element, left, top, width, height) {
+      element.style.left = `${Math.round(left)}px`;
+      element.style.top = `${Math.round(top)}px`;
+      element.style.width = `${Math.max(0, Math.round(width))}px`;
+      element.style.height = `${Math.max(0, Math.round(height))}px`;
+    }
+
+    function applyLayout() {
+      document.querySelectorAll(".layout-btn").forEach(button => {
+        button.classList.toggle("active", button.dataset.layout === layoutMode);
+      });
+
+      if (streamItems.length === 0) return;
+
+      if (!streamItems.some(item => item.id === focusedId)) {
+        focusedId = streamItems[0].id;
+      }
+
+      if (layoutMode === "focus") {
+        streams.className = "focus-mode";
+        applyFocusLayout();
+      } else {
+        streams.className = "uniform-mode";
+        focusPlaceholder.style.display = "none";
+
+        streamItems.forEach(item => {
+          item.tile.classList.remove("main-tile", "side-tile");
+          item.tile.style.display = "block";
+        });
+
+        applyUniformLayout();
+      }
+
+      renderSettings();
+    }
+
+    function applyUniformLayout() {
       const width = window.innerWidth;
       const height = window.innerHeight;
+      const n = streamItems.length;
 
       let bestWidth = 0;
       let bestHeight = 0;
+      let bestCols = 1;
+      let bestArea = 0;
 
       for (let cols = 1; cols <= n; cols++) {
         const rows = Math.ceil(n / cols);
 
-        let maxWidth = Math.floor(width / cols);
-        let maxHeight = Math.floor(height / rows);
+        let itemWidth = Math.floor(width / cols);
+        let itemHeight = Math.floor(height / rows);
 
-        if ((maxWidth * 9) / 16 < maxHeight) {
-          maxHeight = Math.floor((maxWidth * 9) / 16);
+        if ((itemWidth * 9) / 16 <= itemHeight) {
+          itemHeight = Math.floor((itemWidth * 9) / 16);
         } else {
-          maxWidth = Math.floor((maxHeight * 16) / 9);
+          itemWidth = Math.floor((itemHeight * 16) / 9);
         }
 
-        if (maxWidth > bestWidth) {
-          bestWidth = maxWidth;
-          bestHeight = maxHeight;
+        const area = itemWidth * itemHeight;
+
+        if (area > bestArea) {
+          bestArea = area;
+          bestWidth = itemWidth;
+          bestHeight = itemHeight;
+          bestCols = cols;
         }
       }
 
-      iframes.forEach((iframe) => {
-        iframe.style.width = `${bestWidth}px`;
-        iframe.style.height = `${bestHeight}px`;
+      const rows = Math.ceil(n / bestCols);
+      const totalWidth = bestWidth * bestCols;
+      const totalHeight = bestHeight * rows;
+      const startX = Math.floor((width - totalWidth) / 2);
+      const startY = Math.floor((height - totalHeight) / 2);
+
+      streamItems.forEach((item, index) => {
+        const col = index % bestCols;
+        const row = Math.floor(index / bestCols);
+
+        setRect(
+          item.tile,
+          startX + col * bestWidth,
+          startY + row * bestHeight,
+          bestWidth,
+          bestHeight
+        );
       });
     }
 
-    adjustLayout();
-    window.addEventListener("resize", adjustLayout);
+    function applyFocusLayout() {
+      const gap = 6;
+      const pad = 6;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
-    window.addEventListener("message", (e) => {
-      if (e.origin !== "https://play.sooplive.com") return;
+      const sideWidth = Math.max(340, Math.round(width * 0.285));
+      const mainAreaWidth = width - sideWidth - gap - pad * 2;
+      const mainAreaHeight = height - pad * 2;
 
-      const idx = Array.prototype.findIndex.call(
-        iframes,
-        f => e.source === f.contentWindow
+      const focused = getFocusedItem();
+      if (!focused) return;
+
+      let mainWidth = mainAreaWidth;
+      let mainHeight = Math.floor(mainWidth * 9 / 16);
+
+      if (mainHeight > mainAreaHeight) {
+        mainHeight = mainAreaHeight;
+        mainWidth = Math.floor(mainHeight * 16 / 9);
+      }
+
+      const mainLeft = pad + Math.floor((mainAreaWidth - mainWidth) / 2);
+      const mainTop = pad + Math.floor((mainAreaHeight - mainHeight) / 2);
+
+      const sideLeft = width - sideWidth;
+      const slotWidth = Math.floor((sideWidth - gap) / 2);
+      const slotHeight = Math.floor((height - gap * 3) / 4);
+
+      focused.tile.classList.remove("side-tile");
+      focused.tile.classList.add("main-tile");
+      setRect(focused.tile, mainLeft, mainTop, mainWidth, mainHeight);
+
+      const focusedIndex = streamItems.findIndex(item => item.id === focused.id);
+      const focusedCol = focusedIndex % 2;
+      const focusedRow = Math.floor(focusedIndex / 2);
+
+      setRect(
+        focusPlaceholder,
+        sideLeft + focusedCol * (slotWidth + gap),
+        focusedRow * (slotHeight + gap),
+        slotWidth,
+        slotHeight
       );
 
-      if (idx < 0) return;
+      focusPlaceholder.style.display = "flex";
+      focusPlaceholderName.textContent = focused.name;
+      focusLogo.textContent = (focused.name || "M").trim().charAt(0) || "M";
 
-      if (e.data.cmd === "PonReady") {
-        e.source.postMessage({
-          cmd: "Pload",
-          id: iframes[idx].name,
-          mutePlay: false,
-          showChat: false,
-          autoPlay: true,
-          isAdShow: true,
-          showQualityBox: true,
-          fromApi: "1"
-        }, "https://play.sooplive.com");
+      streamItems.forEach((item, index) => {
+        if (item.id === focused.id) return;
 
-        setTimeout(adjustLayout, 300);
+        item.tile.classList.remove("main-tile");
+        item.tile.classList.add("side-tile");
+
+        const col = index % 2;
+        const row = Math.floor(index / 2);
+
+        setRect(
+          item.tile,
+          sideLeft + col * (slotWidth + gap),
+          row * (slotHeight + gap),
+          slotWidth,
+          slotHeight
+        );
+      });
+    }
+
+    function renderSettings() {
+      document.querySelectorAll(".layout-btn").forEach(button => {
+        button.classList.toggle("active", button.dataset.layout === layoutMode);
+      });
+
+      if (streamItems.length === 0) {
+        streamControls.innerHTML = '<div class="settings-note">표시 중인 방송이 없습니다.</div>';
+        return;
+      }
+
+      streamControls.innerHTML = streamItems.map((item, index) => `
+        <div class="stream-control ${item.id === focusedId ? "focused" : ""}">
+          <div class="stream-control-name">${index + 1}. ${escapeHtml(item.name)}</div>
+          <div class="stream-control-actions">
+            <button class="control-btn"
+                    type="button"
+                    data-action="up"
+                    data-id="${escapeAttr(item.id)}"
+                    ${index === 0 ? "disabled" : ""}>▲</button>
+
+            <button class="control-btn"
+                    type="button"
+                    data-action="down"
+                    data-id="${escapeAttr(item.id)}"
+                    ${index === streamItems.length - 1 ? "disabled" : ""}>▼</button>
+
+            <button class="control-btn delete"
+                    type="button"
+                    data-action="delete"
+                    data-id="${escapeAttr(item.id)}">삭제</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    function moveStream(id, direction) {
+      const index = streamItems.findIndex(item => item.id === id);
+      if (index < 0) return;
+
+      const target = index + direction;
+      if (target < 0 || target >= streamItems.length) return;
+
+      [streamItems[index], streamItems[target]] =
+        [streamItems[target], streamItems[index]];
+
+      applyLayout();
+    }
+
+    function focusStream(id) {
+      if (layoutMode !== "focus") return;
+      if (!streamItems.some(item => item.id === id)) return;
+      if (focusedId === id) return;
+
+      focusedId = id;
+
+      // iframe은 그대로 둔 채 CSS 위치만 변경
+      applyFocusLayout();
+      renderSettings();
+    }
+
+    function deleteStream(id) {
+      const index = streamItems.findIndex(item => item.id === id);
+      if (index < 0) return;
+
+      const [removed] = streamItems.splice(index, 1);
+
+      try {
+        removed.iframe.src = "about:blank";
+      } catch (error) {}
+
+      removed.tile.remove();
+
+      if (focusedId === id) {
+        focusedId = streamItems[0]?.id || "";
+      }
+
+      applyLayout();
+    }
+
+    document.querySelectorAll(".layout-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        layoutMode = button.dataset.layout === "focus" ? "focus" : "uniform";
+        applyLayout();
+      });
+    });
+
+    streamControls.addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button || button.disabled) return;
+
+      const id = button.dataset.id;
+      const action = button.dataset.action;
+
+      if (action === "up") moveStream(id, -1);
+      if (action === "down") moveStream(id, 1);
+      if (action === "delete") deleteStream(id);
+    });
+
+    // '선택 화면 크게' 모드에서는 우측 작은 방송 화면을 클릭하면
+    // 그 방송이 즉시 메인 큰 화면으로 이동한다.
+    streams.addEventListener("click", event => {
+      if (layoutMode !== "focus") return;
+
+      const tile = event.target.closest(".stream-tile.side-tile");
+      if (!tile) return;
+
+      const id = tile.dataset.id;
+      if (!id) return;
+
+      focusStream(id);
+    });
+
+    settingsClose.addEventListener("click", () => {
+      settingsPanel.classList.add("closed");
+    });
+
+    settingsOpen.addEventListener("click", () => {
+      settingsPanel.classList.remove("closed");
+    });
+
+    window.addEventListener("resize", () => {
+      if (layoutMode === "focus") {
+        applyFocusLayout();
+      } else {
+        applyUniformLayout();
       }
     });
+
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        if (layoutMode === "focus") applyFocusLayout();
+        else applyUniformLayout();
+      }, 500);
+    });
+
+    initStreams();
   </script>
 </body>
 </html>
