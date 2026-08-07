@@ -567,18 +567,27 @@ import {
     let recommendedMembers = [];
 
     /*
-      여기 명단만 네 tier.xlsx 기준으로 채우면 됩니다.
-      name: 화면에 보여줄 이름
-      id: SOOP 방송국 아이디
+      이름 검색용 명단은 Google 스프레드시트의 tier 시트에서 직접 불러옵니다.
+      name: 이름
+      id: 방송국ID
     */
     let memberList = [];
 
+const TIER_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo/gviz/tq?tqx=out:csv&sheet=tier";
+
 async function loadTierMembers() {
   try {
-    const response = await fetch("./tier.xlsx");
-    const arrayBuffer = await response.arrayBuffer();
+    const response = await fetch(TIER_CSV_URL, { cache: "no-store" });
 
-    const workbook = XLSX.read(arrayBuffer, { type: "array" });
+    if (!response.ok) {
+      throw new Error(`tier 시트 HTTP ${response.status}`);
+    }
+
+    const csvText = await response.text();
+
+    // SheetJS를 이용해 Google Sheets CSV를 파싱
+    const workbook = XLSX.read(csvText, { type: "string" });
     const firstSheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[firstSheetName];
 
@@ -592,11 +601,13 @@ async function loadTierMembers() {
       .filter(member => member.name && member.id);
 
     renderMemberList();
+
   } catch (error) {
-    console.error(error);
+    console.error("Google tier 시트 불러오기 실패:", error);
+
     document.getElementById("memberSearchList").innerHTML = `
       <div class="selected-empty">
-        tier.xlsx 명단을 불러오지 못했습니다.
+        tier 시트 명단을 불러오지 못했습니다.
       </div>
     `;
   }
