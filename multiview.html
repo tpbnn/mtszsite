@@ -277,12 +277,179 @@ body.light-mode .member-search-list::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #4f8cff, #7b4dff);
 }
 
+
+    /* ===== Multiview 8명 UI 개선 ===== */
+    .multiview-wrap {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 18px !important;
+    }
+
+    .selected-list {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: flex-start;
+      align-content: flex-start;
+      gap: 8px !important;
+      min-height: 58px !important;
+    }
+
+    .selected-streamer {
+      flex: 0 0 auto;
+      min-width: 150px;
+      max-width: 220px;
+      padding: 9px 10px !important;
+      border-radius: 12px !important;
+    }
+
+    .selected-streamer strong {
+      font-size: 14px !important;
+    }
+
+    .selected-streamer span {
+      font-size: 11px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+
+    .selected-empty {
+      width: 100%;
+      min-height: 58px !important;
+    }
+
+    .broadcast-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .broadcast-actions .open-multiview-button {
+      margin-top: 0 !important;
+      flex: 1 1 auto;
+    }
+
+    .reset-selection-button {
+      flex: 0 0 auto;
+      min-width: 92px;
+      padding: 0 16px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      background: rgba(255,255,255,.07);
+      color: inherit;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .reset-selection-button:hover {
+      background: rgba(255,80,80,.14);
+      border-color: rgba(255,100,100,.35);
+      color: #ff9d9d;
+    }
+
+    .member-search-list {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      max-height: none !important;
+      overflow: visible !important;
+      padding-right: 0 !important;
+    }
+
+    .member-item {
+      flex: 0 1 auto;
+      min-width: 150px;
+      max-width: 220px;
+      padding: 10px 12px !important;
+    }
+
+    .member-recommend-title {
+      flex: 0 0 100%;
+      margin: 2px 0 4px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted, #9ca3af);
+    }
+
+    .member-toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .member-toolbar .search-input {
+      margin: 0;
+    }
+
+    body.light-mode .reset-selection-button {
+      background: #f4f6fb;
+      border-color: #cfd7e8;
+      color: #334155;
+    }
+
+    body.light-mode .reset-selection-button:hover {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #be123c;
+    }
+
+    @media (max-width: 700px) {
+      .multi-input-row {
+        flex-wrap: wrap;
+      }
+
+      .multi-input-row .multi-button {
+        min-height: 44px;
+      }
+
+      .broadcast-actions {
+        flex-direction: column;
+      }
+
+      .reset-selection-button {
+        min-height: 44px;
+      }
+
+      .selected-streamer,
+      .member-item {
+        min-width: calc(50% - 4px);
+        max-width: calc(50% - 4px);
+      }
+    }
+
+
+    .member-item.is-selected {
+      background: linear-gradient(135deg, rgba(47,124,255,.34), rgba(84,74,255,.24)) !important;
+      border-color: rgba(89,151,255,.78) !important;
+      box-shadow: inset 0 0 0 1px rgba(112,170,255,.18), 0 6px 18px rgba(47,124,255,.12);
+    }
+
+    .member-item.is-selected .member-name {
+      color: #ffffff;
+    }
+
+    .member-item.is-selected .add-badge {
+      background: #2f7cff;
+      color: #ffffff;
+    }
+
+    body.light-mode .member-item.is-selected {
+      background: linear-gradient(135deg, #e8f1ff, #eef0ff) !important;
+      border-color: #5997ff !important;
+    }
+
+    body.light-mode .member-item.is-selected .member-name {
+      color: #174ea6 !important;
+    }
+
   </style>
 </head>
 
 <body data-page="multiview">
 <div class="floating-banner">
-  <a href="http://calm-hoxy.vercel.app/" target="_blank">
+  <a href="https://calm-hoxy.vercel.app/" target="_blank">
     <img src="./banner/banner1.png" alt="배너1">
   </a>
   <a href="https://fmcalm.vercel.app/" target="_blank">
@@ -338,7 +505,7 @@ body.light-mode .member-search-list::-webkit-scrollbar-thumb {
           <div>
             <h2>멀티뷰</h2>
             <span class="section-sub-count">
-              최대 4명의 방송을 동시에 볼 수 있습니다.
+              최대 8명의 방송을 동시에 볼 수 있습니다.
             </span>
           </div>
         </div>
@@ -347,7 +514,7 @@ body.light-mode .member-search-list::-webkit-scrollbar-thumb {
           <div class="multiview-card">
             <h3>
               방송 선택
-              <span id="selectedCount" class="count-chip">0 / 4</span>
+              <span id="selectedCount" class="count-chip">0 / 8</span>
             </h3>
             <p class="multiview-desc">
               SOOP 아이디를 직접 입력하거나, 오른쪽 명단에서 검색 후 추가하세요.
@@ -357,32 +524,26 @@ body.light-mode .member-search-list::-webkit-scrollbar-thumb {
               <input
                 id="streamerInput"
                 type="text"
-                placeholder="SOOP 아이디 입력, 여러 명은 쉼표로 구분"
+                placeholder="이름 또는 SOOP 아이디 입력, 여러 명은 쉼표로 구분"
               />
               <button class="multi-button" onclick="addStreamer()">추가</button>
             </div>
 
             <div id="selectedList" class="selected-list"></div>
 
-            <button class="open-multiview-button" onclick="openMultiview()">
-              멀티뷰 새창 열기
-            </button>
+            <div class="broadcast-actions">
+              <button class="reset-selection-button" onclick="resetStreamers()">초기화</button>
+              <button class="open-multiview-button" onclick="openMultiview()">
+                멀티뷰 새창 열기
+              </button>
+            </div>
           </div>
 
           <div class="multiview-card">
-            <h3>명단 검색</h3>
+            <h3>캄몬스타즈 멤버</h3>
             <p class="multiview-desc">
-              이름 또는 SOOP 아이디로 검색할 수 있습니다.
+              멤버를 클릭하면 방송 선택에 바로 추가됩니다.
             </p>
-
-            <input
-              id="memberSearchInput"
-              class="search-input"
-              type="text"
-              placeholder="예) 치리, brainzerg7"
-              oninput="renderMemberList()"
-            />
-
             <div id="memberSearchList" class="member-search-list"></div>
           </div>
         </div>
@@ -443,11 +604,7 @@ async function loadTierMembers() {
 
 
 async function loadRecommendedMembers() {
-
   try {
-
-
-
     const firebaseConfig = {
       apiKey: "AIzaSyCCpMgZ4DkpqfNvCisH-IJjlxP_r6S5LKU",
       authDomain: "fancalmmstz.firebaseapp.com",
@@ -459,35 +616,34 @@ async function loadRecommendedMembers() {
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     const snapshot = await getDocs(collection(db, "members"));
 
+    // 이 배열은 이제 "캄몬스타즈 멤버 전체" 용도로 사용
     recommendedMembers = [];
 
     snapshot.forEach(doc => {
-
       const data = doc.data();
+      const name = String(data.name || "").trim();
+      const id = String(data.soopId || "").trim();
 
-      if(data.multiviewRecommend === true){
+      if (!name || !id) return;
 
-        recommendedMembers.push({
-          name: data.name,
-          id: data.soopId,
-          order: Number(data.order || 999)
-        });
-
-      }
-
+      recommendedMembers.push({
+        name,
+        id,
+        order: Number(data.order || 999),
+        recommend: data.multiviewRecommend === true
+      });
     });
 
-    recommendedMembers.sort((a,b)=>a.order-b.order);
+    // 관리자 order 기준 정렬, 같은 order면 이름순
+    recommendedMembers.sort((a, b) =>
+      (a.order - b.order) || a.name.localeCompare(b.name, "ko")
+    );
 
     renderMemberList();
-
-  } catch(error){
-
+  } catch(error) {
     console.error(error);
-
   }
 }
 
@@ -496,36 +652,86 @@ async function loadRecommendedMembers() {
       return String(text || "").toLowerCase().replace(/\s/g, "");
     }
 
+    function findMemberByInput(value) {
+      const raw = String(value || "").trim();
+      const normalized = normalizeText(raw);
+
+      const merged = [
+        ...recommendedMembers,
+        ...memberList
+      ].filter((member, index, arr) =>
+        member && member.id &&
+        arr.findIndex(item => item.id === member.id) === index
+      );
+
+      const exact = merged.find(member =>
+        normalizeText(member.id) === normalized ||
+        normalizeText(member.name) === normalized
+      );
+
+      if (exact) return exact;
+
+      const partial = merged.filter(member =>
+        normalizeText(member.name).includes(normalized)
+      );
+
+      return partial.length === 1 ? partial[0] : null;
+    }
+
     function addStreamer() {
       const input = document.getElementById("streamerInput");
       const value = input.value.trim();
 
       if (!value) {
-        alert("SOOP 아이디를 입력해주세요.");
+        alert("이름 또는 SOOP 아이디를 입력해주세요.");
         return;
       }
 
-      const ids = value
+      const values = value
         .split(",")
         .map(v => v.trim())
         .filter(Boolean);
 
-ids.forEach(id => addStreamerById(id));
+      for (const valueItem of values) {
+        const member = findMemberByInput(valueItem);
 
-input.value = "";
-renderSelectedList();
-renderMemberList();
+        if (member) {
+          addStreamerById(member.id);
+          continue;
+        }
+
+        // 한글 이름처럼 보이는데 명단에 없으면 잘못된 ID 추가를 막음
+        if (/[가-힣]/.test(valueItem)) {
+          alert(`"${valueItem}" 멤버를 찾지 못했습니다.`);
+          continue;
+        }
+
+        // 영문/숫자 입력은 SOOP ID 직접 입력으로 처리
+        addStreamerById(valueItem);
+      }
+
+      input.value = "";
+      renderSelectedList();
+      renderMemberList();
     }
 
     function addStreamerById(id) {
-      if (selectedStreamers.length >= 4) {
-        alert("최대 4명까지만 선택할 수 있습니다.");
+      if (selectedStreamers.length >= 8) {
+        alert("최대 8명까지만 선택할 수 있습니다.");
         return;
       }
 
       if (!selectedStreamers.includes(id)) {
         selectedStreamers.push(id);
       }
+    }
+
+    function resetStreamers() {
+      if (selectedStreamers.length === 0) return;
+      selectedStreamers.splice(0, selectedStreamers.length);
+      renderSelectedList();
+      renderMemberList();
+      document.getElementById("streamerInput")?.focus();
     }
 
     function removeStreamer(index) {
@@ -538,7 +744,7 @@ renderMemberList();
       const list = document.getElementById("selectedList");
       const count = document.getElementById("selectedCount");
 
-      count.textContent = `${selectedStreamers.length} / 4`;
+      count.textContent = `${selectedStreamers.length} / 8`;
 
       if (selectedStreamers.length === 0) {
         list.innerHTML = `
@@ -572,57 +778,41 @@ const name = member ? member.name : "직접 입력";
 
 function renderMemberList() {
   const list = document.getElementById("memberSearchList");
-  const input = document.getElementById("memberSearchInput");
-  const keyword = normalizeText(input.value);
 
-  let filtered = [];
-
-  // 검색어가 없으면 Firebase 추천 멤버 먼저 표시
-if (!keyword) {
-  if (recommendedMembers.length > 0) {
-    filtered = recommendedMembers;
-  } else {
-    filtered = memberList.slice(0, 6);
-  }
-} else {
-  filtered = memberList.filter(member => {
-    const target = normalizeText(`${member.name} ${member.id}`);
-    return target.includes(keyword);
-  });
-}
+  // 캄몬스타즈 멤버 영역에는 Firebase members 컬렉션만 표시
+  const filtered = recommendedMembers.filter((member, index, arr) =>
+    member &&
+    member.id &&
+    arr.findIndex(item => item.id === member.id) === index
+  );
 
   if (filtered.length === 0) {
     list.innerHTML = `
       <div class="selected-empty">
-        검색 결과가 없습니다.
+        캄몬스타즈 멤버 정보를 불러오는 중입니다.
       </div>
     `;
     return;
   }
 
-  list.innerHTML = `
-    ${!keyword ? `
-      <div class="member-recommend-title">
-        추천 멤버
-      </div>
-    ` : ""}
+  list.innerHTML = filtered.map(member => {
+    const alreadySelected = selectedStreamers.includes(member.id);
 
-    ${filtered.map(member => {
-      const alreadySelected = selectedStreamers.includes(member.id);
-
-      return `
-        <div class="member-item" onclick="addMemberFromList('${member.id}')">
-          <div>
-            <div class="member-name">${member.name}</div>
-            <div class="member-id">${member.id}</div>
-          </div>
-          <div class="add-badge">
-            ${alreadySelected ? "선택됨" : "추가"}
-          </div>
+    return `
+      <div
+        class="member-item ${alreadySelected ? "is-selected" : ""}"
+        onclick="addMemberFromList('${member.id}')"
+      >
+        <div>
+          <div class="member-name">${member.name}</div>
+          <div class="member-id">${member.id}</div>
         </div>
-      `;
-    }).join("")}
-  `;
+        <div class="add-badge">
+          ${alreadySelected ? "선택됨" : "추가"}
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
     function addMemberFromList(id) {
@@ -642,13 +832,25 @@ if (!keyword) {
         return;
       }
 
-      if (selectedStreamers.length > 4) {
-        alert("최대 4명까지만 선택할 수 있습니다.");
+      if (selectedStreamers.length > 8) {
+        alert("최대 8명까지만 선택할 수 있습니다.");
         return;
       }
 
       const ids = selectedStreamers.join(",");
-      window.open(`multiview-player.html?ids=${encodeURIComponent(ids)}`, "_blank");
+
+      const names = selectedStreamers.map(id => {
+        const member =
+          recommendedMembers.find(m => m.id === id) ||
+          memberList.find(m => m.id === id);
+
+        return member ? member.name : id;
+      }).join(",");
+
+      window.open(
+        `multiview-player.html?ids=${encodeURIComponent(ids)}&names=${encodeURIComponent(names)}`,
+        "_blank"
+      );
     }
 
     document.getElementById("streamerInput").addEventListener("keydown", (e) => {
@@ -659,6 +861,7 @@ if (!keyword) {
 
 Object.assign(window, {
   addStreamer,
+  resetStreamers,
   removeStreamer,
   renderMemberList,
   addMemberFromList,
