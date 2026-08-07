@@ -3,767 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>멀티뷰 플레이어</title>
+
+  <title>플레이리스트 관리자 - 캄몬스타즈</title>
+
+  <link rel="icon" href="./favicon.png" type="image/png" />
+  <link rel="stylesheet" href="common.css" />
 
   <style>
-    * { box-sizing: border-box; }
-
-    html,
-    body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-      color: #fff;
-      font-family: Arial, "Pretendard", sans-serif;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    #streams {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      overflow: hidden;
-    }
-
-    #streams.uniform-mode {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      align-content: center;
-      justify-content: center;
-    }
-
-    .stream-tile {
-      position: absolute;
-      overflow: hidden;
-      background: #000;
-      min-width: 0;
-      min-height: 0;
-      transition: left .16s ease, top .16s ease, width .16s ease, height .16s ease;
-    }
-
-    .stream-tile iframe {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #000;
-    }
-
-    /* 집중 레이아웃은 iframe DOM을 이동하지 않고 좌표만 변경 */
-    #streams.focus-mode {
-      position: relative;
-    }
-
-    .stream-label {
-      position: absolute;
-      left: 6px;
-      top: 6px;
-      z-index: 3;
-      padding: 4px 7px;
-      border-radius: 6px;
-      background: rgba(0,0,0,.58);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      pointer-events: none;
-      opacity: .82;
-    }
-
-    /* 설정 열기 */
-    #settingsOpen {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      z-index: 10001;
-      width: 42px;
-      height: 42px;
-      border: 1px solid #6ca0ff;
-      border-radius: 10px;
-      background: #1d66ff;
-      color: #fff;
-      font-size: 20px;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-    }
-
-    #settingsOpen:hover {
-      background: #3478ff;
-    }
-
-    #settingsPanel {
-      position: fixed;
-      top: 0;
-      right: 0;
-      z-index: 10002;
-      width: min(390px, 92vw);
-      height: 100vh;
-      padding: 18px;
-      overflow-y: auto;
-      background: rgba(8,15,29,.97);
-      border-left: 1px solid rgba(255,255,255,.13);
-      box-shadow: -18px 0 44px rgba(0,0,0,.42);
-      transform: translateX(0);
-      transition: transform .18s ease;
-      backdrop-filter: blur(14px);
-    }
-
-    #settingsPanel.closed {
-      transform: translateX(102%);
-    }
-
-    .settings-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .settings-head h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .settings-close {
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 8px;
-      background: rgba(255,255,255,.07);
-      color: #fff;
-      padding: 7px 10px;
-      cursor: pointer;
-      font-weight: 800;
-    }
-
-    .settings-section {
-      padding: 13px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 12px;
-      background: rgba(255,255,255,.045);
-    }
-
-    .settings-title {
-      margin-bottom: 9px;
-      font-size: 12px;
-      font-weight: 900;
-      color: #a9bdd8;
-    }
-
-    .layout-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-    }
-
-    .layout-btn {
-      min-height: 42px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 9px;
-      background: rgba(255,255,255,.055);
-      color: #dce8f8;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 12px;
-    }
-
-    .layout-btn.active {
-      background: #1d66ff;
-      border-color: #5c91ff;
-      color: #fff;
-    }
-
-    #streamControls {
-      display: grid;
-      gap: 8px;
-    }
-
-    .stream-control {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      align-items: center;
-      padding: 9px;
-      border: 1px solid rgba(255,255,255,.09);
-      border-radius: 10px;
-      background: rgba(0,0,0,.18);
-    }
-
-    .stream-control.focused {
-      border-color: rgba(82,145,255,.72);
-      box-shadow: inset 0 0 0 1px rgba(82,145,255,.24);
-    }
-
-    .stream-control-name {
-      min-width: 0;
-      font-size: 12px;
-      font-weight: 900;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .stream-control-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 5px;
-    }
-
-    .control-btn {
-      min-width: 30px;
-      height: 30px;
-      padding: 0 8px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 7px;
-      background: rgba(255,255,255,.07);
-      color: #fff;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .control-btn:hover {
-      background: rgba(255,255,255,.14);
-    }
-
-    .control-btn.delete {
-      background: rgba(239,68,68,.14);
-      color: #ff9c9c;
-    }
-
-    .settings-note {
-      color: #8299b8;
-      font-size: 10px;
-      line-height: 1.5;
-    }
-
-    .empty-screen {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #8290a7;
-      font-size: 14px;
-    }
-
-    @media (max-width: 900px) {
-      #streams.focus-mode {
-        grid-template-columns: 1fr;
-        grid-template-rows: minmax(0, 2fr) minmax(140px, .8fr);
-      }
-
-      .focus-side {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    #streams.focus-mode .focus-side .stream-tile {
-      cursor: pointer;
-      outline: 1px solid rgba(255,255,255,.08);
-      transition: outline-color .15s ease, filter .15s ease;
-    }
-
-    #streams.focus-mode .focus-side .stream-tile:hover {
-      outline-color: rgba(92,145,255,.95);
-      filter: brightness(1.08);
-    }
-
-  
-    #focusPlaceholder {
-      position: absolute;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 7px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 36%, rgba(29,102,255,.18), transparent 36%),
-        #05070b;
-      border: 1px solid rgba(255,255,255,.09);
-      color: #fff;
-      transition: left .16s ease, top .16s ease, width .16s ease, height .16s ease;
-    }
-
-    #focusPlaceholder .focus-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #1d66ff, #6c4cff);
-      box-shadow: 0 5px 18px rgba(29,102,255,.32);
-      color: #fff;
-      font-size: 18px;
-      font-weight: 950;
-    }
-
-    #focusPlaceholder .focus-name {
-      max-width: 92%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 11px;
-      font-weight: 900;
-      color: #dbeafe;
-    }
-
-    #streams.focus-mode .stream-tile.side-tile .stream-label {
-      pointer-events: auto;
-      cursor: pointer;
-    }
-
-    #streams.focus-mode .stream-tile.side-tile .stream-label:hover {
-      background: #1d66ff;
-      opacity: 1;
-    }
-
+    .manager-wrap{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start;}
+    .manager-card{background:#fff;border-radius:22px;padding:22px;}
+    .manager-card h2{margin:0 0 16px;font-size:24px;color:#ff0000;}
+    .form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+    .form-row label{font-weight:900;}
+    .form-row input,.form-row select{height:46px;border:1px solid #dbe3f0;border-radius:14px;padding:0 14px;font-size:15px;}
+    .manager-btn{height:46px;border:0;border-radius:14px;font-weight:1000;cursor:pointer;background:#2563eb;color:white;}
+    .manager-btn.danger{background:#dc2626;}
+    .manager-btn.gray{background:#64748b;}
+    .manager-btn.green{background:#16a34a;}
+    .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .playlist-list,.video-list{display:flex;flex-direction:column;gap:10px;}
+    .playlist-item,.video-item{border:1px solid #dbe3f0;border-radius:16px;padding:14px;background:#f8fafc;}
+    .playlist-item{cursor:pointer;}
+    .playlist-item.active{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.14);}
+    .playlist-name{font-size:17px;font-weight:1000;margin-bottom:8px;color:#16a34a;}
+    .video-title{font-weight:1000;margin-bottom:6px;color:#16a34a;}
+    .video-url{font-size:12px;color:#64748b;word-break:break-all;margin-bottom:8px;}
+    .small-info{font-size:13px;color:#64748b;font-weight:800;margin-bottom:10px;}
+    .item-actions{display:flex;gap:8px;}
+    .item-actions button{flex:1;height:34px;border:0;border-radius:10px;font-weight:900;cursor:pointer;}
+    .empty{padding:40px 0;text-align:center;color:#64748b;font-weight:900;}
+    @media(max-width:900px){.manager-wrap{grid-template-columns:1fr;}}
   </style>
 </head>
 
-<body>
-  <div id="streams" class="focus-mode">
-    <div id="focusPlaceholder">
-      <div class="focus-logo" id="focusLogo">M</div>
-      <div class="focus-name" id="focusPlaceholderName"></div>
-    </div>
-  </div>
+<body data-page="playlist-manager">
 
-  <button id="settingsOpen" type="button" aria-label="설정 열기">⚙</button>
+<div class="app">
+  <header class="topbar">
+    <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
+    <nav class="nav">
+      <a data-page="playlist" href="playlist.html">영상 재생</a>
+      <a data-page="playlist-manager" href="playlist-manager.html">플레이리스트 관리</a>
+      <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
+    </nav>
+  </header>
 
-  <aside id="settingsPanel">
-    <div class="settings-head">
-      <h2>멀티뷰 설정</h2>
-      <button id="settingsClose" class="settings-close" type="button">설정 닫기</button>
-    </div>
+  <main class="page">
+    <section class="home-simple">
+      <div class="manager-wrap">
+        <section class="manager-card">
+          <h2>재생목록 관리</h2>
 
-    <section class="settings-section">
-      <div class="settings-title">레이아웃 모드</div>
-      <div class="layout-options">
-        <button class="layout-btn" data-layout="uniform" type="button">그리드 모드</button>
-        <button class="layout-btn active" data-layout="focus" type="button">포커스 모드</button>
+          <div class="form-row">
+            <label for="playlistName">재생목록 이름</label>
+            <input id="playlistName" placeholder="예) 캄몬스타즈 뮤비">
+          </div>
+
+          <div class="form-row">
+            <label for="playlistOrder">우선순위</label>
+            <input id="playlistOrder" type="number" value="1">
+          </div>
+
+          <div class="form-row">
+            <label for="playlistPublic">공개 설정</label>
+            <select id="playlistPublic">
+              <option value="public">공개</option>
+              <option value="private">비공개</option>
+            </select>
+          </div>
+
+          <div class="btn-row">
+            <button id="playlistSaveButton" class="manager-btn" onclick="savePlaylistToFirebase()">재생목록 저장</button>
+            <button class="manager-btn gray" onclick="clearPlaylistForm()">입력 초기화</button>
+          </div>
+
+          <hr style="margin:22px 0; border:0; border-top:1px solid #e2e8f0;">
+          <div id="playlistList" class="playlist-list"></div>
+        </section>
+
+        <section class="manager-card">
+          <h2>영상 관리</h2>
+
+          <div class="form-row">
+            <label for="videoTitle">영상 제목</label>
+            <input id="videoTitle" placeholder="예) My Time Is Now">
+          </div>
+
+          <div class="form-row">
+            <label for="videoPlatform">플랫폼</label>
+            <select id="videoPlatform">
+              <option value="youtube">YouTube</option>
+              <option value="soop">SOOP</option>
+              <option value="streamable">Streamable</option>
+              <option value="external">기타</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="videoPublic">공개 설정</label>
+            <select id="videoPublic">
+              <option value="public">공개</option>
+              <option value="private">비공개</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="videoUrl">영상 URL</label>
+            <input id="videoUrl" placeholder="YouTube / SOOP / Streamable / 기타 URL">
+          </div>
+
+          <div class="form-row">
+            <label for="videoThumb">썸네일 URL</label>
+            <input id="videoThumb" placeholder="비워두면 플랫폼 기본 썸네일 사용">
+          </div>
+
+          <div class="form-row">
+            <label for="videoPlaylist">재생목록 선택</label>
+            <select id="videoPlaylist"></select>
+          </div>
+
+          <div class="form-row">
+            <label for="videoPriority">우선순위</label>
+            <input id="videoPriority" type="number" value="1">
+          </div>
+
+          <div class="btn-row">
+            <button id="videoSaveButton" class="manager-btn green" onclick="savePlaylistVideoToFirebase()">영상 추가</button>
+            <button class="manager-btn gray" onclick="clearVideoForm()">입력 초기화</button>
+          </div>
+
+          <p class="small-info" style="margin-top:14px;">우선순위 숫자가 낮을수록 아래쪽에 표시됩니다. 예: 20, 15, 10, 5, 1</p>
+
+          <hr style="margin:22px 0; border:0; border-top:1px solid #e2e8f0;">
+          <div id="videoList" class="video-list"></div>
+        </section>
       </div>
     </section>
-
-    <section class="settings-section">
-      <div class="settings-title">방송 화면 설정</div>
-      <div id="streamControls"></div>
-    </section>
-
-    <div class="settings-note">
-      ▲▼ 버튼으로 방송 순서를 변경할 수 있습니다.<br>
-포커스 모드에서는 우측 방송의 이름을 클릭하면 해당 방송이 큰 화면으로 전환됩니다.
-    </div>
-  </aside>
-
-  <script>
-    const MAX_PLAYERS = 8;
-    const params = new URLSearchParams(location.search);
-
-    const initialIds = (params.get("ids") || "")
-      .split(",")
-      .map(id => id.trim())
-      .filter(Boolean)
-      .slice(0, MAX_PLAYERS);
-
-    const initialNames = (params.get("names") || "")
-      .split(",")
-      .map(name => name.trim())
-      .slice(0, MAX_PLAYERS);
-
-    const streams = document.getElementById("streams");
-    const focusPlaceholder = document.getElementById("focusPlaceholder");
-    const focusLogo = document.getElementById("focusLogo");
-    const focusPlaceholderName = document.getElementById("focusPlaceholderName");
-    const settingsPanel = document.getElementById("settingsPanel");
-    const settingsOpen = document.getElementById("settingsOpen");
-    const settingsClose = document.getElementById("settingsClose");
-    const streamControls = document.getElementById("streamControls");
-
-    let layoutMode = "focus";
-    // let layoutMode = "uniform";
-    let focusedId = initialIds[0] || "";
-    let streamItems = [];
-
-    function makeEmbedUrl(id) {
-      const url = new URL(`https://play.sooplive.com/${encodeURIComponent(id)}/embed`);
-
-      url.searchParams.set("quality", "1080p");
-      url.searchParams.set("resolution", "1080p");
-      url.searchParams.set("preferredQuality", "1080p");
-      url.searchParams.set("vq", "hd1080");
-      url.searchParams.set("hd", "1");
-
-      url.searchParams.set("showChat", "false");
-      url.searchParams.set("autoPlay", "true");
-
-      return url.toString();
-    }
-
-    function createStreamItem(id, index, name) {
-      const tile = document.createElement("div");
-      tile.className = "stream-tile";
-      tile.dataset.id = id;
-
-      const label = document.createElement("div");
-      label.className = "stream-label";
-      label.textContent = name || id;
-
-      const iframe = document.createElement("iframe");
-      iframe.name = id;
-      iframe.title = id;
-      iframe.src = makeEmbedUrl(id);
-      iframe.frameBorder = "0";
-      iframe.scrolling = "no";
-      iframe.allowFullscreen = true;
-      iframe.allow = "autoplay; fullscreen; picture-in-picture; encrypted-media; local-network-access; storage-access";
-
-      // 기존 8명 동시 재생 구조: 5번째부터 credentialless
-      if (index >= 4) {
-        try {
-          iframe.credentialless = true;
-          iframe.setAttribute("credentialless", "");
-        } catch (error) {
-          iframe.setAttribute("credentialless", "");
-        }
-      }
-
-      tile.append(label, iframe);
-      streams.appendChild(tile);
-
-      return {
-        id,
-        name: name || id,
-        tile,
-        iframe
-      };
-    }
-
-    function initStreams() {
-      streamItems = initialIds.map((id, index) =>
-        createStreamItem(id, index, initialNames[index] || id)
-      );
-      applyLayout();
-      renderSettings();
-    }
-
-    function getFocusedItem() {
-      return streamItems.find(item => item.id === focusedId) || streamItems[0] || null;
-    }
-
-    function setRect(element, left, top, width, height) {
-      element.style.left = `${Math.round(left)}px`;
-      element.style.top = `${Math.round(top)}px`;
-      element.style.width = `${Math.max(0, Math.round(width))}px`;
-      element.style.height = `${Math.max(0, Math.round(height))}px`;
-    }
-
-    function applyLayout() {
-      document.querySelectorAll(".layout-btn").forEach(button => {
-        button.classList.toggle("active", button.dataset.layout === layoutMode);
-      });
-
-      if (streamItems.length === 0) return;
-
-      if (!streamItems.some(item => item.id === focusedId)) {
-        focusedId = streamItems[0].id;
-      }
-
-      if (layoutMode === "focus") {
-        streams.className = "focus-mode";
-        applyFocusLayout();
-      } else {
-        streams.className = "uniform-mode";
-        focusPlaceholder.style.display = "none";
-
-        streamItems.forEach(item => {
-          item.tile.classList.remove("main-tile", "side-tile");
-          item.tile.style.display = "block";
-        });
-
-        applyUniformLayout();
-      }
-
-      renderSettings();
-    }
-
-    function applyUniformLayout() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const n = streamItems.length;
-
-      let bestWidth = 0;
-      let bestHeight = 0;
-      let bestCols = 1;
-      let bestArea = 0;
-
-      for (let cols = 1; cols <= n; cols++) {
-        const rows = Math.ceil(n / cols);
-
-        let itemWidth = Math.floor(width / cols);
-        let itemHeight = Math.floor(height / rows);
-
-        if ((itemWidth * 9) / 16 <= itemHeight) {
-          itemHeight = Math.floor((itemWidth * 9) / 16);
-        } else {
-          itemWidth = Math.floor((itemHeight * 16) / 9);
-        }
-
-        const area = itemWidth * itemHeight;
-
-        if (area > bestArea) {
-          bestArea = area;
-          bestWidth = itemWidth;
-          bestHeight = itemHeight;
-          bestCols = cols;
-        }
-      }
-
-      const rows = Math.ceil(n / bestCols);
-      const totalWidth = bestWidth * bestCols;
-      const totalHeight = bestHeight * rows;
-      const startX = Math.floor((width - totalWidth) / 2);
-      const startY = Math.floor((height - totalHeight) / 2);
-
-      streamItems.forEach((item, index) => {
-        const col = index % bestCols;
-        const row = Math.floor(index / bestCols);
-
-        setRect(
-          item.tile,
-          startX + col * bestWidth,
-          startY + row * bestHeight,
-          bestWidth,
-          bestHeight
-        );
-      });
-    }
-
-    function applyFocusLayout() {
-      const gap = 6;
-      const pad = 6;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      const sideWidth = Math.max(340, Math.round(width * 0.285));
-      const mainAreaWidth = width - sideWidth - gap - pad * 2;
-      const mainAreaHeight = height - pad * 2;
-
-      const focused = getFocusedItem();
-      if (!focused) return;
-
-      let mainWidth = mainAreaWidth;
-      let mainHeight = Math.floor(mainWidth * 9 / 16);
-
-      if (mainHeight > mainAreaHeight) {
-        mainHeight = mainAreaHeight;
-        mainWidth = Math.floor(mainHeight * 16 / 9);
-      }
-
-      const mainLeft = pad + Math.floor((mainAreaWidth - mainWidth) / 2);
-      const mainTop = pad + Math.floor((mainAreaHeight - mainHeight) / 2);
-
-      const sideLeft = width - sideWidth;
-      const slotWidth = Math.floor((sideWidth - gap) / 2);
-      const slotHeight = Math.floor((height - gap * 3) / 4);
-
-      focused.tile.classList.remove("side-tile");
-      focused.tile.classList.add("main-tile");
-      setRect(focused.tile, mainLeft, mainTop, mainWidth, mainHeight);
-
-      const focusedIndex = streamItems.findIndex(item => item.id === focused.id);
-      const focusedCol = focusedIndex % 2;
-      const focusedRow = Math.floor(focusedIndex / 2);
-
-      setRect(
-        focusPlaceholder,
-        sideLeft + focusedCol * (slotWidth + gap),
-        focusedRow * (slotHeight + gap),
-        slotWidth,
-        slotHeight
-      );
-
-      focusPlaceholder.style.display = "flex";
-      focusPlaceholderName.textContent = focused.name;
-      focusLogo.textContent = (focused.name || "M").trim().charAt(0) || "M";
-
-      streamItems.forEach((item, index) => {
-        if (item.id === focused.id) return;
-
-        item.tile.classList.remove("main-tile");
-        item.tile.classList.add("side-tile");
-
-        const col = index % 2;
-        const row = Math.floor(index / 2);
-
-        setRect(
-          item.tile,
-          sideLeft + col * (slotWidth + gap),
-          row * (slotHeight + gap),
-          slotWidth,
-          slotHeight
-        );
-      });
-    }
-
-    function renderSettings() {
-      document.querySelectorAll(".layout-btn").forEach(button => {
-        button.classList.toggle("active", button.dataset.layout === layoutMode);
-      });
-
-      if (streamItems.length === 0) {
-        streamControls.innerHTML = '<div class="settings-note">표시 중인 방송이 없습니다.</div>';
-        return;
-      }
-
-      streamControls.innerHTML = streamItems.map((item, index) => `
-        <div class="stream-control ${item.id === focusedId ? "focused" : ""}">
-          <div class="stream-control-name">${index + 1}. ${escapeHtml(item.name)}</div>
-          <div class="stream-control-actions">
-            <button class="control-btn"
-                    type="button"
-                    data-action="up"
-                    data-id="${escapeAttr(item.id)}"
-                    ${index === 0 ? "disabled" : ""}>▲</button>
-
-            <button class="control-btn"
-                    type="button"
-                    data-action="down"
-                    data-id="${escapeAttr(item.id)}"
-                    ${index === streamItems.length - 1 ? "disabled" : ""}>▼</button>
-
-            <button class="control-btn delete"
-                    type="button"
-                    data-action="delete"
-                    data-id="${escapeAttr(item.id)}">삭제</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function escapeHtml(value) {
-      return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function escapeAttr(value) {
-      return escapeHtml(value);
-    }
-
-    function moveStream(id, direction) {
-      const index = streamItems.findIndex(item => item.id === id);
-      if (index < 0) return;
-
-      const target = index + direction;
-      if (target < 0 || target >= streamItems.length) return;
-
-      [streamItems[index], streamItems[target]] =
-        [streamItems[target], streamItems[index]];
-
-      applyLayout();
-    }
-
-    function focusStream(id) {
-      if (layoutMode !== "focus") return;
-      if (!streamItems.some(item => item.id === id)) return;
-      if (focusedId === id) return;
-
-      focusedId = id;
-
-      // iframe은 그대로 둔 채 CSS 위치만 변경
-      applyFocusLayout();
-      renderSettings();
-    }
-
-    function deleteStream(id) {
-      const index = streamItems.findIndex(item => item.id === id);
-      if (index < 0) return;
-
-      const [removed] = streamItems.splice(index, 1);
-
-      try {
-        removed.iframe.src = "about:blank";
-      } catch (error) {}
-
-      removed.tile.remove();
-
-      if (focusedId === id) {
-        focusedId = streamItems[0]?.id || "";
-      }
-
-      applyLayout();
-    }
-
-    document.querySelectorAll(".layout-btn").forEach(button => {
-      button.addEventListener("click", () => {
-        layoutMode = button.dataset.layout === "focus" ? "focus" : "uniform";
-        applyLayout();
-      });
-    });
-
-    streamControls.addEventListener("click", event => {
-      const button = event.target.closest("[data-action]");
-      if (!button || button.disabled) return;
-
-      const id = button.dataset.id;
-      const action = button.dataset.action;
-
-      if (action === "up") moveStream(id, -1);
-      if (action === "down") moveStream(id, 1);
-      if (action === "delete") deleteStream(id);
-    });
-
-    // '선택 화면 크게' 모드에서는 우측 작은 방송 화면을 클릭하면
-    // 그 방송이 즉시 메인 큰 화면으로 이동한다.
-    streams.addEventListener("click", event => {
-      if (layoutMode !== "focus") return;
-
-      const tile = event.target.closest(".stream-tile.side-tile");
-      if (!tile) return;
-
-      const id = tile.dataset.id;
-      if (!id) return;
-
-      focusStream(id);
-    });
-
-    settingsClose.addEventListener("click", () => {
-      settingsPanel.classList.add("closed");
-    });
-
-    settingsOpen.addEventListener("click", () => {
-      settingsPanel.classList.remove("closed");
-    });
-
-    window.addEventListener("resize", () => {
-      if (layoutMode === "focus") {
-        applyFocusLayout();
-      } else {
-        applyUniformLayout();
-      }
-    });
-
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        if (layoutMode === "focus") applyFocusLayout();
-        else applyUniformLayout();
-      }, 500);
-    });
-
-    initStreams();
-  </script>
+  </main>
+</div>
+
+<div class="form-row">
+  <label for="importJsonText">localStorage JSON 붙여넣기</label>
+  <textarea
+    id="importJsonText"
+    rows="8"
+    placeholder='{"playlists":[...]}'
+  ></textarea>
+</div>
+
+<button class="manager-btn" onclick="importJsonTextToFirebase()">
+  붙여넣은 JSON Firebase로 옮기기
+</button>
+
+<footer class="footer">
+  <div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div>
+  <div class="footer-links">
+    <a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon"><img src="icons/soop-logo.png" alt="SOOP" /></a>
+    <a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon"><img src="icons/youtube-logo.png" alt="YouTube" /></a>
+  </div>
+</footer>
+
+<script type="module" src="./playlist.js"></script>
+<script src="./theme.js?v=3"></script>
 </body>
 </html>
