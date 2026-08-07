@@ -702,7 +702,7 @@ async function loadRecommendedMembers() {
 
         // 한글 이름처럼 보이는데 명단에 없으면 잘못된 ID 추가를 막음
         if (/[가-힣]/.test(valueItem)) {
-          alert(`"${valueItem}" 멤버를 찾지 못했습니다.`);
+          alert(`"${valueItem}" 스트리머를 찾지 못했습니다. SOOP 아이디를 입력하세요.`);
           continue;
         }
 
