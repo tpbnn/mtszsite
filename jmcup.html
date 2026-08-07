@@ -35,10 +35,10 @@
 #page-tournament .sab-table tbody tr:last-child td{border-bottom:0}
 #page-tournament .sab-rank{font-weight:900;color:#94a3b8}
 #page-tournament .sab-rank.top{color:#fbbf24}
-#page-tournament .sab-player{text-align:left!important;min-width:126px}
-#page-tournament .sab-player strong{display:block;color:#fff;font-size:14px}
-#page-tournament .sab-player span{display:block;margin-top:3px;color:#94a3b8;font-size:11px}
-#page-tournament .sab-team{text-align:left!important;color:#cbd5e1}
+#page-tournament .sab-player{text-align:center!important;min-width:126px}
+#page-tournament .sab-player strong{display:block;color:#fff;font-size:14px;text-align:center!important}
+#page-tournament .sab-player span{display:block;margin-top:3px;color:#94a3b8;font-size:11px;text-align:center!important}
+#page-tournament .sab-team{text-align:center!important;color:#cbd5e1}
 #page-tournament .sab-positive{color:#4ade80;font-weight:900}
 #page-tournament .sab-negative{color:#fb7185;font-weight:900}
 #page-tournament .sab-primary{color:#7dd3fc;font-weight:900}
@@ -67,6 +67,261 @@ body.light #page-tournament,body.light-mode #page-tournament .sab-legend-item b{
   #page-tournament .sab-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
   #page-tournament .sab-field,#page-tournament .sab-field.search{min-width:0}
   #page-tournament .sab-table th,#page-tournament .sab-table td{padding:11px 9px}
+}
+</style>
+
+
+<style id="entry-badge-result-final">
+/* =========================================================
+   상세 엔트리 최종 뱃지 디자인
+   - 티어: 투명 배경 + 흰색 테두리/글씨
+   - 종족: 종족색 채움 + 검은 글씨
+   - 패배자: 이름/티어/종족 모두 어두운 회색 처리
+========================================================= */
+
+#page-tournament .set-player-badge-line{
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  margin-top:7px !important;
+}
+
+#page-tournament .player-badge{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:42px !important;
+  height:24px !important;
+  padding:0 9px !important;
+  border-radius:7px !important;
+  box-sizing:border-box !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+
+/* 티어 뱃지: 흰색 외곽선, 배경 없음 */
+#page-tournament .player-badge.tier{
+  background:transparent !important;
+  border:2px solid #f8fafc !important;
+  color:#f8fafc !important;
+}
+
+/* 종족 뱃지 공통: 검은 글씨 */
+#page-tournament .player-badge.race{
+  border:0 !important;
+  color:#05070b !important;
+}
+
+/* Z = 빨강 */
+#page-tournament .player-badge.race-Z{
+  background:#ff4f70 !important;
+  color:#05070b !important;
+}
+
+/* T = 파랑 */
+#page-tournament .player-badge.race-T{
+  background:#3b82f6 !important;
+  color:#05070b !important;
+}
+
+/* P = 민트 */
+#page-tournament .player-badge.race-P{
+  background:#5eead4 !important;
+  color:#05070b !important;
+}
+
+/* 승자 이름 */
+#page-tournament .set-player-box.is-winner .set-player-name-line strong{
+  color:#22d37d !important;
+  opacity:1 !important;
+}
+
+/* 패배자 이름 */
+#page-tournament .set-player-box.is-loser .set-player-name-line strong{
+  color:#626a78 !important;
+  opacity:1 !important;
+}
+
+/* 패배자 티어 뱃지:
+   투명 배경 + 어두운 회색 테두리/글씨 */
+#page-tournament .set-player-box.is-loser .player-badge.tier{
+  background:transparent !important;
+  border-color:#4b5563 !important;
+  color:#626a78 !important;
+  opacity:1 !important;
+}
+
+/* 패배자 종족 뱃지:
+   종족과 무관하게 어두운 회색으로 채우고 검은 글씨 */
+#page-tournament .set-player-box.is-loser .player-badge.race,
+#page-tournament .set-player-box.is-loser .player-badge.race-Z,
+#page-tournament .set-player-box.is-loser .player-badge.race-T,
+#page-tournament .set-player-box.is-loser .player-badge.race-P{
+  background:#4b5563 !important;
+  border-color:#4b5563 !important;
+  color:#090b0f !important;
+  opacity:1 !important;
+}
+
+/* 패배자 비고 뱃지도 있을 경우 동일하게 딤 */
+#page-tournament .set-player-box.is-loser .player-badge.note{
+  background:#4b5563 !important;
+  border-color:#4b5563 !important;
+  color:#090b0f !important;
+  opacity:1 !important;
+}
+
+/* 라이트모드에서도 승패 구분 유지 */
+body.light #page-tournament .set-player-box.is-loser .set-player-name-line strong,
+body.light-mode #page-tournament .set-player-box.is-loser .set-player-name-line strong{
+  color:#64748b !important;
+}
+
+body.light #page-tournament .set-player-box.is-loser .player-badge.tier,
+body.light-mode #page-tournament .set-player-box.is-loser .player-badge.tier{
+  background:transparent !important;
+  border-color:#64748b !important;
+  color:#64748b !important;
+}
+
+body.light #page-tournament .set-player-box.is-loser .player-badge.race,
+body.light-mode #page-tournament .set-player-box.is-loser .player-badge.race{
+  background:#64748b !important;
+  border-color:#64748b !important;
+  color:#090b0f !important;
+}
+</style>
+
+
+<style id="power-search-submit-style">
+/* 파워랭킹 선수 검색: Enter / 검색 버튼으로만 조회 */
+#page-tournament .sab-field.search{
+  min-width:270px;
+}
+
+#page-tournament .sab-search-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+#page-tournament .sab-search-row input{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+#page-tournament .sab-search-btn{
+  flex:0 0 auto;
+  height:38px;
+  padding:0 15px;
+  border:1px solid #00a2ff;
+  border-radius:9px;
+  background:#00a2ff;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:filter .15s ease, transform .15s ease;
+}
+
+#page-tournament .sab-search-btn:hover{
+  filter:brightness(1.08);
+}
+
+#page-tournament .sab-search-btn:active{
+  transform:translateY(1px);
+}
+
+body.light #page-tournament .sab-search-btn,
+body.light-mode #page-tournament .sab-search-btn{
+  background:#00a2ff;
+  border-color:#00a2ff;
+  color:#fff;
+}
+
+@media(max-width:768px){
+  #page-tournament .sab-field.search{
+    min-width:0;
+  }
+
+  #page-tournament .sab-search-btn{
+    padding:0 12px;
+  }
+}
+</style>
+
+
+<style id="power-reset-final-style">
+/* 파워랭킹 선수/소속팀 가운데 정렬 최종 보정 */
+#page-tournament .sab-player,
+#page-tournament .sab-team{
+  text-align:center !important;
+  vertical-align:middle !important;
+}
+
+#page-tournament .sab-player strong,
+#page-tournament .sab-player span{
+  text-align:center !important;
+}
+
+/* 검색창 + 버튼 2개가 한 줄 유지 */
+#page-tournament .sab-field.search{
+  min-width:355px;
+}
+
+#page-tournament .sab-search-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+#page-tournament .sab-search-row input{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+/* 초기화 버튼 */
+#page-tournament .sab-reset-btn{
+  flex:0 0 auto;
+  height:38px;
+  padding:0 15px;
+  border:1px solid #475569;
+  border-radius:9px;
+  background:#334155;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:filter .15s ease, transform .15s ease, background .15s ease;
+}
+
+#page-tournament .sab-reset-btn:hover{
+  background:#475569;
+}
+
+#page-tournament .sab-reset-btn:active{
+  transform:translateY(1px);
+}
+
+body.light #page-tournament .sab-reset-btn,
+body.light-mode #page-tournament .sab-reset-btn{
+  background:#64748b;
+  border-color:#64748b;
+  color:#fff;
+}
+
+@media(max-width:768px){
+  #page-tournament .sab-field.search{
+    min-width:0;
+  }
+
+  #page-tournament .sab-search-btn,
+  #page-tournament .sab-reset-btn{
+    padding:0 10px;
+  }
 }
 </style>
 
@@ -268,6 +523,20 @@ function numOrBlank(value){
   return Number.isFinite(n) ? n : null;
 }
 
+function getPlayerEntryInfo(playerName){
+  const target = String(playerName || "").trim();
+  if(!target || target === "미정") return { tier:"", race:"" };
+
+  const row = TOURNAMENT_ROWS.find(r =>
+    String(r["이름"] || "").trim() === target
+  );
+
+  return {
+    tier: String(row?.["티어"] || "").trim(),
+    race: String(row?.["종족"] || "").trim()
+  };
+}
+
 function buildMatches(){
   const map = new Map();
 
@@ -306,20 +575,29 @@ function buildMatches(){
     const hasSetData = setNo !== null || row["세트A선수"] || row["세트B선수"] || row["세트승자"];
     if(!hasSetData) return;
 
+    const playerAName = String(row["세트A선수"] || "").trim();
+    const playerBName = String(row["세트B선수"] || "").trim();
+    const playerAInfo = getPlayerEntryInfo(playerAName);
+    const playerBInfo = getPlayerEntryInfo(playerBName);
+
     match.sets.push({
       세트: setNo ?? row["세트"],
-      세트A: String(row["세트A선수"] || "").trim(),
-      세트B: String(row["세트B선수"] || "").trim(),
+      세트A: playerAName,
+      세트B: playerBName,
       세트승자: String(row["세트승자"] || "").trim(),
       세트승리팀: String(row["세트승리팀"] || "").trim(),
       맵: row["맵"],
       팀A점수전: numOrBlank(row["팀A점수(전)"]),
       팀B점수전: numOrBlank(row["팀B점수(전)"]),
       에이스전: toBool(row["에이스전"]),
-      세트A티어: row["선수A티어"] || "",
-      세트A종족: row["선수A종족"] || "",
-      세트B티어: row["선수B티어"] || "",
-      세트B종족: row["선수B종족"] || "",
+
+      // 상세 엔트리의 티어/종족은 우측 선수 목록(이름/종족/티어)에서 자동 조회
+      // 기존 전용 컬럼이 있으면 그 값을 우선 사용하고, 없으면 선수 목록 값을 사용
+      세트A티어: String(row["선수A티어"] || playerAInfo.tier || "").trim(),
+      세트A종족: String(row["선수A종족"] || playerAInfo.race || "").trim(),
+      세트B티어: String(row["선수B티어"] || playerBInfo.tier || "").trim(),
+      세트B종족: String(row["선수B종족"] || playerBInfo.race || "").trim(),
+
       세트A비고: row["선수A비고"] || "",
       세트B비고: row["선수B비고"] || "",
       홈픽: row["선수A비고"] || "",
@@ -679,22 +957,33 @@ function renderMatchList(openKey = ""){
 }
 
 function playerWithBadges(name, tier, race, note, winner, side){
+  const winnerName = String(winner || "").trim();
+  const playerName = String(name || "").trim();
+
+  const hasResult =
+    winnerName &&
+    winnerName !== "미정";
+
   const isWinner =
-    name &&
-    winner &&
-    String(name).trim() === String(winner).trim();
+    hasResult &&
+    playerName &&
+    playerName === winnerName;
+
+  const resultClass = hasResult
+    ? (isWinner ? "is-winner" : "is-loser")
+    : "";
 
   return `
-    <div class="set-player-box ${side} ${isWinner ? "is-winner" : "is-loser"}">
+    <div class="set-player-box ${side} ${resultClass}">
       <div class="set-player-name-line">
         <strong>${esc(name || "미정")}</strong>
       </div>
 
-<div class="set-player-badge-line">
-  ${tier ? `<span class="player-badge tier">${esc(tier)}</span>` : ""}
-  ${race ? `<span class="player-badge race race-${esc(race)}">${esc(race)}</span>` : ""}
-  ${note ? `<span class="player-badge note">${esc(note)}</span>` : ""}
-</div>
+      <div class="set-player-badge-line">
+        ${tier ? `<span class="player-badge tier">${esc(tier)}</span>` : ""}
+        ${race ? `<span class="player-badge race race-${esc(race)}">${esc(race)}</span>` : ""}
+        ${note ? `<span class="player-badge note">${esc(note)}</span>` : ""}
+      </div>
     </div>
   `;
 }
@@ -1380,7 +1669,14 @@ function renderPowerRanking(){
           ${filterSelect("티어","sabTier",["전체",...tiers],powerFilters.tier)}
           ${filterSelect("종족","sabRace",["전체",...races],powerFilters.race)}
           ${filterSelect("최소 출전","sabMinSet",["0","1","2","3","5","10"],String(powerFilters.minSet),v=>v==="0"?"전체":`${v}세트`)}
-          <div class="sab-field search"><label for="sabSearch">선수 검색</label><input id="sabSearch" value="${esc(powerFilters.search)}" placeholder="선수명 입력"></div>
+          <div class="sab-field search">
+            <label for="sabSearch">선수 검색</label>
+            <div class="sab-search-row">
+              <input id="sabSearch" value="${esc(powerFilters.search)}" placeholder="선수명 입력" autocomplete="off">
+              <button id="sabSearchBtn" class="sab-search-btn" type="button">검색</button>
+              <button id="sabResetBtn" class="sab-reset-btn" type="button">초기화</button>
+            </div>
+          </div>
         </div>
         <button id="sabHelpBtn" class="sab-help" type="button">지표 설명 ⓘ</button>
       </div>
@@ -1398,7 +1694,45 @@ function renderPowerRanking(){
   document.getElementById("sabHelpBtn").onclick=()=>document.getElementById("sabLegend").classList.toggle("open");
   bindPowerFilter("sabTeam","team"); bindPowerFilter("sabTier","tier"); bindPowerFilter("sabRace","race");
   document.getElementById("sabMinSet").onchange=e=>{powerFilters.minSet=Number(e.target.value||0);renderPowerTable();};
-  document.getElementById("sabSearch").oninput=e=>{powerFilters.search=e.target.value;renderPowerTable();};
+  const sabSearchInput = document.getElementById("sabSearch");
+  const sabSearchBtn = document.getElementById("sabSearchBtn");
+  const sabResetBtn = document.getElementById("sabResetBtn");
+
+  const submitPowerSearch = () => {
+    powerFilters.search = sabSearchInput.value.trim();
+    renderPowerTable();
+  };
+
+  // 입력만 할 때는 조회하지 않음
+  // Enter 또는 검색 버튼을 눌렀을 때만 적용
+  sabSearchBtn.onclick = submitPowerSearch;
+
+  sabSearchInput.onkeydown = e => {
+    if(e.key === "Enter"){
+      e.preventDefault();
+      submitPowerSearch();
+    }
+  };
+
+  // 초기화: 팀 / 티어 / 종족 / 최소 출전 / 선수 검색을 모두 기본값으로 복원
+  sabResetBtn.onclick = () => {
+    powerFilters = {
+      team: "전체",
+      tier: "전체",
+      race: "전체",
+      minSet: 0,
+      search: ""
+    };
+
+    document.getElementById("sabTeam").value = "전체";
+    document.getElementById("sabTier").value = "전체";
+    document.getElementById("sabRace").value = "전체";
+    document.getElementById("sabMinSet").value = "0";
+    sabSearchInput.value = "";
+
+    renderPowerTable();
+  };
+
   renderPowerTable();
 }
 
