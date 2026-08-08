@@ -617,6 +617,31 @@ function renderPlaylistPage(){
   renderVideoListForPlaylist();
 }
 
+function isNewVideo(video){
+  if(!video.createdAt) return false;
+
+  const created = new Date(video.createdAt);
+
+  if(Number.isNaN(created.getTime())){
+    return false;
+  }
+
+  const now = new Date();
+  const sevenDays = 7 * 24 * 60 * 60 * 1000;
+  const diff = now.getTime() - created.getTime();
+
+  return diff >= 0 && diff < sevenDays;
+}
+
+function playlistHasNewVideo(playlistId){
+  return videos.some(video =>
+    video.playlistId === playlistId &&
+    video.public !== false &&
+    isNewVideo(video)
+  );
+}
+
+
 function renderPlaylistTabs(publicPlaylists){
   const area = document.getElementById("playlistTabArea");
 
@@ -624,6 +649,7 @@ function renderPlaylistTabs(publicPlaylists){
 
   area.innerHTML = publicPlaylists.map(playlist => {
     const active = playlist.id === currentPlaylistId ? "active" : "";
+    const isNew = playlistHasNewVideo(playlist.id);
 
     return `
       <button
@@ -632,6 +658,7 @@ function renderPlaylistTabs(publicPlaylists){
         onclick="selectPlaylistForPlayer('${jsString(playlist.id)}')"
       >
         ${escapeHTML(playlist.name)}
+        ${isNew ? `<span class="playlist-new-badge">NEW</span>` : ""}
       </button>
     `;
   }).join("");
