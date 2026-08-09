@@ -3,6 +3,7 @@ let currentTab = "team";
 let selectedMatchTypes = new Set();
 let selectedResult = "all";
 let selectedPlayerName = "";
+let opponentSearchKeyword = "";
 
 
 /* =====================================================
@@ -2123,8 +2124,22 @@ function renderOpponentRecordTable(){
   }
 
 
-  const records =
-    getOpponentRecords();
+const allRecords =
+  getOpponentRecords();
+
+const keyword =
+  opponentSearchKeyword
+    .trim()
+    .toLowerCase();
+
+const records =
+  !keyword
+    ? allRecords
+    : allRecords.filter(record =>
+        String(record.opponent || "")
+          .toLowerCase()
+          .includes(keyword)
+      );
 
 
   if(
@@ -2225,13 +2240,50 @@ function renderOpponentRecordTable(){
 
 function openOpponentRecordModal(){
 
-  /*
-    팝업을 열 때마다
-    현재 데이터 기준으로 다시 렌더링
-  */
+  /* ==============================
+     대학 이름 검색 초기화
+  ============================== */
+
+  const searchInput =
+    document.getElementById(
+      "opponentRecordSearch"
+    );
+
+  const clearButton =
+    document.getElementById(
+      "opponentRecordSearchClear"
+    );
+
+
+  opponentSearchKeyword = "";
+
+
+  if(searchInput){
+
+    searchInput.value = "";
+
+  }
+
+
+  if(clearButton){
+
+    clearButton.classList.remove(
+      "show"
+    );
+
+  }
+
+
+  /* ==============================
+     상대별 전적 다시 출력
+  ============================== */
 
   renderOpponentRecordTable();
 
+
+  /* ==============================
+     팝업 열기
+  ============================== */
 
   const modal =
     document.getElementById(
@@ -2259,8 +2311,25 @@ function openOpponentRecordModal(){
     "opponent-record-modal-open"
   );
 
-}
 
+  /* ==============================
+     팝업 열리면 검색창에 커서
+  ============================== */
+
+  setTimeout(
+    () => {
+
+      if(searchInput){
+
+        searchInput.focus();
+
+      }
+
+    },
+    50
+  );
+
+}
 
 
 /* =====================================================
@@ -2319,6 +2388,79 @@ document.addEventListener(
   }
 );
 
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const searchInput =
+      document.getElementById(
+        "opponentRecordSearch"
+      );
+
+    const clearButton =
+      document.getElementById(
+        "opponentRecordSearchClear"
+      );
+
+
+    if(searchInput){
+
+      searchInput.addEventListener(
+        "input",
+        () => {
+
+          opponentSearchKeyword =
+            searchInput.value;
+
+          renderOpponentRecordTable();
+
+          if(clearButton){
+
+            clearButton.classList.toggle(
+              "show",
+              Boolean(
+                searchInput.value
+              )
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+
+    if(clearButton){
+
+      clearButton.addEventListener(
+        "click",
+        () => {
+
+          opponentSearchKeyword = "";
+
+          if(searchInput){
+
+            searchInput.value = "";
+
+            searchInput.focus();
+
+          }
+
+          clearButton.classList.remove(
+            "show"
+          );
+
+          renderOpponentRecordTable();
+
+        }
+      );
+
+    }
+
+  }
+);
 
 
 /* =====================================================
