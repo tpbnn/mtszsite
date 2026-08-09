@@ -125,13 +125,45 @@
 
   <div class="opponent-record-dialog" role="dialog" aria-modal="true" aria-labelledby="opponentRecordTitle">
     <div class="opponent-record-header">
-      <div>
-        <h3 id="opponentRecordTitle">대학별 전적</h3>
-        <p>각 대학과의 총 전적 / 대학대전 / 미니대전 / 대회전적입니다.</p>
-      </div>
 
-      <button type="button" class="opponent-record-close" onclick="closeOpponentRecordModal()" aria-label="닫기">×</button>
+  <div class="opponent-record-title-area">
+    <h3 id="opponentRecordTitle">대학별 전적</h3>
+    <p>각 대학과의 총 전적 / 대학대전 / 미니대전 / 대회전적입니다.</p>
+  </div>
+
+  <div class="opponent-record-header-actions">
+
+    <div class="opponent-search-wrap">
+      <input
+        type="text"
+        id="opponentRecordSearch"
+        class="opponent-record-search"
+        placeholder="대학 이름 검색"
+        autocomplete="off"
+      >
+
+      <button
+        type="button"
+        id="opponentRecordSearchClear"
+        class="opponent-record-search-clear"
+        aria-label="검색 초기화"
+      >
+        ×
+      </button>
     </div>
+
+    <button
+      type="button"
+      class="opponent-record-close"
+      onclick="closeOpponentRecordModal()"
+      aria-label="닫기"
+    >
+      ×
+    </button>
+
+  </div>
+
+</div>
 
     <div class="opponent-record-body">
       <div class="opponent-record-table-wrap">
