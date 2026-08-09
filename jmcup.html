@@ -1175,8 +1175,31 @@ function renderGroupStanding(){
 
     const aScore = Number(match.점수A || 0);
     const bScore = Number(match.점수B || 0);
-    const winTeam = String(match.승리팀 || "").trim();
-    const hasResult = winTeam && winTeam !== "미정";
+    const isFinished = String(match.상태 || "").trim() === "종료";
+
+    // 종료 경기는 실제 점수를 기준으로 승리팀을 판정한다.
+    // 시트의 승리팀 값은 점수로 판정할 수 없는 경우에만 보조적으로 사용한다.
+    let winTeam = "";
+
+    if(isFinished){
+      if(aScore > bScore){
+        winTeam = teamA;
+      }else if(bScore > aScore){
+        winTeam = teamB;
+      }
+    }
+
+    if(!winTeam){
+      const sheetWinner = String(match.승리팀 || "").trim();
+      if(sheetWinner === teamA || sheetWinner === teamB){
+        winTeam = sheetWinner;
+      }
+    }
+
+    const hasResult =
+      isFinished &&
+      winTeam &&
+      winTeam !== "미정";
 
 if(hasResult){
 
