@@ -2854,35 +2854,127 @@ body.light-mode .opponent-record-table td{
   }
 }
 
+/* =====================================================
+   상대별 전적 - 대회전적
+===================================================== */
 
-/* 상대별 전적 - 대회전적 */
-.opponent-tournament-list{
+/* 대회전적 전체 영역 */
+.opponent-tournament-wrap{
   display:flex;
   flex-direction:column;
-  align-items:flex-start;
-  gap:6px;
+  align-items:stretch;
+  gap:8px;
+  width:100%;
 }
 
-.opponent-tournament-item{
+
+/* 해당 대학과의 전체 대회전적
+   승 = 파랑 / 패 = 빨강 유지 */
+.opponent-tournament-total{
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:5px;
+
+  width:100%;
+  padding-bottom:7px;
+
+  border-bottom:1px solid rgba(255,255,255,.10);
+
+  font-size:14px;
+  font-weight:1000;
+}
+
+
+/* 각 대회별 세부 전적 */
+.opponent-tournament-detail{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:5px;
+
+  width:100%;
+}
+
+
+.opponent-tournament-item{
+  display:grid;
+  grid-template-columns:minmax(70px,1fr) auto;
+  align-items:center;
+  gap:10px;
+
+  width:100%;
   white-space:nowrap;
 }
 
+
+/* 대회명 배지 */
 .opponent-tournament-name{
   display:inline-flex;
   align-items:center;
+
+  width:max-content;
+  max-width:100%;
+
   padding:4px 8px;
-  margin-right:3px;
   border-radius:7px;
+
   background:rgba(255,255,255,.08);
   color:#fff;
+
+  font-size:11px;
+  font-weight:900;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+
+/* 각 대회별 1승 0패 등의 승패는 모두 흰색 */
+.opponent-tournament-result{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+
+  color:#fff !important;
+
   font-size:12px;
   font-weight:900;
+  white-space:nowrap;
+}
+
+
+/* 라이트모드 */
+body.light-mode .opponent-tournament-total{
+  border-bottom-color:#e1e7f2;
 }
 
 body.light-mode .opponent-tournament-name{
   background:#e8eef9;
   color:#25314d;
+}
+
+/* 요청사항: 라이트모드에서도 대회별 세부 승패는 흰색 유지 */
+body.light-mode .opponent-tournament-result{
+  color:#fff !important;
+}
+
+
+/* 모바일 */
+@media(max-width:768px){
+
+  .opponent-tournament-item{
+    grid-template-columns:minmax(64px,1fr) auto;
+    gap:7px;
+  }
+
+  .opponent-tournament-name{
+    font-size:10px;
+    padding:4px 7px;
+  }
+
+  .opponent-tournament-result{
+    font-size:11px;
+  }
+
 }
