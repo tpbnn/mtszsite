@@ -2569,3 +2569,320 @@ body.light-mode #page-records .match-item{
   }
 
 }
+
+/* =====================================================
+   경기 결과 - 상대별 전적 버튼 / 팝업
+===================================================== */
+
+#page-matchresult .match-result-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:20px;
+}
+
+#page-matchresult .opponent-record-btn{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:124px;
+  height:42px;
+  padding:0 18px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  background:rgba(255,255,255,.07);
+  color:var(--text);
+  font-size:14px;
+  font-weight:900;
+  cursor:pointer;
+  transition:background .2s ease,border-color .2s ease,transform .2s ease;
+}
+
+#page-matchresult .opponent-record-btn:hover{
+  background:linear-gradient(135deg,var(--brand),var(--brand2));
+  border-color:transparent;
+  color:#fff;
+  transform:translateY(-1px);
+}
+
+.opponent-record-modal{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.opponent-record-modal.active{
+  display:flex;
+}
+
+.opponent-record-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(4,9,22,.72);
+  backdrop-filter:blur(6px);
+}
+
+.opponent-record-dialog{
+  position:relative;
+  z-index:1;
+  width:min(1050px,100%);
+  max-height:82vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background:#16233c;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:24px;
+  box-shadow:0 28px 80px rgba(0,0,0,.5);
+}
+
+.opponent-record-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  padding:22px 26px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.opponent-record-header h3{
+  margin:0 0 6px;
+  color:#fff;
+  font-size:21px;
+  font-weight:1000;
+  letter-spacing:-.04em;
+}
+
+.opponent-record-header p{
+  margin:0;
+  color:#8fa2c4;
+  font-size:13px;
+  font-weight:800;
+}
+
+.opponent-record-close{
+  flex:0 0 auto;
+  width:38px;
+  height:38px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:50%;
+  background:rgba(255,255,255,.07);
+  color:#fff;
+  font-size:25px;
+  line-height:1;
+  cursor:pointer;
+}
+
+.opponent-record-close:hover{
+  background:rgba(255,255,255,.14);
+}
+
+.opponent-record-body{
+  padding:18px 24px 24px;
+  overflow:auto;
+}
+
+.opponent-record-table-wrap{
+  width:100%;
+  overflow-x:auto;
+}
+
+.opponent-record-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0 8px;
+  border-radius:0;
+  overflow:visible;
+}
+
+.opponent-record-table th{
+  padding:0 16px 8px;
+  border:0;
+  background:transparent;
+  color:#8fa2c4;
+  font-size:12px;
+  font-weight:900;
+  text-align:center;
+}
+
+.opponent-record-table th:first-child{
+  text-align:left;
+}
+
+.opponent-record-table td{
+  padding:16px;
+  border:0;
+  background:rgba(255,255,255,.055);
+  color:#fff;
+  font-size:14px;
+  font-weight:900;
+  text-align:center;
+}
+
+.opponent-record-table td:first-child{
+  text-align:left;
+  border-radius:14px 0 0 14px;
+}
+
+.opponent-record-table td:last-child{
+  border-radius:0 14px 14px 0;
+}
+
+.opponent-record-name{
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+}
+
+.opponent-record-win{
+  color:var(--terran);
+}
+
+.opponent-record-loss{
+  color:var(--bad);
+  margin-left:5px;
+}
+
+.opponent-record-empty{
+  color:#7183a2;
+}
+
+.opponent-record-no-data{
+  padding:30px !important;
+  border-radius:14px !important;
+  color:#8fa2c4 !important;
+  text-align:center !important;
+}
+
+body.opponent-record-modal-open{
+  overflow:hidden;
+}
+
+/* 라이트모드 */
+body.light-mode #page-matchresult .opponent-record-btn{
+  background:#eef3ff;
+  border-color:#d7e2ff;
+  color:#23304f;
+}
+
+body.light-mode #page-matchresult .opponent-record-btn:hover{
+  background:linear-gradient(135deg,#178bff,#45b8ff);
+  border-color:transparent;
+  color:#fff;
+}
+
+body.light-mode .opponent-record-backdrop{
+  background:rgba(17,24,39,.48);
+}
+
+body.light-mode .opponent-record-dialog{
+  background:#fff;
+  border-color:#d7def0;
+  box-shadow:0 28px 80px rgba(28,39,65,.22);
+}
+
+body.light-mode .opponent-record-header{
+  border-bottom-color:#e2e8f5;
+}
+
+body.light-mode .opponent-record-header h3,
+body.light-mode .opponent-record-name{
+  color:#1b1a27;
+}
+
+body.light-mode .opponent-record-header p,
+body.light-mode .opponent-record-table th{
+  color:#66738f;
+}
+
+body.light-mode .opponent-record-close{
+  background:#eef3ff;
+  border-color:#d7e2ff;
+  color:#23304f;
+}
+
+body.light-mode .opponent-record-table td{
+  background:#f3f6fd;
+  color:#1b1a27;
+}
+
+@media(max-width:768px){
+  #page-matchresult .match-result-title{
+    align-items:center;
+  }
+
+  #page-matchresult .opponent-record-btn{
+    min-width:auto;
+    height:36px;
+    padding:0 13px;
+    font-size:12px;
+  }
+
+  .opponent-record-modal{
+    padding:12px;
+  }
+
+  .opponent-record-dialog{
+    max-height:86vh;
+    border-radius:18px;
+  }
+
+  .opponent-record-header{
+    padding:17px 18px;
+  }
+
+  .opponent-record-header h3{
+    font-size:18px;
+  }
+
+  .opponent-record-body{
+    padding:10px 12px 16px;
+  }
+
+  .opponent-record-table{
+    min-width:780px;
+  }
+
+  .opponent-record-table td{
+    padding:14px 12px;
+    font-size:13px;
+  }
+}
+
+
+/* 상대별 전적 - 대회전적 */
+.opponent-tournament-list{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
+}
+
+.opponent-tournament-item{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  white-space:nowrap;
+}
+
+.opponent-tournament-name{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  margin-right:3px;
+  border-radius:7px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+}
+
+body.light-mode .opponent-tournament-name{
+  background:#e8eef9;
+  color:#25314d;
+}
