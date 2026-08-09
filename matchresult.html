@@ -12,7 +12,7 @@
 <body data-page="matchresult">
 
 <div class="floating-banner">
-  <a href="http://calm-hoxy.vercel.app/" target="_blank">
+  <a href="https://calm-hoxy.vercel.app/" target="_blank">
     <img src="./banner/banner1.png" alt="배너1">
   </a>
   <a href="https://fmcalm.vercel.app/" target="_blank">
@@ -73,11 +73,15 @@
 <main id="page-matchresult" class="page">
   <section class="card panel match-result-wrap">
 
-    <div class="section-title">
+    <div class="section-title match-result-title">
       <div>
         <h2>경기 결과</h2>
         <span>캄몬스타즈 소속 결과만 반영됩니다.</span>
-         </div>
+      </div>
+
+      <button type="button" class="opponent-record-btn" onclick="openOpponentRecordModal()">
+        상대별 전적
+      </button>
     </div>
 
     <div class="match-tabs">
@@ -113,6 +117,39 @@
 
   </section>
   </main>
+</div>
+
+
+<div id="opponentRecordModal" class="opponent-record-modal" aria-hidden="true">
+  <div class="opponent-record-backdrop" onclick="closeOpponentRecordModal()"></div>
+
+  <div class="opponent-record-dialog" role="dialog" aria-modal="true" aria-labelledby="opponentRecordTitle">
+    <div class="opponent-record-header">
+      <div>
+        <h3 id="opponentRecordTitle">상대별 전적</h3>
+        <p>상대별 총 전적 / 대학대전 / 미니대전 / 대회전적입니다.</p>
+      </div>
+
+      <button type="button" class="opponent-record-close" onclick="closeOpponentRecordModal()" aria-label="닫기">×</button>
+    </div>
+
+    <div class="opponent-record-body">
+      <div class="opponent-record-table-wrap">
+        <table class="opponent-record-table">
+          <thead>
+            <tr>
+              <th>상대</th>
+              <th>총 전적</th>
+              <th>대학대전</th>
+              <th>미니대전</th>
+              <th>대회전적</th>
+            </tr>
+          </thead>
+          <tbody id="opponentRecordTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <footer class="footer">
