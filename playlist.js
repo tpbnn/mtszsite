@@ -742,7 +742,7 @@ window.playPlaylistVideo = function(id){
   }
 
   currentVideoId = id;
-  setPlayer(video, true);
+  setPlayer(video, false);
   renderVideoListForPlaylist();
 };
 
