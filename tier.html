@@ -90,7 +90,7 @@
     }
 
     .stats-title{
-      font-size:22px;
+      font-size:15px;
       font-weight:800;
       margin-bottom:18px;
     }
@@ -411,14 +411,361 @@
 
 
 
-  </style>
+  
+/* 티어표 필터 + 버튼 한 줄 배치 */
+#page-tiers .filters{
+  display:grid !important;
+  grid-template-columns:minmax(280px,1.6fr) minmax(150px,.72fr) minmax(150px,.72fr) minmax(135px,.68fr) 92px 118px !important;
+  gap:10px !important;
+  align-items:center;
+  overflow:visible !important;
+}
+
+/* 체크박스형 다중 선택 드롭다운 */
+.multi-filter{
+  position:relative;
+  min-width:0;
+}
+
+.multi-filter-button{
+  width:100%;
+  height:52px;
+  padding:0 16px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  background:#344c75;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:700;
+  text-align:left;
+  box-sizing:border-box;
+}
+
+.multi-filter-button::after{
+  content:"⌄";
+  flex:0 0 auto;
+  opacity:.85;
+  font-size:16px;
+}
+
+.multi-filter.open .multi-filter-button{
+  border-color:#0d8bff;
+  box-shadow:0 0 0 2px rgba(13,139,255,.14);
+}
+
+.multi-filter-menu{
+  display:none;
+  position:absolute;
+  top:calc(100% + 8px);
+  left:0;
+  z-index:200;
+  min-width:100%;
+  width:max-content;
+  max-width:280px;
+  max-height:330px;
+  overflow-y:auto;
+  padding:8px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:14px;
+  background:#172643;
+  box-shadow:0 16px 36px rgba(0,0,0,.34);
+  box-sizing:border-box;
+}
+
+.multi-filter.open .multi-filter-menu{
+  display:block;
+}
+
+.multi-filter-option{
+  min-width:160px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  border-radius:10px;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.multi-filter-option:hover{
+  background:rgba(13,139,255,.16);
+}
+
+.multi-filter-option input{
+  width:16px;
+  height:16px;
+  margin:0;
+  accent-color:#0d8bff;
+  cursor:pointer;
+}
+
+/* 필터 초기화 */
+.tier-reset-btn{
+  width:92px;
+  height:52px;
+  min-width:92px;
+  padding:0 12px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  background:#33435f;
+  color:#dfe9ff;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .15s ease, transform .15s ease;
+}
+
+.tier-reset-btn:hover{
+  background:#465a7d;
+  transform:translateY(-1px);
+}
+
+/* 새로고침 */
+.tier-refresh-btn{
+  width:118px;
+  height:52px;
+  min-width:118px;
+  padding:0 14px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  background:#0d8bff;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  white-space:nowrap;
+  transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  box-shadow:0 6px 18px rgba(13,139,255,.20);
+}
+
+.tier-refresh-btn:hover{
+  background:#2498ff;
+  transform:translateY(-1px);
+  box-shadow:0 8px 22px rgba(13,139,255,.30);
+}
+
+.tier-refresh-btn:active{
+  transform:translateY(0);
+}
+
+.tier-refresh-btn .refresh-icon{
+  display:inline-block;
+  line-height:1;
+  font-size:18px;
+}
+
+@media(max-width:900px){
+  #page-tiers .filters{
+    grid-template-columns:1fr !important;
+  }
+
+  .tier-reset-btn,
+  .tier-refresh-btn{
+    width:100%;
+  }
+
+  .multi-filter-menu{
+    width:100%;
+    max-width:none;
+  }
+}
+
+
+/* ===== 티어 필터 UI 보정 ===== */
+
+/* 드롭다운이 결과 영역/패널 높이에 의해 잘리지 않도록 */
+#page-tiers .card.panel,
+#page-tiers .panel{
+  overflow:visible !important;
+}
+
+#page-tiers .filters{
+  position:relative;
+  z-index:300;
+  overflow:visible !important;
+}
+
+/* 검색창 + 티어/종족 + 라이브 필터 디자인 통일 */
+#page-tiers .filters > #searchInput,
+#page-tiers .multi-filter-button,
+#page-tiers #liveFilter{
+  height:52px !important;
+  min-height:52px !important;
+  box-sizing:border-box !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:16px !important;
+  background:#344c75 !important;
+  color:#ffffff !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+#page-tiers .filters > #searchInput{
+  width:100% !important;
+  padding:0 16px !important;
+}
+
+#page-tiers .filters > #searchInput::placeholder{
+  color:rgba(255,255,255,.46) !important;
+}
+
+#page-tiers #liveFilter{
+  width:100% !important;
+  padding:0 36px 0 16px !important;
+  cursor:pointer;
+}
+
+/* 티어/종족 체크박스 드롭다운 */
+#page-tiers .multi-filter{
+  z-index:310;
+}
+
+#page-tiers .multi-filter.open{
+  z-index:500;
+}
+
+#page-tiers .multi-filter-menu{
+  z-index:9999 !important;
+  min-width:100% !important;
+  width:100% !important;
+  max-width:none !important;
+
+  /* 스크롤 제거 */
+  max-height:none !important;
+  overflow:visible !important;
+
+  padding:7px !important;
+  background:#172643 !important;
+}
+
+/* 티어 항목을 작게 만들어 전체 티어가 한 번에 보이도록 */
+#page-tiers .multi-filter-option{
+  min-width:0 !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  gap:8px !important;
+  padding:5px 8px !important;
+  border-radius:8px !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+  min-height:27px !important;
+}
+
+#page-tiers .multi-filter-option input{
+  width:14px !important;
+  height:14px !important;
+  flex:0 0 14px !important;
+}
+
+/* 값이 없을 때 빈 드롭다운이 찌그러지지 않도록 */
+#page-tiers .multi-filter-empty{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:8px 10px;
+  box-sizing:border-box;
+  color:#9fb2c9;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+/* 라이트 모드에서도 동일한 형태 유지 */
+body.light-mode #page-tiers .filters > #searchInput,
+body.light-mode #page-tiers .multi-filter-button,
+body.light-mode #page-tiers #liveFilter{
+  background:#ffffff !important;
+  color:#1b2940 !important;
+  border-color:#cfd8e6 !important;
+}
+
+body.light-mode #page-tiers .filters > #searchInput::placeholder{
+  color:#8794a8 !important;
+}
+
+body.light-mode #page-tiers .multi-filter-menu{
+  background:#ffffff !important;
+  border-color:#cfd8e6 !important;
+  box-shadow:0 16px 36px rgba(22,34,52,.18) !important;
+}
+
+body.light-mode #page-tiers .multi-filter-option{
+  color:#1b2940 !important;
+}
+
+body.light-mode #page-tiers .multi-filter-option:hover{
+  background:#edf5ff !important;
+}
+
+
+/* 라이브 필터도 티어/종족과 동일한 커스텀 드롭다운 */
+#page-tiers .live-filter-menu{
+  width:100% !important;
+  min-width:100% !important;
+  padding:7px !important;
+}
+
+#page-tiers .live-filter-option{
+  width:100%;
+  min-height:32px;
+  padding:7px 9px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  text-align:left;
+  cursor:pointer;
+  box-sizing:border-box;
+}
+
+#page-tiers .live-filter-option:hover{
+  background:rgba(13,139,255,.16);
+}
+
+#page-tiers .live-filter-option.active{
+  background:rgba(13,139,255,.26);
+  color:#7fd0ff;
+}
+
+body.light-mode #page-tiers .live-filter-option{
+  color:#1b2940;
+}
+
+body.light-mode #page-tiers .live-filter-option:hover{
+  background:#edf5ff;
+}
+
+body.light-mode #page-tiers .live-filter-option.active{
+  background:#dceeff;
+  color:#0d78d8;
+}
+
+</style>
 </head>
 
 
 <body data-page="tiers">
 
 <div class="floating-banner">
-  <a href="http://calm-hoxy.vercel.app/" target="_blank">
+  <a href="https://calm-hoxy.vercel.app/" target="_blank">
     <img src="./banner/banner1.png" alt="배너1">
   </a>
   <a href="https://fmcalm.vercel.app/" target="_blank">
@@ -479,11 +826,48 @@
     <div class="section-title"><h2>티어표 & 선수 검색</h2><span>에펨코리아 티어표 기반 / 라이브 자동 확인</span></div>
     <div class="filters">
       <input id="searchInput" placeholder="선수 닉네임 검색" oninput="renderTierCards()" />
-      <select id="tierFilter" onchange="renderTierCards()"><option value="all">전체 티어</option></select>
-      <select id="raceFilter" onchange="renderTierCards()">
-        <option value="all">전체 종족</option><option value="T">테란</option><option value="Z">저그</option><option value="P">프로토스</option><option value="R">랜덤</option>
-      </select>
-      <select id="liveFilter" onchange="renderTierCards()"><option value="all">전체</option><option value="live" selected>라이브 중</option></select>
+
+      <div class="multi-filter" id="tierMultiFilter">
+        <button type="button" class="multi-filter-button" onclick="toggleMultiDropdown('tierMultiFilter')">
+          <span id="tierFilterLabel">전체 티어</span>
+        </button>
+        <div class="multi-filter-menu" id="tierFilterMenu"></div>
+      </div>
+
+      <div class="multi-filter" id="raceMultiFilter">
+        <button type="button" class="multi-filter-button" onclick="toggleMultiDropdown('raceMultiFilter')">
+          <span id="raceFilterLabel">전체 종족</span>
+        </button>
+        <div class="multi-filter-menu">
+          <label class="multi-filter-option"><input type="checkbox" name="raceFilterMulti" value="T" onchange="onMultiFilterChange()"> 테란</label>
+          <label class="multi-filter-option"><input type="checkbox" name="raceFilterMulti" value="Z" onchange="onMultiFilterChange()"> 저그</label>
+          <label class="multi-filter-option"><input type="checkbox" name="raceFilterMulti" value="P" onchange="onMultiFilterChange()"> 프로토스</label>
+          <label class="multi-filter-option"><input type="checkbox" name="raceFilterMulti" value="R" onchange="onMultiFilterChange()"> 랜덤</label>
+        </div>
+      </div>
+
+      <div class="multi-filter" id="liveMultiFilter">
+        <button type="button" class="multi-filter-button" onclick="toggleMultiDropdown('liveMultiFilter')">
+          <span id="liveFilterLabel">라이브 중</span>
+        </button>
+
+        <div class="multi-filter-menu live-filter-menu">
+          <button type="button" class="live-filter-option" data-value="all" onclick="selectLiveFilter('all')">전체</button>
+          <button type="button" class="live-filter-option active" data-value="live" onclick="selectLiveFilter('live')">라이브 중</button>
+        </div>
+
+        <select id="liveFilter" onchange="renderTierCards()" hidden>
+          <option value="all">전체</option>
+          <option value="live" selected>라이브 중</option>
+        </select>
+      </div>
+
+      <button type="button" class="tier-reset-btn" onclick="resetTierFilters()">필터 초기화</button>
+
+      <button type="button" class="tier-refresh-btn" onclick="refreshTierPage()" title="현재 필터 유지 후 새로고침" aria-label="현재 필터 유지 후 새로고침">
+        <span class="refresh-icon">↻</span>
+        <span class="refresh-text">새로고침</span>
+      </button>
     </div>
     <div id="tierCards" class="tier-grid"></div>
   </section>
@@ -492,6 +876,168 @@
 
 </main>
   </div>
+
+<script>
+const TIER_FILTER_STORAGE_KEY = 'calmTierFilters';
+
+function getCheckedValues(name){
+  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+    .map(el => el.value);
+}
+
+function setCheckedValues(name, values){
+  const set = new Set(Array.isArray(values) ? values : []);
+  document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+    el.checked = set.has(el.value);
+  });
+}
+
+function updateMultiFilterLabels(){
+  const tiers = getCheckedValues('tierFilterMulti');
+  const races = getCheckedValues('raceFilterMulti');
+
+  const tierLabel = document.getElementById('tierFilterLabel');
+  const raceLabel = document.getElementById('raceFilterLabel');
+
+  if(tierLabel){
+    tierLabel.textContent =
+      tiers.length === 0 ? '전체 티어' :
+      tiers.length <= 2 ? tiers.join(', ') :
+      `${tiers[0]} 외 ${tiers.length - 1}개`;
+  }
+
+  if(raceLabel){
+    const raceMap = { T:'테란', Z:'저그', P:'프로토스', R:'랜덤' };
+    const names = races.map(v => raceMap[v] || v);
+
+    raceLabel.textContent =
+      names.length === 0 ? '전체 종족' :
+      names.length <= 2 ? names.join(', ') :
+      `${names[0]} 외 ${names.length - 1}개`;
+  }
+}
+
+function onMultiFilterChange(){
+  updateMultiFilterLabels();
+  if(typeof window.renderTierCards === 'function'){
+    window.renderTierCards();
+  }
+}
+
+function toggleMultiDropdown(id){
+  const target = document.getElementById(id);
+  if(!target) return;
+
+  const menu = target.querySelector('.multi-filter-menu');
+  if(!menu) return;
+
+  document.querySelectorAll('.multi-filter.open').forEach(el => {
+    if(el !== target) el.classList.remove('open');
+  });
+
+  target.classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('.multi-filter')){
+    document.querySelectorAll('.multi-filter.open')
+      .forEach(el => el.classList.remove('open'));
+  }
+});
+
+
+function updateLiveFilterUI(){
+  const live = document.getElementById('liveFilter');
+  const label = document.getElementById('liveFilterLabel');
+  const value = live?.value || 'live';
+
+  if(label){
+    label.textContent = value === 'all' ? '전체' : '라이브 중';
+  }
+
+  document.querySelectorAll('.live-filter-option').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.value === value);
+  });
+}
+
+function selectLiveFilter(value){
+  const live = document.getElementById('liveFilter');
+  if(!live) return;
+
+  live.value = value;
+  updateLiveFilterUI();
+
+  document.getElementById('liveMultiFilter')?.classList.remove('open');
+
+  if(typeof window.renderTierCards === 'function'){
+    window.renderTierCards();
+  }
+}
+
+function getCurrentTierFilterState(){
+  return {
+    tiers: getCheckedValues('tierFilterMulti'),
+    races: getCheckedValues('raceFilterMulti'),
+    live: document.getElementById('liveFilter')?.value || 'live'
+  };
+}
+
+function refreshTierPage(){
+  sessionStorage.setItem(
+    TIER_FILTER_STORAGE_KEY,
+    JSON.stringify(getCurrentTierFilterState())
+  );
+  location.reload();
+}
+
+function resetTierFilters(){
+  setCheckedValues('tierFilterMulti', []);
+  setCheckedValues('raceFilterMulti', []);
+
+  const live = document.getElementById('liveFilter');
+  if(live) live.value = 'live';
+
+  updateMultiFilterLabels();
+  updateLiveFilterUI();
+
+  document.querySelectorAll('.multi-filter.open')
+    .forEach(el => el.classList.remove('open'));
+
+  if(typeof window.renderTierCards === 'function'){
+    window.renderTierCards();
+  }
+}
+
+/* app.js에서 티어 체크박스 생성이 끝난 직후 호출 */
+window.restoreTierMultiFilters = function(){
+  let saved = null;
+
+  try{
+    saved = JSON.parse(
+      sessionStorage.getItem(TIER_FILTER_STORAGE_KEY) || 'null'
+    );
+  }catch(e){
+    saved = null;
+  }
+
+  if(!saved){
+    updateMultiFilterLabels();
+    return;
+  }
+
+  setCheckedValues('tierFilterMulti', saved.tiers || []);
+  setCheckedValues('raceFilterMulti', saved.races || []);
+
+  const live = document.getElementById('liveFilter');
+  if(live) live.value = saved.live || 'live';
+
+  updateMultiFilterLabels();
+  updateLiveFilterUI();
+  sessionStorage.removeItem(TIER_FILTER_STORAGE_KEY);
+};
+document.addEventListener('DOMContentLoaded', updateLiveFilterUI);
+</script>
+
   <script type="module" src="app.js"></script>
 
 
