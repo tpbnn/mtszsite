@@ -525,6 +525,24 @@ function esc(v){
   }[s]));
 }
 
+function displayMatchScore(score, status){
+  const raw = String(score ?? "").trim();
+  const gameStatus = String(status || "").trim();
+
+  // 진행중 또는 종료된 경기는 0도 실제 점수로 표시
+  if(gameStatus === "진행중" || gameStatus === "종료"){
+    return raw === "" ? "0" : raw;
+  }
+
+  // 경기 시작 전에는 0 또는 공란을 "-"로 표시
+  if(raw === "" || Number(raw) === 0){
+    return "-";
+  }
+
+  // 그 외 실제 점수는 그대로 표시
+  return raw;
+}
+
 function sheetUrl(){
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
 }
@@ -973,7 +991,7 @@ function renderMatchList(openKey = ""){
                   ? "losing-score"
                   : ""
             }">
-              ${esc(m.점수A || "-")}
+              ${esc(displayMatchScore(m.점수A, m.상태))}
             </span>
 
             <span class="score-colon"> : </span>
@@ -985,7 +1003,7 @@ function renderMatchList(openKey = ""){
                   ? "losing-score"
                   : ""
             }">
-              ${esc(m.점수B || "-")}
+              ${esc(displayMatchScore(m.점수B, m.상태))}
             </span>
 
             <div class="tm-team tm-team-b">
@@ -1066,7 +1084,7 @@ function renderInlineDetail(match){
 
     <div class="detail-score">
       <strong>${esc(match.팀A || "미정")}</strong>
-      <b>${esc(match.점수A || "-")} : ${esc(match.점수B || "-")}</b>
+      <b>${esc(displayMatchScore(match.점수A, match.상태))} : ${esc(displayMatchScore(match.점수B, match.상태))}</b>
       <strong>${esc(match.팀B || "미정")}</strong>
     </div>
 
@@ -1371,7 +1389,7 @@ function renderBracket(){
                   }
                   <b>${esc(m.팀A || "미정")}</b>
                 </span>
-                <strong>${esc(m.점수A || "-")}</strong>
+                <strong>${esc(displayMatchScore(m.점수A, m.상태))}</strong>
               </div>
 
               <div class="bracket-team ${m.승리팀 === m.팀B ? "winner" : ""}">
@@ -1383,7 +1401,7 @@ function renderBracket(){
                   }
                   <b>${esc(m.팀B || "미정")}</b>
                 </span>
-                <strong>${esc(m.점수B || "-")}</strong>
+                <strong>${esc(displayMatchScore(m.점수B, m.상태))}</strong>
               </div>
             </div>
           `).join("")}
