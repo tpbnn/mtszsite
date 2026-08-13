@@ -4,6 +4,7 @@ let selectedMatchTypes = new Set();
 let selectedResult = "all";
 let selectedPlayerName = "";
 let opponentSearchKeyword = "";
+let opponentRecordMode = "team";
 
 
 /* =====================================================
@@ -575,7 +576,6 @@ function initMatchFilters(){
         selectedResult =
           resultFilter.value;
 
-
         renderTeamResult();
 
       }
@@ -704,7 +704,6 @@ function initMatchFilters(){
                 type
               );
 
-
               btn.classList.remove(
                 "active"
               );
@@ -714,7 +713,6 @@ function initMatchFilters(){
               selectedMatchTypes.add(
                 type
               );
-
 
               btn.classList.add(
                 "active"
@@ -732,6 +730,9 @@ function initMatchFilters(){
     );
 
 }
+
+
+
 /* =====================================================
    팀 경기 결과
 ===================================================== */
@@ -831,13 +832,11 @@ function renderTeamResult(){
 
         match.sets.push({
 
-          // I열: 정렬용
           no:
             Number(
               r[8]
             ) || 9999,
 
-          // J열: 화면 표시용 세트
           set:
             r[9],
 
@@ -877,7 +876,6 @@ function renderTeamResult(){
 
 
     matches.push(match);
-
 
     i = j - 1;
 
@@ -1129,10 +1127,88 @@ function renderTeamResult(){
 
 }
 
+/* =====================================================
+   선수 선택 버튼
+   - 선수명 : [선수 전적용 이름] 열
+   - 종족   : [선수 전적용 종족] 열
+   - 종족별 그룹 출력
+===================================================== */
+
+
+/* 헤더 이름으로 열 번호 찾기 */
+function getMatchColumnIndex(headerName){
+
+  if(
+    !matchRows.length ||
+    !matchRows[0]
+  ){
+    return -1;
+  }
+
+
+  return matchRows[0].findIndex(
+    header =>
+      String(
+        header || ""
+      ).trim() === headerName
+  );
+
+}
+
+
+/* 종족값 통일 */
+function normalizePlayerRace(value){
+
+  const race =
+    String(
+      value || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  if(
+    race === "T" ||
+    race === "테란"
+  ){
+    return "T";
+  }
+
+
+  if(
+    race === "Z" ||
+    race === "저그"
+  ){
+    return "Z";
+  }
+
+
+  if(
+    race === "P" ||
+    race === "프로토스"
+  ){
+    return "P";
+  }
+
+
+  if(
+    race === "R" ||
+    race === "랜덤"
+  ){
+    return "R";
+  }
+
+
+  return "ETC";
+
+}
 
 
 /* =====================================================
    선수 선택 버튼
+   - 선수명 : [선수 전적용 이름]
+   - 종족   : [선수 전적용 종족]
+   - 현역   : [선수 전적용 현역]
 ===================================================== */
 
 function renderPlayerButtons(){
@@ -1148,60 +1224,342 @@ function renderPlayerButtons(){
   }
 
 
-  // P열 = 선수 전적용 리스트
-  const names = [
-    ...new Set(
+  /* =============================================
+     헤더 위치
+  ============================================= */
 
-      matchRows
-        .slice(1)
-        .map(
-          row =>
-            String(
-              row[15] || ""
-            ).trim()
-        )
-        .filter(Boolean)
+  const playerNameIndex =
+    getMatchColumnIndex(
+      "선수 전적용 이름"
+    );
 
-    )
-  ];
+
+  const playerRaceIndex =
+    getMatchColumnIndex(
+      "선수 전적용 종족"
+    );
+
+
+  const playerActiveIndex =
+    getMatchColumnIndex(
+      "선수 전적용 현역"
+    );
 
 
   if(
-    !selectedPlayerName &&
-    names.length
+    playerNameIndex === -1 ||
+    playerRaceIndex === -1
   ){
 
+    console.warn(
+      "선수 전적용 이름 / 선수 전적용 종족 열을 찾을 수 없습니다."
+    );
+
+
+    box.innerHTML = `
+
+      <div class="player-list-error">
+        선수 명단 데이터를 불러올 수 없습니다.
+      </div>
+
+    `;
+
+
+    return;
+  }
+
+
+
+  /* =============================================
+     선수 데이터 생성
+  ============================================= */
+
+  const playerMap =
+    new Map();
+
+
+  matchRows
+    .slice(1)
+    .forEach(
+      row => {
+
+        const name =
+          String(
+            row[playerNameIndex] || ""
+          ).trim();
+
+
+        if(!name){
+          return;
+        }
+
+
+        const race =
+          normalizePlayerRace(
+            row[playerRaceIndex]
+          );
+
+
+        /* 현역 여부 */
+        const activeValue =
+          playerActiveIndex !== -1
+            ? String(
+                row[playerActiveIndex] ?? ""
+              ).trim()
+            : "1";
+
+
+        /* 값이 0이면 비현역 */
+        const isActive =
+          activeValue !== "0";
+
+
+        if(
+          !playerMap.has(name)
+        ){
+
+          playerMap.set(
+            name,
+            {
+              name,
+              race,
+              isActive
+            }
+          );
+
+        }
+
+      }
+    );
+
+
+  const players = [
+    ...playerMap.values()
+  ];
+
+
+
+  /* =============================================
+     종족 그룹
+  ============================================= */
+
+  const raceGroups = [
+
+    {
+      race:"T",
+      label:"테란",
+      className:"terran"
+    },
+
+    {
+      race:"Z",
+      label:"저그",
+      className:"zerg"
+    },
+
+    {
+      race:"P",
+      label:"프로토스",
+      className:"protoss"
+    },
+
+    {
+      race:"R",
+      label:"랜덤",
+      className:"random"
+    },
+
+    {
+      race:"ETC",
+      label:"기타",
+      className:"etc"
+    }
+
+  ];
+
+
+
+  /* =============================================
+     기본 선택 선수
+     - 가능하면 현역 먼저 선택
+  ============================================= */
+
+  const playerNames =
+    players.map(
+      player =>
+        player.name
+    );
+
+
+  if(
+    !selectedPlayerName ||
+    !playerNames.includes(
+      selectedPlayerName
+    )
+  ){
+
+    const sortedPlayers =
+      raceGroups
+        .flatMap(
+          group =>
+            players.filter(
+              player =>
+                player.race ===
+                group.race
+            )
+        );
+
+
+    const firstActivePlayer =
+      sortedPlayers.find(
+        player =>
+          player.isActive
+      );
+
+
+    const firstPlayer =
+      firstActivePlayer ||
+      sortedPlayers[0];
+
+
     selectedPlayerName =
-      names[0];
+      firstPlayer
+        ? firstPlayer.name
+        : "";
 
   }
 
 
+
+  /* =============================================
+     종족별 HTML
+  ============================================= */
+
   box.innerHTML =
-    names
+    raceGroups
       .map(
-        name => `
+        group => {
 
-          <button
-            class="
-              player-name-chip
-              ${
-                name ===
-                selectedPlayerName
-                  ? "active"
-                  : ""
-              }
-            "
-            data-name="${escapeOpponentHtml(name)}"
-            type="button"
-          >
-            ${escapeOpponentHtml(name)}
-          </button>
+          const groupPlayers =
+            players.filter(
+              player =>
+                player.race ===
+                group.race
+            );
 
-        `
+
+          if(
+            !groupPlayers.length
+          ){
+            return "";
+          }
+
+
+          return `
+
+            <div
+              class="
+                player-race-group
+                player-race-group-${group.className}
+              "
+            >
+
+              <div class="player-race-title">
+
+                <span
+                  class="
+                    player-race-code
+                    race-${group.race}
+                  "
+                >
+                  ${
+                    group.race === "ETC"
+                      ? "?"
+                      : group.race
+                  }
+                </span>
+
+
+                <span class="player-race-name">
+                  ${group.label}
+                </span>
+
+
+               <span class="player-race-count">
+  ${
+    groupPlayers.filter(
+      player => player.isActive
+    ).length
+  }
+</span>
+
+              </div>
+
+
+              <div class="player-race-list">
+
+                ${
+                  groupPlayers
+                    .map(
+                      player => `
+
+                        <button
+                          type="button"
+
+                          class="
+                            player-name-chip
+
+                            ${
+                              player.name ===
+                              selectedPlayerName
+                                ? "active"
+                                : ""
+                            }
+
+                            ${
+                              !player.isActive
+                                ? "inactive"
+                                : ""
+                            }
+                          "
+
+                          data-name="${escapeOpponentHtml(player.name)}"
+
+                          title="${
+                            escapeOpponentHtml(
+                              player.name
+                            )
+                          }${
+                            !player.isActive
+                              ? " (비현역)"
+                              : ""
+                          }"
+                        >
+
+                          ${escapeOpponentHtml(player.name)}
+
+                        </button>
+
+                      `
+                    )
+                    .join("")
+                }
+
+              </div>
+
+            </div>
+
+          `;
+
+        }
       )
       .join("");
 
+
+
+  /* =============================================
+     선수 선택 이벤트
+  ============================================= */
 
   box
     .querySelectorAll(
@@ -1230,7 +1588,6 @@ function renderPlayerButtons(){
   renderPlayerResult();
 
 }
-
 
 
 /* =====================================================
@@ -1620,21 +1977,22 @@ function renderPlayerResult(){
   `;
 
 }
+
+
+
 /* =====================================================
-   상대별 전적
+   팀 기준 대학별 전적
 
    A열 = 날짜
-   B열 = 상대팀       row[1]
-   C열 = 경기 종류    row[2]
-   D열 = 경기 결과    row[3]
-   S열 = 대회명       row[18]
-
-   집계 기준
+   B열 = 상대팀
+   C열 = 경기 종류
+   D열 = 팀 경기 결과
+   S열 = 대회명
 
    총 전적
    = 대학대전 전체 + 미니대전
 
-   대학대전
+   일반 대학대전
    = 대학대전 + S열 빈칸
 
    미니대전
@@ -1660,7 +2018,6 @@ function getOpponentRecords(){
       matchRows[i];
 
 
-    // 날짜가 있는 행만 한 경기로 처리
     if(!row[0]){
       continue;
     }
@@ -1684,7 +2041,6 @@ function getOpponentRecords(){
       ).trim();
 
 
-    // S열 = 대회명
     const tournament =
       String(
         row[18] || ""
@@ -1696,11 +2052,6 @@ function getOpponentRecords(){
     }
 
 
-    /*
-      상대별 전적에서는
-      대학대전 / 미니대전만 대상으로 함
-    */
-
     if(
       ![
         "대학대전",
@@ -1709,7 +2060,6 @@ function getOpponentRecords(){
     ){
       continue;
     }
-
 
 
     if(
@@ -1755,12 +2105,7 @@ function getOpponentRecords(){
 
 
 
-    /* =========================================
-       총 전적
-
-       대학대전은 S열 여부와 관계없이 모두 포함
-       미니대전도 모두 포함
-    ========================================= */
+    /* 총 전적 */
 
     if(result === "승"){
 
@@ -1774,14 +2119,7 @@ function getOpponentRecords(){
 
 
 
-    /* =========================================
-       일반 대학대전
-
-       C열 = 대학대전
-       S열 = 빈칸
-
-       대회 대학대전은 여기에서 제외
-    ========================================= */
+    /* 일반 대학대전 */
 
     if(
       type === "대학대전" &&
@@ -1802,9 +2140,7 @@ function getOpponentRecords(){
 
 
 
-    /* =========================================
-       미니대전
-    ========================================= */
+    /* 미니대전 */
 
     if(type === "미니대전"){
 
@@ -1822,12 +2158,7 @@ function getOpponentRecords(){
 
 
 
-    /* =========================================
-       대회전적
-
-       C열 = 대학대전
-       S열 = 대회명 있음
-    ========================================= */
+    /* 대회전적 */
 
     if(
       type === "대학대전" &&
@@ -1854,11 +2185,8 @@ function getOpponentRecords(){
 
       if(result === "승"){
 
-        // 해당 상대와의 전체 대회전적
         item.tournamentTotal.win++;
 
-
-        // 각 대회별 세부 전적
         item
           .tournaments[
             tournament
@@ -1867,11 +2195,8 @@ function getOpponentRecords(){
 
       }else if(result === "패"){
 
-        // 해당 상대와의 전체 대회전적
         item.tournamentTotal.lose++;
 
-
-        // 각 대회별 세부 전적
         item
           .tournaments[
             tournament
@@ -1885,14 +2210,6 @@ function getOpponentRecords(){
   }
 
 
-
-  /* =========================================
-     상대 정렬
-
-     1. 총 경기수 많은 순
-     2. 승리 많은 순
-     3. 이름순
-  ========================================= */
 
   return [
     ...records.values()
@@ -1910,7 +2227,8 @@ function getOpponentRecords(){
 
 
       if(
-        bGames !== aGames
+        bGames !==
+        aGames
       ){
 
         return (
@@ -1949,7 +2267,417 @@ function getOpponentRecords(){
 
 
 /* =====================================================
-   일반 전적 텍스트
+   선수별 - 대학별 전적
+
+   B열 = 상대 대학
+   C열 = 경기 종류
+   S열 = 대회명
+
+   K열 = 선수명
+   M열 = 선수 개인 승패
+
+   중요:
+   팀 결과 D열을 사용하지 않고
+   선수 개인 세트 승패 M열을 기준으로 계산
+===================================================== */
+
+function getPlayerOpponentRecords(playerName){
+
+  const records =
+    new Map();
+
+
+  if(!playerName){
+    return [];
+  }
+
+
+  for(
+    let i = 1;
+    i < matchRows.length;
+    i++
+  ){
+
+    const row =
+      matchRows[i];
+
+
+    if(!row[0]){
+      continue;
+    }
+
+
+    const opponent =
+      String(
+        row[1] || ""
+      ).trim();
+
+
+    const type =
+      String(
+        row[2] || ""
+      ).trim();
+
+
+    const tournament =
+      String(
+        row[18] || ""
+      ).trim();
+
+
+    if(!opponent){
+      continue;
+    }
+
+
+    if(
+      ![
+        "대학대전",
+        "미니대전"
+      ].includes(type)
+    ){
+      continue;
+    }
+
+
+    let j = i;
+
+
+    while(
+      j < matchRows.length
+    ){
+
+      const r =
+        matchRows[j];
+
+
+      if(
+        j !== i &&
+        r[0]
+      ){
+        break;
+      }
+
+
+      const currentPlayer =
+        String(
+          r[10] || ""
+        ).trim();
+
+
+      if(
+        currentPlayer ===
+        playerName
+      ){
+
+        const result =
+          String(
+            r[12] || ""
+          ).trim();
+
+
+        if(
+          result === "승" ||
+          result === "패"
+        ){
+
+          if(
+            !records.has(opponent)
+          ){
+
+            records.set(
+              opponent,
+              {
+
+                opponent,
+
+                total:{
+                  win:0,
+                  lose:0
+                },
+
+                college:{
+                  win:0,
+                  lose:0
+                },
+
+                mini:{
+                  win:0,
+                  lose:0
+                },
+
+                tournamentTotal:{
+                  win:0,
+                  lose:0
+                },
+
+                tournaments:{}
+
+              }
+            );
+
+          }
+
+
+          const item =
+            records.get(opponent);
+
+
+
+          /* 총 전적 */
+
+          if(result === "승"){
+
+            item.total.win++;
+
+          }else{
+
+            item.total.lose++;
+
+          }
+
+
+
+          /* 일반 대학대전 */
+
+          if(
+            type === "대학대전" &&
+            !tournament
+          ){
+
+            if(result === "승"){
+
+              item.college.win++;
+
+            }else{
+
+              item.college.lose++;
+
+            }
+
+          }
+
+
+
+          /* 미니대전 */
+
+          if(type === "미니대전"){
+
+            if(result === "승"){
+
+              item.mini.win++;
+
+            }else{
+
+              item.mini.lose++;
+
+            }
+
+          }
+
+
+
+          /* 대회전적 */
+
+          if(
+            type === "대학대전" &&
+            tournament
+          ){
+
+            if(
+              !item.tournaments[
+                tournament
+              ]
+            ){
+
+              item.tournaments[
+                tournament
+              ] = {
+                win:0,
+                lose:0
+              };
+
+            }
+
+
+            if(result === "승"){
+
+              item.tournamentTotal.win++;
+
+              item
+                .tournaments[
+                  tournament
+                ]
+                .win++;
+
+            }else{
+
+              item.tournamentTotal.lose++;
+
+              item
+                .tournaments[
+                  tournament
+                ]
+                .lose++;
+
+            }
+
+          }
+
+        }
+
+      }
+
+
+      j++;
+
+    }
+
+
+    i = j - 1;
+
+  }
+
+
+
+  return [
+    ...records.values()
+  ].sort(
+    (a,b) => {
+
+      const aGames =
+        a.total.win +
+        a.total.lose;
+
+
+      const bGames =
+        b.total.win +
+        b.total.lose;
+
+
+      if(
+        bGames !==
+        aGames
+      ){
+
+        return bGames - aGames;
+
+      }
+
+
+      if(
+        b.total.win !==
+        a.total.win
+      ){
+
+        return b.total.win - a.total.win;
+
+      }
+
+
+      return a.opponent.localeCompare(
+        b.opponent,
+        "ko"
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   대학별 전적 - 합계 계산
+===================================================== */
+
+function calcOpponentRecordSummary(records){
+
+  const summary = {
+
+    total:{
+      win:0,
+      lose:0
+    },
+
+    college:{
+      win:0,
+      lose:0
+    },
+
+    mini:{
+      win:0,
+      lose:0
+    },
+
+    tournament:{
+      win:0,
+      lose:0
+    }
+
+  };
+
+
+  records.forEach(
+    record => {
+
+      summary.total.win +=
+        Number(
+          record.total?.win || 0
+        );
+
+      summary.total.lose +=
+        Number(
+          record.total?.lose || 0
+        );
+
+
+      summary.college.win +=
+        Number(
+          record.college?.win || 0
+        );
+
+      summary.college.lose +=
+        Number(
+          record.college?.lose || 0
+        );
+
+
+      summary.mini.win +=
+        Number(
+          record.mini?.win || 0
+        );
+
+      summary.mini.lose +=
+        Number(
+          record.mini?.lose || 0
+        );
+
+
+      summary.tournament.win +=
+        Number(
+          record.tournamentTotal?.win || 0
+        );
+
+      summary.tournament.lose +=
+        Number(
+          record.tournamentTotal?.lose || 0
+        );
+
+    }
+  );
+
+
+  return summary;
+
+}
+
+
+
+
+
+
+/* =====================================================
+   일반 전적 표시
 ===================================================== */
 
 function opponentRecordText(record){
@@ -1987,7 +2715,7 @@ function opponentRecordText(record){
 
 
 /* =====================================================
-   대회별 전적 텍스트
+   대회전적 표시
 ===================================================== */
 
 function opponentTournamentText(
@@ -2017,8 +2745,6 @@ function opponentTournamentText(
     <div class="opponent-tournament-wrap">
 
 
-      <!-- 해당 대학과의 전체 대회전적 -->
-
       <div class="opponent-tournament-total">
 
         <span class="opponent-record-win">
@@ -2031,8 +2757,6 @@ function opponentTournamentText(
 
       </div>
 
-
-      <!-- 대회별 세부 전적 -->
 
       <div class="opponent-tournament-detail">
 
@@ -2106,9 +2830,8 @@ function escapeOpponentHtml(value){
 }
 
 
-
 /* =====================================================
-   상대별 전적 테이블 출력
+   팀 기준 대학별 전적 테이블
 ===================================================== */
 
 function renderOpponentRecordTable(){
@@ -2124,27 +2847,30 @@ function renderOpponentRecordTable(){
   }
 
 
-const allRecords =
-  getOpponentRecords();
-
-const keyword =
-  opponentSearchKeyword
-    .trim()
-    .toLowerCase();
-
-const records =
-  !keyword
-    ? allRecords
-    : allRecords.filter(record =>
-        String(record.opponent || "")
-          .toLowerCase()
-          .includes(keyword)
-      );
+  const allRecords =
+    getOpponentRecords();
 
 
-  if(
-    !records.length
-  ){
+  const keyword =
+    opponentSearchKeyword
+      .trim()
+      .toLowerCase();
+
+
+  const records =
+    !keyword
+      ? allRecords
+      : allRecords.filter(
+          record =>
+            String(
+              record.opponent || ""
+            )
+              .toLowerCase()
+              .includes(keyword)
+        );
+
+
+  if(!records.length){
 
     tbody.innerHTML = `
 
@@ -2161,13 +2887,57 @@ const records =
 
     `;
 
-
     return;
 
   }
 
 
-  tbody.innerHTML =
+  /* ==============================
+     현재 표시 중인 대학들의 합계
+  ============================== */
+
+  const summary =
+    calcOpponentRecordSummary(
+      records
+    );
+
+
+  const summaryHtml = `
+
+    <tr class="opponent-record-summary-row">
+
+      <td>
+        <span class="opponent-record-summary-label">
+          합계
+        </span>
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.total)}
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.college)}
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.mini)}
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.tournament)}
+      </td>
+
+    </tr>
+
+  `;
+
+
+  const recordsHtml =
     records
       .map(
         record => `
@@ -2184,35 +2954,17 @@ const records =
 
 
             <td>
-
-              ${
-                opponentRecordText(
-                  record.total
-                )
-              }
-
+              ${opponentRecordText(record.total)}
             </td>
 
 
             <td>
-
-              ${
-                opponentRecordText(
-                  record.college
-                )
-              }
-
+              ${opponentRecordText(record.college)}
             </td>
 
 
             <td>
-
-              ${
-                opponentRecordText(
-                  record.mini
-                )
-              }
-
+              ${opponentRecordText(record.mini)}
             </td>
 
 
@@ -2233,21 +2985,216 @@ const records =
       )
       .join("");
 
+
+  tbody.innerHTML =
+    summaryHtml +
+    recordsHtml;
+
 }
+
 /* =====================================================
-   상대별 전적 팝업 열기
+   선수 기준 대학별 전적 테이블
 ===================================================== */
 
-function openOpponentRecordModal(){
+function renderPlayerOpponentRecordTable(){
+
+  const tbody =
+    document.getElementById(
+      "opponentRecordTableBody"
+    );
+
+
+  if(!tbody){
+    return;
+  }
+
+
+  const allRecords =
+    getPlayerOpponentRecords(
+      selectedPlayerName
+    );
+
+
+  const keyword =
+    opponentSearchKeyword
+      .trim()
+      .toLowerCase();
+
+
+  const records =
+    !keyword
+      ? allRecords
+      : allRecords.filter(
+          record =>
+            String(
+              record.opponent || ""
+            )
+              .toLowerCase()
+              .includes(keyword)
+        );
+
+
+  if(!records.length){
+
+    tbody.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="5"
+          class="opponent-record-no-data"
+        >
+
+          ${
+            selectedPlayerName
+              ? `${escapeOpponentHtml(selectedPlayerName)} 선수의 대학별 전적이 없습니다.`
+              : "표시할 선수 전적이 없습니다."
+          }
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
 
   /* ==============================
-     대학 이름 검색 초기화
+     현재 선택 선수의 합계
   ============================== */
+
+  const summary =
+    calcOpponentRecordSummary(
+      records
+    );
+
+
+  const summaryHtml = `
+
+    <tr class="opponent-record-summary-row">
+
+      <td>
+        <span class="opponent-record-summary-label">
+          합계
+        </span>
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.total)}
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.college)}
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.mini)}
+      </td>
+
+
+      <td>
+        ${opponentRecordText(summary.tournament)}
+      </td>
+
+    </tr>
+
+  `;
+
+
+  const recordsHtml =
+    records
+      .map(
+        record => `
+
+          <tr>
+
+            <td>
+
+              <span class="opponent-record-name">
+                ${escapeOpponentHtml(record.opponent)}
+              </span>
+
+            </td>
+
+
+            <td>
+              ${opponentRecordText(record.total)}
+            </td>
+
+
+            <td>
+              ${opponentRecordText(record.college)}
+            </td>
+
+
+            <td>
+              ${opponentRecordText(record.mini)}
+            </td>
+
+
+            <td>
+
+              ${
+                opponentTournamentText(
+                  record.tournamentTotal,
+                  record.tournaments
+                )
+              }
+
+            </td>
+
+          </tr>
+
+        `
+      )
+      .join("");
+
+
+  tbody.innerHTML =
+    summaryHtml +
+    recordsHtml;
+
+}
+
+/* =====================================================
+   현재 팝업 모드에 맞게 다시 렌더링
+===================================================== */
+
+function renderCurrentOpponentRecordTable(){
+
+  if(
+    opponentRecordMode === "player"
+  ){
+
+    renderPlayerOpponentRecordTable();
+
+  }else{
+
+    renderOpponentRecordTable();
+
+  }
+
+}
+
+
+
+/* =====================================================
+   팝업 공통 검색 초기화
+===================================================== */
+
+function resetOpponentSearch(){
 
   const searchInput =
     document.getElementById(
       "opponentRecordSearch"
     );
+
 
   const clearButton =
     document.getElementById(
@@ -2274,16 +3221,22 @@ function openOpponentRecordModal(){
   }
 
 
-  /* ==============================
-     상대별 전적 다시 출력
-  ============================== */
+  return {
+    searchInput,
+    clearButton
+  };
 
-  renderOpponentRecordTable();
+}
 
 
-  /* ==============================
-     팝업 열기
-  ============================== */
+
+/* =====================================================
+   팝업 공통 열기
+===================================================== */
+
+function showOpponentRecordModal(
+  searchInput
+){
 
   const modal =
     document.getElementById(
@@ -2312,10 +3265,6 @@ function openOpponentRecordModal(){
   );
 
 
-  /* ==============================
-     팝업 열리면 검색창에 커서
-  ============================== */
-
   setTimeout(
     () => {
 
@@ -2332,8 +3281,126 @@ function openOpponentRecordModal(){
 }
 
 
+
 /* =====================================================
-   상대별 전적 팝업 닫기
+   팀 전적 > 대학별 전적 팝업
+===================================================== */
+
+function openOpponentRecordModal(){
+
+  opponentRecordMode =
+    "team";
+
+
+  const title =
+    document.getElementById(
+      "opponentRecordTitle"
+    );
+
+
+  const description =
+    document.querySelector(
+      ".opponent-record-title-area p"
+    );
+
+
+  if(title){
+
+    title.textContent =
+      "대학별 전적";
+
+  }
+
+
+  if(description){
+
+    description.textContent =
+      "각 대학과의 총 전적 / 대학대전 / 미니대전 / 대회전적입니다.";
+
+  }
+
+
+  const {
+    searchInput
+  } =
+    resetOpponentSearch();
+
+
+  renderOpponentRecordTable();
+
+
+  showOpponentRecordModal(
+    searchInput
+  );
+
+}
+
+
+
+/* =====================================================
+   선수별 전적 > 대학별 전적 팝업
+
+   현재 선택된 selectedPlayerName 기준
+===================================================== */
+
+function openPlayerOpponentRecordModal(){
+
+  if(!selectedPlayerName){
+    return;
+  }
+
+
+  opponentRecordMode =
+    "player";
+
+
+  const title =
+    document.getElementById(
+      "opponentRecordTitle"
+    );
+
+
+  const description =
+    document.querySelector(
+      ".opponent-record-title-area p"
+    );
+
+
+  if(title){
+
+    title.textContent =
+      `${selectedPlayerName} 대학별 전적`;
+
+  }
+
+
+  if(description){
+
+    description.textContent =
+      `${selectedPlayerName} 선수의 상대 대학별 개인 승패 전적입니다.`;
+
+  }
+
+
+  const {
+    searchInput
+  } =
+    resetOpponentSearch();
+
+
+  renderPlayerOpponentRecordTable();
+
+
+  showOpponentRecordModal(
+    searchInput
+  );
+
+}
+
+
+
+/* =====================================================
+   팝업 닫기
 ===================================================== */
 
 function closeOpponentRecordModal(){
@@ -2369,7 +3436,7 @@ function closeOpponentRecordModal(){
 
 
 /* =====================================================
-   ESC 키로 팝업 닫기
+   ESC 팝업 닫기
 ===================================================== */
 
 document.addEventListener(
@@ -2389,6 +3456,11 @@ document.addEventListener(
 );
 
 
+
+/* =====================================================
+   대학 이름 검색
+===================================================== */
+
 document.addEventListener(
   "DOMContentLoaded",
   () => {
@@ -2397,6 +3469,7 @@ document.addEventListener(
       document.getElementById(
         "opponentRecordSearch"
       );
+
 
     const clearButton =
       document.getElementById(
@@ -2413,7 +3486,9 @@ document.addEventListener(
           opponentSearchKeyword =
             searchInput.value;
 
-          renderOpponentRecordTable();
+
+          renderCurrentOpponentRecordTable();
+
 
           if(clearButton){
 
@@ -2440,6 +3515,7 @@ document.addEventListener(
 
           opponentSearchKeyword = "";
 
+
           if(searchInput){
 
             searchInput.value = "";
@@ -2448,11 +3524,13 @@ document.addEventListener(
 
           }
 
+
           clearButton.classList.remove(
             "show"
           );
 
-          renderOpponentRecordTable();
+
+          renderCurrentOpponentRecordTable();
 
         }
       );
@@ -2463,12 +3541,17 @@ document.addEventListener(
 );
 
 
+
 /* =====================================================
    HTML onclick에서 사용할 함수 공개
 ===================================================== */
 
 window.openOpponentRecordModal =
   openOpponentRecordModal;
+
+
+window.openPlayerOpponentRecordModal =
+  openPlayerOpponentRecordModal;
 
 
 window.closeOpponentRecordModal =
