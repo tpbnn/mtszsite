@@ -327,6 +327,128 @@
       opacity: 1;
     }
 
+
+    /* 스트리머 검색/추가 */
+    .stream-search-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    .stream-search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
+    .stream-search-input {
+      width: 100%;
+      height: 38px;
+      padding: 0 11px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 8px;
+      outline: none;
+      background: rgba(0,0,0,.22);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stream-search-input::placeholder {
+      color: #7186a3;
+    }
+
+    .stream-search-input:focus {
+      border-color: #5c91ff;
+      box-shadow: 0 0 0 2px rgba(29,102,255,.16);
+    }
+
+    .stream-search-btn {
+      min-width: 66px;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid #5c91ff;
+      border-radius: 8px;
+      background: #1d66ff;
+      color: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .stream-search-btn:hover {
+      background: #3478ff;
+    }
+
+    .stream-search-results {
+      display: grid;
+      gap: 6px;
+      max-height: 230px;
+      overflow-y: auto;
+    }
+
+    .stream-search-result {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 9px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 9px;
+      background: rgba(0,0,0,.18);
+    }
+
+    .stream-search-result-info {
+      min-width: 0;
+    }
+
+    .stream-search-result-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .stream-search-result-id {
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #7f96b5;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .stream-add-btn {
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid rgba(92,145,255,.75);
+      border-radius: 7px;
+      background: rgba(29,102,255,.18);
+      color: #a9c5ff;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .stream-add-btn:hover {
+      background: #1d66ff;
+      color: #fff;
+    }
+
+    .stream-add-btn:disabled {
+      cursor: not-allowed;
+      opacity: .42;
+    }
+
+    .stream-search-empty {
+      padding: 9px 2px 2px;
+      color: #8299b8;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
   </style>
 </head>
 
@@ -363,7 +485,33 @@
       ▲▼ 버튼으로 방송 순서를 변경할 수 있습니다.<br>
 포커스 모드에서는 우측 방송의 이름을 클릭하면 해당 방송이 큰 화면으로 전환됩니다.
     </div>
+
+    <section class="settings-section" style="margin-top:12px;">
+      <div class="settings-title">스트리머 검색해서 추가</div>
+
+      <div class="stream-search-wrap">
+        <div class="stream-search-row">
+          <input
+            id="streamerSearchInput"
+            class="stream-search-input"
+            type="text"
+            placeholder="스트리머 이름 또는 SOOP ID 검색"
+            autocomplete="off"
+          />
+          <button id="streamerSearchBtn" class="stream-search-btn" type="button">검색</button>
+        </div>
+
+        <div id="streamerSearchResults" class="stream-search-results"></div>
+
+        <div class="settings-note">
+          검색 결과의 추가 버튼을 누르면 현재 멀티뷰에 바로 추가됩니다.
+          최대 8명까지 추가할 수 있습니다.
+        </div>
+      </div>
+    </section>
   </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
   <script>
     const MAX_PLAYERS = 8;
@@ -388,6 +536,31 @@
     const settingsOpen = document.getElementById("settingsOpen");
     const settingsClose = document.getElementById("settingsClose");
     const streamControls = document.getElementById("streamControls");
+    const streamerSearchInput = document.getElementById("streamerSearchInput");
+    const streamerSearchBtn = document.getElementById("streamerSearchBtn");
+    const streamerSearchResults = document.getElementById("streamerSearchResults");
+
+    /*
+      멀티뷰 메인 페이지와 동일한 검색 데이터 사용
+      1) Google 스프레드시트 tier 시트: 이름 / 방송국ID / 소속
+      2) Firebase members 컬렉션: name / soopId
+    */
+    const TIER_CSV_URL =
+      "https://docs.google.com/spreadsheets/d/1jjguKLQE4dI76DBIbEw4ppxG26Ld8Eq7_cvbqFYU7Yo/gviz/tq?tqx=out:csv&sheet=tier";
+
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCCpMgZ4DkpqfNvCisH-IJjlxP_r6S5LKU",
+      authDomain: "fancalmmstz.firebaseapp.com",
+      projectId: "fancalmmstz",
+      storageBucket: "fancalmmstz.firebasestorage.app",
+      messagingSenderId: "671096603122",
+      appId: "1:671096603122:web:f1d7de0cda877d7330eb6b"
+    };
+
+    let tierMembers = [];
+    let firebaseMembers = [];
+    let streamerDirectoryLoaded = false;
+    let streamerDirectoryLoading = false;
 
     let layoutMode = "focus";
     // let layoutMode = "uniform";
@@ -663,6 +836,264 @@
       return escapeHtml(value);
     }
 
+    function normalizeStreamer(entry) {
+      if (!entry) return null;
+
+      const id = String(entry.id ?? entry.soopId ?? entry.soop_id ?? "").trim();
+      const name = String(entry.name ?? entry.nickname ?? entry.nick ?? id).trim();
+      const university = String(entry.university ?? "").trim();
+
+      if (!id) return null;
+      return { id, name: name || id, university };
+    }
+
+    async function loadTierDirectory() {
+      const response = await fetch(TIER_CSV_URL, { cache: "no-store" });
+
+      if (!response.ok) {
+        throw new Error(`tier 시트 HTTP ${response.status}`);
+      }
+
+      const csvText = await response.text();
+      const workbook = XLSX.read(csvText, { type: "string" });
+      const firstSheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[firstSheetName];
+
+      const rows = XLSX.utils.sheet_to_json(sheet, {
+        header: 1,
+        defval: "",
+        raw: false
+      });
+
+      if (!rows.length) {
+        throw new Error("tier 시트에 데이터가 없습니다.");
+      }
+
+      const headers = rows[0].map(value => String(value || "").trim());
+
+      const nameCol = headers.findIndex(header => header === "이름");
+      const idCol = headers.findIndex(header => header === "방송국ID");
+      const universityCol = headers.findIndex(header => header === "소속");
+
+      if (nameCol < 0 || idCol < 0) {
+        throw new Error(
+          `tier 필수 열을 찾지 못했습니다. 이름=${nameCol}, 방송국ID=${idCol}`
+        );
+      }
+
+      tierMembers = rows
+        .slice(1)
+        .map(row => ({
+          name: String(row[nameCol] || "").trim(),
+          id: String(row[idCol] || "").trim(),
+          university: universityCol >= 0
+            ? String(row[universityCol] || "").trim()
+            : ""
+        }))
+        .filter(member => member.name && member.id);
+    }
+
+    async function loadFirebaseDirectory() {
+      const [
+        { initializeApp, getApps },
+        { getFirestore, collection, getDocs }
+      ] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+      ]);
+
+      const app = getApps().length
+        ? getApps()[0]
+        : initializeApp(FIREBASE_CONFIG);
+
+      const db = getFirestore(app);
+      const snapshot = await getDocs(collection(db, "members"));
+
+      firebaseMembers = [];
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const name = String(data.name || "").trim();
+        const id = String(data.soopId || "").trim();
+
+        if (!name || !id) return;
+
+        firebaseMembers.push({
+          name,
+          id,
+          university: "",
+          order: Number(data.order || 999)
+        });
+      });
+
+      firebaseMembers.sort((a, b) =>
+        (a.order - b.order) || a.name.localeCompare(b.name, "ko")
+      );
+    }
+
+    async function loadStreamerDirectory() {
+      if (streamerDirectoryLoaded || streamerDirectoryLoading) return;
+
+      streamerDirectoryLoading = true;
+
+      streamerSearchResults.innerHTML =
+        '<div class="stream-search-empty">스트리머 검색 데이터를 불러오는 중입니다.</div>';
+
+      const results = await Promise.allSettled([
+        loadTierDirectory(),
+        loadFirebaseDirectory()
+      ]);
+
+      results.forEach(result => {
+        if (result.status === "rejected") {
+          console.error("[멀티뷰 검색 데이터 로드 실패]", result.reason);
+        }
+      });
+
+      streamerDirectoryLoaded = true;
+      streamerDirectoryLoading = false;
+
+      if (streamerSearchInput.value.trim()) {
+        renderStreamerSearchResults(streamerSearchInput.value);
+      } else {
+        streamerSearchResults.innerHTML =
+          '<div class="stream-search-empty">이름 또는 SOOP ID를 입력한 뒤 검색하세요.</div>';
+      }
+    }
+
+    function getStreamerDirectory() {
+      const merged = [];
+      const seen = new Set();
+
+      const pushEntry = entry => {
+        const normalized = normalizeStreamer(entry);
+        if (!normalized) return;
+
+        const key = normalized.id.toLowerCase();
+        if (seen.has(key)) return;
+
+        seen.add(key);
+        merged.push(normalized);
+      };
+
+      // 메인 멀티뷰 검색과 동일하게 Firebase + tier를 합친다.
+      firebaseMembers.forEach(pushEntry);
+      tierMembers.forEach(pushEntry);
+
+      // 현재 열린 방송도 검색 목록에 보강한다.
+      initialIds.forEach((id, index) => {
+        pushEntry({
+          id,
+          name: initialNames[index] || id
+        });
+      });
+
+      streamItems.forEach(item => {
+        pushEntry({
+          id: item.id,
+          name: item.name
+        });
+      });
+
+      return merged;
+    }
+
+    function renderStreamerSearchResults(query = "") {
+      const keyword = String(query || "").trim().toLowerCase();
+
+      if (!keyword) {
+        streamerSearchResults.innerHTML =
+          '<div class="stream-search-empty">이름 또는 SOOP ID를 입력한 뒤 검색하세요.</div>';
+        return;
+      }
+
+      if (!streamerDirectoryLoaded) {
+        streamerSearchResults.innerHTML =
+          '<div class="stream-search-empty">검색 데이터를 불러오는 중입니다.</div>';
+        loadStreamerDirectory();
+        return;
+      }
+
+      const directory = getStreamerDirectory();
+
+      const results = directory
+        .filter(item =>
+          item.name.toLowerCase().includes(keyword) ||
+          item.id.toLowerCase().includes(keyword)
+        )
+        .slice(0, 30);
+
+      if (results.length === 0) {
+        streamerSearchResults.innerHTML = `
+          <div class="stream-search-empty">
+            검색 결과가 없습니다.
+          </div>
+        `;
+        return;
+      }
+
+      streamerSearchResults.innerHTML = results.map(item => {
+        const alreadyAdded = streamItems.some(
+          stream => stream.id.toLowerCase() === item.id.toLowerCase()
+        );
+
+        return `
+          <div class="stream-search-result">
+            <div class="stream-search-result-info">
+              <div class="stream-search-result-name">${escapeHtml(item.name)}</div>
+              <div class="stream-search-result-id">
+                ${escapeHtml(item.id)}
+                ${item.university ? ` · ${escapeHtml(item.university)}` : ""}
+              </div>
+            </div>
+
+            <button
+              class="stream-add-btn"
+              type="button"
+              data-add-stream-id="${escapeAttr(item.id)}"
+              data-add-stream-name="${escapeAttr(item.name)}"
+              ${alreadyAdded || streamItems.length >= MAX_PLAYERS ? "disabled" : ""}
+            >
+              ${alreadyAdded ? "추가됨" : "추가"}
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function addStream(id, name) {
+      id = String(id || "").trim();
+      name = String(name || id).trim();
+
+      if (!id) return;
+
+      if (streamItems.length >= MAX_PLAYERS) {
+        alert(`멀티뷰는 최대 ${MAX_PLAYERS}개까지 추가할 수 있습니다.`);
+        return;
+      }
+
+      const duplicated = streamItems.some(
+        item => item.id.toLowerCase() === id.toLowerCase()
+      );
+
+      if (duplicated) {
+        alert("이미 추가된 방송입니다.");
+        return;
+      }
+
+      const index = streamItems.length;
+      const item = createStreamItem(id, index, name || id);
+
+      streamItems.push(item);
+
+      if (!focusedId) {
+        focusedId = id;
+      }
+
+      applyLayout();
+      renderStreamerSearchResults(streamerSearchInput.value);
+    }
+
     function moveStream(id, direction) {
       const index = streamItems.findIndex(item => item.id === id);
       if (index < 0) return;
@@ -740,6 +1171,37 @@
       focusStream(id);
     });
 
+    async function runStreamerSearch() {
+      if (!streamerDirectoryLoaded) {
+        await loadStreamerDirectory();
+      }
+      renderStreamerSearchResults(streamerSearchInput.value);
+    }
+
+    streamerSearchBtn.addEventListener("click", runStreamerSearch);
+
+    streamerSearchInput.addEventListener("keydown", event => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      runStreamerSearch();
+    });
+
+    streamerSearchInput.addEventListener("input", () => {
+      if (!streamerSearchInput.value.trim()) {
+        renderStreamerSearchResults("");
+      }
+    });
+
+    streamerSearchResults.addEventListener("click", event => {
+      const button = event.target.closest("[data-add-stream-id]");
+      if (!button || button.disabled) return;
+
+      addStream(
+        button.dataset.addStreamId,
+        button.dataset.addStreamName || button.dataset.addStreamId
+      );
+    });
+
     settingsClose.addEventListener("click", () => {
       settingsPanel.classList.add("closed");
     });
@@ -764,6 +1226,8 @@
     });
 
     initStreams();
+    renderStreamerSearchResults("");
+    loadStreamerDirectory();
   </script>
 </body>
 </html>
