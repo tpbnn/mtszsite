@@ -771,42 +771,46 @@ function renderTeamResult(){
     }
 
 
-    const match = {
+  const match = {
 
-      date:
-        formatDate(
-          row[0]
-        ),
+  // 날짜가 같으면 시트에서 더 아래에 입력된 경기를 먼저 표시
+  sheetRow:
+    i,
 
-      opponent:
-        String(
-          row[1] || ""
-        ).trim(),
+  date:
+    formatDate(
+      row[0]
+    ),
 
-      type:
-        String(
-          row[2] || ""
-        ).trim(),
+  opponent:
+    String(
+      row[1] || ""
+    ).trim(),
 
-      result:
-        String(
-          row[3] || ""
-        ).trim(),
+  type:
+    String(
+      row[2] || ""
+    ).trim(),
 
-      win:
-        row[4],
+  result:
+    String(
+      row[3] || ""
+    ).trim(),
 
-      lose:
-        row[5],
+  win:
+    row[4],
 
-      note:
-        String(
-          row[7] || ""
-        ).trim(),
+  lose:
+    row[5],
 
-      sets: []
+  note:
+    String(
+      row[7] || ""
+    ).trim(),
 
-    };
+  sets: []
+
+};
 
 
     let j = i;
@@ -900,11 +904,23 @@ function renderTeamResult(){
           selectedResult
     )
 
-    .sort(
-      (a,b) =>
-        dateToTime(b.date) -
-        dateToTime(a.date)
-    )
+.sort(
+  (a,b) => {
+
+    const dateDiff =
+      dateToTime(b.date) -
+      dateToTime(a.date);
+
+    // 날짜가 다르면 최신 날짜부터 표시
+    if(dateDiff !== 0){
+      return dateDiff;
+    }
+
+    // 날짜가 같으면 시트에서 더 아래에 있는 경기부터 표시
+    return b.sheetRow - a.sheetRow;
+
+  }
+)
 
     .forEach(
       match => {
@@ -1694,38 +1710,42 @@ function renderPlayerResult(){
 
         games.push({
 
-          date,
+  // 해당 경기가 시작되는 시트 행 순서
+  sheetRow:
+    i,
 
-          opponent,
+  date,
 
-          type,
+  opponent,
 
-          player:
-            String(
-              r[10] || ""
-            ).trim(),
+  type,
 
-          race:
-            String(
-              r[11] || ""
-            ).trim(),
+  player:
+    String(
+      r[10] || ""
+    ).trim(),
 
-          result:
-            String(
-              r[12] || ""
-            ).trim(),
+  race:
+    String(
+      r[11] || ""
+    ).trim(),
 
-          enemy:
-            String(
-              r[13] || ""
-            ).trim(),
+  result:
+    String(
+      r[12] || ""
+    ).trim(),
 
-          url:
-            String(
-              r[14] || ""
-            ).trim()
+  enemy:
+    String(
+      r[13] || ""
+    ).trim(),
 
-        });
+  url:
+    String(
+      r[14] || ""
+    ).trim()
+
+});
 
       }
 
@@ -1781,10 +1801,22 @@ function renderPlayerResult(){
 
 
   games.sort(
-    (a,b) =>
+  (a,b) => {
+
+    const dateDiff =
       dateToTime(b.date) -
-      dateToTime(a.date)
-  );
+      dateToTime(a.date);
+
+    // 날짜가 다르면 최신 날짜부터 표시
+    if(dateDiff !== 0){
+      return dateDiff;
+    }
+
+    // 날짜가 같으면 시트에서 더 아래에 있는 경기부터 표시
+    return b.sheetRow - a.sheetRow;
+
+  }
+);
 
 
   const total =
