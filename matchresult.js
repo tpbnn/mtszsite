@@ -775,7 +775,7 @@ function renderTeamResult(){
 
   // 날짜가 같으면 시트에서 더 아래에 입력된 경기를 먼저 표시
   sheetRow:
-    i,
+    j,
 
   date:
     formatDate(
@@ -1712,7 +1712,7 @@ function renderPlayerResult(){
 
   // 해당 경기가 시작되는 시트 행 순서
   sheetRow:
-    i,
+    j,
 
   date,
 
