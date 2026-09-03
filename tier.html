@@ -758,6 +758,26 @@ body.light-mode #page-tiers .live-filter-option.active{
   color:#0d78d8;
 }
 
+
+/* 대학명 오른쪽 로고 */
+.tier-player-meta .tier-university{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:0;
+}
+
+.tier-player-meta .tier-university-logo{
+  width:18px !important;
+  height:18px !important;
+  flex:0 0 18px;
+  display:block;
+  object-fit:contain !important;
+  border-radius:4px !important;
+  background:transparent !important;
+}
+
 </style>
 </head>
 
@@ -1038,7 +1058,7 @@ window.restoreTierMultiFilters = function(){
 document.addEventListener('DOMContentLoaded', updateLiveFilterUI);
 </script>
 
-  <script type="module" src="app.js"></script>
+  
 
 
 <script type="module" src="app.js"></script>
