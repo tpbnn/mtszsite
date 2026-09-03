@@ -27,6 +27,7 @@ const firebaseTools = { collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 
 let members = [];
 let tierMembers = [];
+let universityLogoMap = {};
 let posts = [];
 let visiblePostCount = 20;
 let autoRefreshTimerId = null;
@@ -48,6 +49,7 @@ const AUTO_REFRESH_INTERVAL_MS = 60 * 1000;
 const maps = ['투혼','폴리포이드','레트로','네메시스','버미어','라데온'];
 const raceName = {T:'테란', Z:'저그', P:'프로토스', R:'랜덤', Terran:'테란', Zerg:'저그', Protoss:'프로토스'};
 const raceIcon = {T:'T', Z:'Z', P:'P', R:'R', Terran:'T', Zerg:'Z', Protoss:'P'};
+const UNIVERSITY_LOGO_FOLDER = './teamlogo/';
 
 let schedules = [
   {
@@ -131,6 +133,55 @@ function normalizeRace(value){
   if(v === 'Protoss') return 'P';
 
   return v;
+}
+
+
+function normalizeUniversityName(value){
+
+  return String(value || '')
+    .trim()
+    .replace(/\s+/g, '')
+    .toLowerCase();
+
+}
+
+
+function getUniversityLogoUrl(universityName){
+
+  const logoFile =
+    universityLogoMap[
+      normalizeUniversityName(universityName)
+    ]
+    ||
+    '';
+
+
+  if(!logoFile){
+    return '';
+  }
+
+
+  /*
+    대학명로고 셀에 전체 URL이나 경로를 입력한 경우에는 그대로 사용하고,
+    1.webp처럼 파일명만 입력한 경우에는 universitylogo 폴더를 사용합니다.
+  */
+  if(
+    /^(?:https?:)?\/\//i.test(logoFile)
+    ||
+    logoFile.startsWith('/')
+    ||
+    logoFile.startsWith('./')
+    ||
+    logoFile.startsWith('../')
+    ||
+    logoFile.includes('/')
+  ){
+    return logoFile;
+  }
+
+
+  return `${UNIVERSITY_LOGO_FOLDER}${logoFile}`;
+
 }
 
 
@@ -242,6 +293,73 @@ async function loadTierExcel(){
     workbook.Sheets[
       workbook.SheetNames[0]
     ];
+
+
+  /*
+    '대학명로고' 열의 왼쪽 열을 대학명으로 사용해 로고 표를 만듭니다.
+    예: W열 캄몬스타즈 / X열 1.webp
+  */
+  const rawRows =
+    XLSX.utils.sheet_to_json(
+      sheet,
+      {
+        header:1,
+        defval:""
+      }
+    );
+
+
+  const headerRow =
+    rawRows[0]
+    ||
+    [];
+
+
+  const universityLogoColumnIndex =
+    headerRow.findIndex(
+      value =>
+        String(value || '').trim()
+        ===
+        '대학명로고'
+    );
+
+
+  universityLogoMap = {};
+
+
+  if(universityLogoColumnIndex > 0){
+
+    rawRows
+      .slice(1)
+      .forEach(row => {
+
+        const universityName =
+          String(
+            row[universityLogoColumnIndex - 1]
+            ||
+            ''
+          ).trim();
+
+
+        const universityLogo =
+          String(
+            row[universityLogoColumnIndex]
+            ||
+            ''
+          ).trim();
+
+
+        if(universityName && universityLogo){
+
+          universityLogoMap[
+            normalizeUniversityName(universityName)
+          ] = universityLogo;
+
+        }
+
+      });
+
+  }
 
 
   const rows =
@@ -1409,6 +1527,12 @@ function renderTierCards(){
                           m.station;
 
 
+                      const universityLogoUrl =
+                        getUniversityLogoUrl(
+                          m.crew
+                        );
+
+
                       return `
 
                         <a
@@ -1487,11 +1611,32 @@ function renderTierCards(){
                             </span>
 
 
-                            <span>
-                              ${escapeHtml(
-                                m.crew ||
-                                ''
-                              )}
+                            <span class="tier-university">
+
+                              <span>
+                                ${escapeHtml(
+                                  m.crew ||
+                                  ''
+                                )}
+                              </span>
+
+
+                              ${
+                                universityLogoUrl
+                                  ?
+                                  `
+                                    <img
+                                      class="tier-university-logo"
+                                      src="${escapeHtml(universityLogoUrl)}"
+                                      alt="${escapeHtml(m.crew || '')} 로고"
+                                      loading="lazy"
+                                      onerror="this.remove()"
+                                    >
+                                  `
+                                  :
+                                  ''
+                              }
+
                             </span>
 
                           </div>
