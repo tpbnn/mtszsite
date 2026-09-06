@@ -1,175 +1,53 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>플레이리스트 관리자 - 캄몬스타즈</title>
-
-  <link rel="icon" href="./favicon.png" type="image/png" />
-  <link rel="stylesheet" href="common.css" />
-
+  <link rel="icon" href="./favicon.png" type="image/png">
+  <link rel="stylesheet" href="common.css">
   <style>
-    .manager-wrap{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start;}
-    .manager-card{background:#fff;border-radius:22px;padding:22px;}
-    .manager-card h2{margin:0 0 16px;font-size:24px;color:#ff0000;}
-    .form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-    .form-row label{font-weight:900;}
-    .form-row input,.form-row select{height:46px;border:1px solid #dbe3f0;border-radius:14px;padding:0 14px;font-size:15px;}
-    .manager-btn{height:46px;border:0;border-radius:14px;font-weight:1000;cursor:pointer;background:#2563eb;color:white;}
-    .manager-btn.danger{background:#dc2626;}
-    .manager-btn.gray{background:#64748b;}
-    .manager-btn.green{background:#16a34a;}
-    .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .playlist-list,.video-list{display:flex;flex-direction:column;gap:10px;}
-    .playlist-item,.video-item{border:1px solid #dbe3f0;border-radius:16px;padding:14px;background:#f8fafc;}
-    .playlist-item{cursor:pointer;}
-    .playlist-item.active{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.14);}
-    .playlist-name{font-size:17px;font-weight:1000;margin-bottom:8px;color:#16a34a;}
-    .video-title{font-weight:1000;margin-bottom:6px;color:#16a34a;}
-    .video-url{font-size:12px;color:#64748b;word-break:break-all;margin-bottom:8px;}
-    .small-info{font-size:13px;color:#64748b;font-weight:800;margin-bottom:10px;}
-    .item-actions{display:flex;gap:8px;}
-    .item-actions button{flex:1;height:34px;border:0;border-radius:10px;font-weight:900;cursor:pointer;}
-    .empty{padding:40px 0;text-align:center;color:#64748b;font-weight:900;}
-    @media(max-width:900px){.manager-wrap{grid-template-columns:1fr;}}
+    .manager-wrap{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}.manager-card{background:#fff;border-radius:22px;padding:22px}.manager-card h2{margin:0 0 16px;font-size:24px;color:red}.auto-import-card{grid-column:1/-1;border:2px solid #dbeafe}.auto-import-grid{display:grid;grid-template-columns:1.2fr 1.2fr 1fr .6fr .6fr;gap:12px;align-items:end}.form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}.form-row label{font-weight:900}.form-row input,.form-row select,.form-row textarea{border:1px solid #dbe3f0;border-radius:14px;padding:0 14px;font-size:15px;background:#fff;color:#111827}.form-row input,.form-row select{height:46px}.form-row textarea{padding:14px;resize:vertical}.check-row{height:46px;display:flex;align-items:center;gap:10px;font-weight:900}.check-row input{width:20px;height:20px}.manager-btn{height:46px;border:0;border-radius:14px;font-weight:1000;cursor:pointer;background:#2563eb;color:#fff}.manager-btn.danger{background:#dc2626}.manager-btn.gray{background:#64748b}.manager-btn.green{background:#16a34a}.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.playlist-list,.video-list,.auto-source-list{display:flex;flex-direction:column;gap:10px}.playlist-item,.video-item,.auto-source-item{border:1px solid #dbe3f0;border-radius:16px;padding:14px;background:#f8fafc}.playlist-item{cursor:pointer}.playlist-item.active{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.14)}.playlist-name,.video-title{font-size:17px;font-weight:1000;margin-bottom:8px;color:#16a34a}.video-url{font-size:12px;color:#64748b;word-break:break-all;margin-bottom:8px}.small-info{font-size:13px;color:#64748b;font-weight:800;margin-bottom:10px}.item-actions{display:flex;gap:8px}.item-actions button{flex:1;height:34px;border:0;border-radius:10px;font-weight:900;cursor:pointer}.empty{padding:30px 0;text-align:center;color:#64748b;font-weight:900}.auto-help{color:#64748b;font-size:13px;font-weight:700;line-height:1.6}.auto-status{margin-top:14px;padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1d4ed8;font-size:13px;font-weight:900}.auto-status[data-type=success]{background:#ecfdf5;color:#15803d}body.dark .manager-card{background:#111827;color:#fff}body.dark .playlist-item,body.dark .video-item,body.dark .auto-source-item{background:#1f2937;border-color:#374151}body.dark .form-row input,body.dark .form-row select,body.dark .form-row textarea{background:#0f172a;color:#fff;border-color:#475569}@media(max-width:1100px){.auto-import-grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}@media(max-width:900px){.manager-wrap,.auto-import-grid{grid-template-columns:1fr}.auto-import-card,.wide{grid-column:auto}}
+    .auto-card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}.auto-card-head h2{margin:0}.auto-collapse-btn{min-width:92px;height:38px;border:0;border-radius:12px;background:#334155;color:#fff;font-weight:900;cursor:pointer}.auto-import-content[hidden]{display:none}.form-row label,.check-row{color:#1e293b}.auto-import-card .form-row label,.auto-import-card .check-row{color:#1d4ed8}.keyword-row{grid-column:1/-1}.keyword-row textarea{min-height:76px}body.dark .form-row label,body.dark .check-row{color:#e2e8f0}body.dark .auto-import-card .form-row label,body.dark .auto-import-card .check-row{color:#93c5fd}
   </style>
 </head>
-
 <body data-page="playlist-manager">
-
 <div class="app">
-  <header class="topbar">
-    <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
-    <nav class="nav">
-      <a data-page="home" href="index.html">홈</a>
-      <a data-page="members" href="members.html">멤버 정보</a>
-      <a data-page="matchresult" href="matchresult.html">경기 결과</a>
-      <a data-page="tiers" href="tier.html">티어표</a>
-      <a data-page="records" href="records.html">개인전적</a>
-      <a data-page="matches" href="matches.html">상대전적</a>
-      <a data-page="playlist" href="playlist.html">영상 재생</a>
-      <a data-page="playlist-manager" href="playlist-manager.html">플레이리스트 관리</a>
-      <button class="theme-button" onclick="toggleTheme()">🌙 모드</button>
-    </nav>
-  </header>
-
-  <main class="page">
-    <section class="home-simple">
-      <div class="manager-wrap">
-        <section class="manager-card">
-          <h2>재생목록 관리</h2>
-
-          <div class="form-row">
-            <label for="playlistName">재생목록 이름</label>
-            <input id="playlistName" placeholder="예) 캄몬스타즈 뮤비">
-          </div>
-
-          <div class="form-row">
-            <label for="playlistOrder">우선순위</label>
-            <input id="playlistOrder" type="number" value="1">
-          </div>
-
-          <div class="form-row">
-            <label for="playlistPublic">공개 설정</label>
-            <select id="playlistPublic">
-              <option value="public">공개</option>
-              <option value="private">비공개</option>
-            </select>
-          </div>
-
-          <div class="btn-row">
-            <button id="playlistSaveButton" class="manager-btn" onclick="savePlaylistToFirebase()">재생목록 저장</button>
-            <button class="manager-btn gray" onclick="clearPlaylistForm()">입력 초기화</button>
-          </div>
-
-          <hr style="margin:22px 0; border:0; border-top:1px solid #e2e8f0;">
-          <div id="playlistList" class="playlist-list"></div>
-        </section>
-
-        <section class="manager-card">
-          <h2>영상 관리</h2>
-
-          <div class="form-row">
-            <label for="videoTitle">영상 제목</label>
-            <input id="videoTitle" placeholder="예) My Time Is Now">
-          </div>
-
-          <div class="form-row">
-            <label for="videoPlatform">플랫폼</label>
-            <select id="videoPlatform">
-              <option value="youtube">YouTube</option>
-              <option value="soop">SOOP</option>
-              <option value="streamable">Streamable</option>
-              <option value="external">기타</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label for="videoPublic">공개 설정</label>
-            <select id="videoPublic">
-              <option value="public">공개</option>
-              <option value="private">비공개</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label for="videoUrl">영상 URL</label>
-            <input id="videoUrl" placeholder="YouTube / SOOP / Streamable / 기타 URL">
-          </div>
-
-          <div class="form-row">
-            <label for="videoThumb">썸네일 URL</label>
-            <input id="videoThumb" placeholder="비워두면 플랫폼 기본 썸네일 사용">
-          </div>
-
-          <div class="form-row">
-            <label for="videoPlaylist">재생목록 선택</label>
-            <select id="videoPlaylist"></select>
-          </div>
-
-          <div class="form-row">
-            <label for="videoPriority">우선순위</label>
-            <input id="videoPriority" type="number" value="1">
-          </div>
-
-          <div class="btn-row">
-            <button id="videoSaveButton" class="manager-btn green" onclick="savePlaylistVideoToFirebase()">영상 추가</button>
-            <button class="manager-btn gray" onclick="clearVideoForm()">입력 초기화</button>
-          </div>
-
-          <p class="small-info" style="margin-top:14px;">우선순위 숫자가 낮을수록 아래쪽에 표시됩니다. 예: 20, 15, 10, 5, 1</p>
-
-          <hr style="margin:22px 0; border:0; border-top:1px solid #e2e8f0;">
-          <div id="videoList" class="video-list"></div>
-        </section>
+  <header class="topbar"><a class="logo" href="index.html"><div>CALM MONSTARZ</div></a><nav class="nav"><a data-page="playlist" href="playlist.html">영상 재생</a><a data-page="playlist-manager" href="playlist-manager.html">플레이리스트 관리</a><button class="theme-button" onclick="toggleTheme()">🌙 모드</button></nav></header>
+  <main class="page"><section class="home-simple"><div class="manager-wrap">
+    <section class="manager-card auto-import-card">
+      <div class="auto-card-head"><h2>YouTube 채널·재생목록 자동 등록</h2><button id="autoCollapseButton" class="auto-collapse-btn" type="button" onclick="toggleAutoImportMenu()">접기 ▲</button></div>
+      <div id="autoImportContent" class="auto-import-content">
+      <p class="auto-help">여러 설정을 등록할 수 있습니다. Google Apps Script가 30분마다 ‘사용 중’인 설정을 확인합니다. YouTube API 키는 이 페이지에 입력하지 않습니다.</p>
+      <div class="auto-import-grid">
+        <div class="form-row"><label for="autoSourceName">설정 이름</label><input id="autoSourceName" placeholder="예) Fresh토마토 채널"></div>
+        <div class="form-row wide"><label for="youtubeSourceUrl">YouTube 채널 또는 재생목록 URL</label><input id="youtubeSourceUrl" placeholder="https://youtube.com/@채널 또는 playlist?list=PL..."></div>
+        <div class="form-row"><label for="autoTargetPlaylist">등록할 재생목록</label><select id="autoTargetPlaylist"></select></div>
+        <div class="form-row"><label for="autoVideoPriority">우선순위</label><input id="autoVideoPriority" type="number" value="1"></div>
+        <div class="form-row"><label for="autoImportCount">최근 확인 개수</label><input id="autoImportCount" type="number" min="1" max="50" value="5"></div>
+        <div class="form-row keyword-row"><label for="autoExcludeKeywords">제외 키워드</label><textarea id="autoExcludeKeywords" rows="3" placeholder="예) 쇼츠, 다시보기, 광고&#10;쉼표 또는 줄바꿈으로 여러 개 입력"></textarea></div>
+      </div>
+      <div class="auto-import-grid">
+        <div class="form-row"><label for="autoVideoPublic">공개 설정</label><select id="autoVideoPublic"><option value="public">공개</option><option value="private">비공개</option></select></div>
+        <label class="check-row"><input id="autoImportEnabled" type="checkbox" checked> 30분 자동등록 사용</label>
+        <button id="autoSourceSaveButton" class="manager-btn" type="button" onclick="saveAutoSourceToFirebase()">자동등록 설정 추가</button>
+        <button class="manager-btn gray" type="button" onclick="clearAutoSourceForm()">입력 초기화</button>
+        <button class="manager-btn green" type="button" onclick="rebuildPublicPlaylistCache()">공개 캐시 다시 만들기</button>
+      </div>
+      <div id="publicCacheStatus" class="auto-status">처음 적용할 때 ‘공개 캐시 다시 만들기’를 한 번 눌러주세요.</div>
+      <hr style="margin:22px 0;border:0;border-top:1px solid #e2e8f0"><div id="autoSourceList" class="auto-source-list"></div>
       </div>
     </section>
-  </main>
+
+    <section class="manager-card"><h2>재생목록 관리</h2>
+      <div class="form-row"><label for="playlistName">재생목록 이름</label><input id="playlistName" placeholder="예) 캄몬스타즈 뮤비"></div><div class="form-row"><label for="playlistOrder">우선순위</label><input id="playlistOrder" type="number" value="1"></div><div class="form-row"><label for="playlistPublic">공개 설정</label><select id="playlistPublic"><option value="public">공개</option><option value="private">비공개</option></select></div><div class="btn-row"><button id="playlistSaveButton" class="manager-btn" onclick="savePlaylistToFirebase()">재생목록 저장</button><button class="manager-btn gray" onclick="clearPlaylistForm()">입력 초기화</button></div><hr style="margin:22px 0;border:0;border-top:1px solid #e2e8f0"><div id="playlistList" class="playlist-list"></div>
+    </section>
+    <section class="manager-card"><h2>영상 관리</h2>
+      <div class="form-row"><label for="videoTitle">영상 제목</label><input id="videoTitle"></div><div class="form-row"><label for="videoPlatform">플랫폼</label><select id="videoPlatform"><option value="youtube">YouTube</option><option value="soop">SOOP</option><option value="streamable">Streamable</option><option value="external">기타</option></select></div><div class="form-row"><label for="videoPublic">공개 설정</label><select id="videoPublic"><option value="public">공개</option><option value="private">비공개</option></select></div><div class="form-row"><label for="videoUrl">영상 URL</label><input id="videoUrl"></div><div class="form-row"><label for="videoThumb">썸네일 URL</label><input id="videoThumb"></div><div class="form-row"><label for="videoPlaylist">재생목록 선택</label><select id="videoPlaylist"></select></div><div class="form-row"><label for="videoPriority">우선순위</label><input id="videoPriority" type="number" value="1"></div><div class="btn-row"><button id="videoSaveButton" class="manager-btn green" onclick="savePlaylistVideoToFirebase()">영상 추가</button><button class="manager-btn gray" onclick="clearVideoForm()">입력 초기화</button></div><hr style="margin:22px 0;border:0;border-top:1px solid #e2e8f0"><div id="videoList" class="video-list"></div>
+    </section>
+    <section class="manager-card auto-import-card"><div class="form-row"><label for="importJsonText">localStorage JSON 붙여넣기</label><textarea id="importJsonText" rows="8" placeholder='{"playlists":[...]}'></textarea></div><button class="manager-btn" onclick="importJsonTextToFirebase()">붙여넣은 JSON Firebase로 옮기기</button></section>
+  </div></section></main>
 </div>
-
-<div class="form-row">
-  <label for="importJsonText">localStorage JSON 붙여넣기</label>
-  <textarea
-    id="importJsonText"
-    rows="8"
-    placeholder='{"playlists":[...]}'
-  ></textarea>
-</div>
-
-<button class="manager-btn" onclick="importJsonTextToFirebase()">
-  붙여넣은 JSON Firebase로 옮기기
-</button>
-
-<footer class="footer">
-  <div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div>
-  <div class="footer-links">
-    <a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon"><img src="icons/soop-logo.png" alt="SOOP" /></a>
-    <a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon"><img src="icons/youtube-logo.png" alt="YouTube" /></a>
-  </div>
-</footer>
-
-<script type="module" src="./playlist.js"></script>
-<script src="./theme.js?v=3"></script>
-</body>
-</html>
+<footer class="footer"><div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div></footer>
+<script type="module" src="./playlist.js"></script><script src="./theme.js?v=3"></script>
+</body></html>
