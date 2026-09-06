@@ -1,22 +1,165 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>캄몬스타즈</title><link rel="icon" href="./favicon.png" type="image/png"><link rel="stylesheet" href="common.css">
-<style>
-.playlist-page-wrap{display:flex;flex-direction:column;gap:20px;margin-top:240px}.playlist-tab-area{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:-24px;position:relative;z-index:50}.playlist-tab{min-width:120px;height:58px;border:0;border-radius:18px;padding:0 20px;background:rgba(0,0,0,.5);color:#fff;font-size:14px;font-weight:1000;cursor:pointer;position:relative}.playlist-tab.active{background:linear-gradient(135deg,#1d4ed8,#7c3aed)}.youtube-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}.youtube-player-box{background:#000;border-radius:22px;overflow:hidden;aspect-ratio:16/9;margin-top:44px}.youtube-player-box iframe{width:100%;height:100%;border:0;display:block}.youtube-list-box{border-radius:22px;padding:4px;min-height:624px}.youtube-list-title{margin:0 0 16px;font-size:16px;font-weight:1000;color:#fff}.youtube-list{display:flex;flex-direction:column;gap:4px;max-height:624px;overflow-y:auto;padding-right:8px}.youtube-item{width:100%;display:grid;grid-template-columns:100px 1fr;align-items:center;border:1px solid #e2e8f0;border-radius:16px;padding:4px 12px 4px 4px;background:#f8fafc;cursor:pointer;text-align:left;min-height:62px}.youtube-item:hover{background:#eef2ff}.youtube-item.active{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.16)}.youtube-item img{width:90px;aspect-ratio:16/9;object-fit:cover;border-radius:12px}.youtube-item-title{font-size:12px;line-height:1.4;font-weight:700;color:#111827}.empty-playlist{padding:80px 0;text-align:center;font-size:18px;font-weight:900;color:#64748b}.vod-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;background:#000;color:#fff}.vod-open-button{border:0;border-radius:14px;padding:14px 22px;background:#2563eb;color:#fff;font-weight:1000}.soop-thumb{width:90px!important;height:auto!important;object-fit:contain!important}.playlist-new-badge{position:absolute;top:-8px;right:-7px;display:flex;align-items:center;justify-content:center;min-width:32px;height:18px;padding:0 6px;background:#ff2a51;color:#fff;border-radius:999px;font-size:9px;font-weight:1000;box-shadow:0 3px 8px rgba(255,42,81,.4);pointer-events:none}@media(max-width:900px){.youtube-layout{grid-template-columns:1fr}.youtube-list-box{min-height:auto}.youtube-list{max-height:none}}
-.playlist-page-wrap{margin-top:0}
-</style></head>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>캄몬스타즈</title>
+
+  <link rel="icon" href="./favicon.png" type="image/png" />
+  <link rel="stylesheet" href="common.css" />
+
+  <style>
+    .playlist-page-wrap{display:flex;flex-direction:column;gap:20px;margin-top:240px}
+    .playlist-tab-area{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:-24px;position:relative;z-index:50;}
+    .playlist-tab{width:auto;min-width:120px;height:58px;border:0;border-radius:18px;padding:0 20px;background:rgba(0,0,0,.5);color:#fff;font-size:14px;font-weight:1000;cursor:pointer;box-shadow:0 8px 18px rgba(15, 23, 42, 0.185);position:relative;z-index:51;}
+    .playlist-tab.active{background:linear-gradient(135deg,#1d4ed8,#7c3aed);}
+    .youtube-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start;}
+    .youtube-player-box{background:#000;border-radius:22px;overflow:hidden;aspect-ratio:16/9;margin-top:44px;}
+    .youtube-player-box iframe{width:100%;height:100%;border:0;display:block;}
+    .youtube-list-box{background:none;border-radius:22px;padding:4px;min-height:624px;}
+    body.dark .youtube-list-box{background:#111827;}
+    .youtube-list-title{margin:0 0 16px;font-size:16px;font-weight:1000;color:#fff;}
+    body.dark .youtube-list-title{color:#fff;}
+    .youtube-list{display:flex;flex-direction:column;gap:4px;max-height:624px;overflow-y:auto;padding-right:8px;scrollbar-width:thin;scrollbar-color:#fff transparent;}
+    .youtube-list::-webkit-scrollbar{width:2px;}
+    .youtube-list::-webkit-scrollbar-track{background:transparent;}
+    .youtube-list::-webkit-scrollbar-thumb{background:#4f6fb8;border-radius:999px;}
+    .youtube-list::-webkit-scrollbar-thumb:hover{background:#6f8fda;}
+    .youtube-item{width:100%;display:grid;grid-template-columns:100px 1fr;gap:0px;align-items:center;border:1px solid #e2e8f0;border-radius:16px;padding:4px 12px 4px 4px;background:#f8fafc#2B304D;cursor:pointer;text-align:left;min-height:62px;}
+    .youtube-item:hover{background:#eef2ff;}
+    .youtube-item.active{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.16);}
+    .youtube-item img{width:90px;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:none;margin-left:0;}
+    .youtube-item-title{font-size:12px;line-height:1.4;font-weight:700;color:#111827;}
+    .empty-playlist{padding:80px 0;text-align:center;font-size:20px;font-weight:900;color:#64748b;}
+    .vod-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;background:#000;color:#fff;text-align:center;padding:24px;}
+    .vod-placeholder-title{font-size:22px;font-weight:1000;}
+    .vod-open-button{border:0;border-radius:14px;padding:14px 22px;background:#2563eb;color:#fff;font-size:16px;font-weight:1000;cursor:pointer;}
+    @media(max-width:900px){.youtube-layout{grid-template-columns:1fr;}.youtube-list-box{min-height:auto;}.youtube-list{max-height:none;}}
+    .soop-thumb{width:90px !important;height:auto !important;object-fit:contain !important;background:transparent !important;margin:auto;}
+
+
+
+
+/* 신규 영상 NEW 배지 */
+.playlist-new-badge{
+  position:absolute;
+  top:-8px;
+  right:-7px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  min-width:32px;
+  height:18px;
+  padding:0 6px;
+
+  background:#ff2a51;
+  color:#fff;
+
+  border-radius:999px;
+
+  font-size:9px;
+  font-weight:1000;
+  line-height:1;
+  letter-spacing:.3px;
+
+  box-shadow:0 3px 8px rgba(255,42,81,.4);
+
+  pointer-events:none;
+}
+
+
+
+
+
+  </style>
+</head>
+
 <body data-page="playlist">
+
 <div class="floating-banner">
-  <a href="https://calm-hoxy.vercel.app/" target="_blank"><img src="./banner/banner1.png" alt="배너1"></a>
-  <a href="https://fmcalm.vercel.app/" target="_blank"><img src="./banner/banner2.png" alt="배너2"></a>
-  <a href="https://calm-mstz.vercel.app/" target="_blank"><img src="./banner/banner3.png" alt="배너3"></a>
-  <a href="https://www.fmkorea.com/starcraft/" target="_blank"><img src="./banner/banner4.png" alt="배너4"></a>
-  <a href="https://www.youtube.com/" target="_blank"><img src="./banner/banner5.png" alt="배너5"></a>
-  <a href="https://www.naver.com/" target="_blank"><img src="./banner/banner6.png" alt="배너6"></a>
-  <a href="https://www.sooplive.com/" target="_blank"><img src="./banner/banner0.png" alt="배너7"></a>
-  <a href="https://lazygyu.github.io/roulette/" target="_blank"><img src="./banner/banner8.png" alt="배너9"></a>
-  <a href="https://910map.tistory.com/" target="_blank"><img src="./banner/banner9.png" alt="배너10"></a>
-  <a href="https://scintro.vercel.app/" target="_blank"><img src="./banner/banner11.png" alt="배너11"></a>
+  <a href="http://calm-hoxy.vercel.app/" target="_blank">
+    <img src="./banner/banner1.png" alt="배너1">
+  </a>
+  <a href="https://fmcalm.vercel.app/" target="_blank">
+    <img src="./banner/banner2.png" alt="배너2">
+  </a>
+  <a href="https://calm-mstz.vercel.app/" target="_blank">
+    <img src="./banner/banner3.png" alt="배너3">
+  </a>
+  <a href="https://www.fmkorea.com/starcraft/" target="_blank">
+    <img src="./banner/banner4.png" alt="배너4">
+  </a>
+  <a href="https://www.youtube.com//" target="_blank">
+    <img src="./banner/banner5.png" alt="배너5">
+  </a>
+  <a href="https://www.naver.com/" target="_blank">
+    <img src="./banner/banner6.png" alt="배너6">
+  </a>
+  <a href="https://www.sooplive.com/" target="_blank">
+    <img src="./banner/banner0.png" alt="배너7">
+  </a>
+    <a href="https://lazygyu.github.io/roulette/" target="_blank">
+    <img src="./banner/banner8.png" alt="배너9">
+  </a>
+  <a href="https://910map.tistory.com/" target="_blank">
+    <img src="./banner/banner9.png" alt="배너10">
+  </a>
+  <a href="https://scintro.vercel.app/" target="_blank">
+    <img src="./banner/banner11.png" alt="배너11">
+  </a>
+  </div>
+
+
+
+  <div class="app">
+    
+<header class="topbar">
+  <a class="logo" href="index.html"><div>CALM MONSTARZ</div></a>
+  <nav class="nav">
+<a data-page="home" href="index.html">홈</a>
+    <a data-page="members" href="members.html">멤버 정보</a>
+    <a data-page="matchresult" href="matchresult.html">경기 결과</a>
+    <a data-page="playlist" href="playlist.html">영상 모음</a>
+    <a data-page="tiers" href="tier.html">티어표</a>
+    <!-- <a data-page="records" href="records.html">개인전적</a>
+    <a data-page="matches" href="matches.html">상대전적</a> -->
+    <a data-page="matches" href="multiview.html">멀티뷰</a>
+    <a data-page="matches" href="minigame.html">미니게임</a>
+    <button class="theme-button" onclick="toggleTheme()">
+  🌙 모드
+</button>
+    
+  </nav>
+  </header>
+
+  <main id="page-playlist" class="page">
+    
+<br>
+      <div id="playlistTabArea" class="playlist-tab-area"></div>
+
+      <div class="youtube-layout">
+        <section id="playerBox" class="youtube-player-box"></section>
+        <aside class="youtube-list-box">
+          <h2 id="youtubeListTitle" class="youtube-list-title">재생목록</h2>
+          <div id="youtubeList" class="youtube-list"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
 </div>
-<div class="app"><header class="topbar"><a class="logo" href="index.html"><div>CALM MONSTARZ</div></a><nav class="nav"><a data-page="home" href="index.html">홈</a><a data-page="members" href="members.html">멤버 정보</a><a data-page="matchresult" href="matchresult.html">경기 결과</a><a data-page="playlist" href="playlist.html">영상 모음</a><a data-page="tiers" href="tier.html">티어표</a><a data-page="matches" href="multiview.html">멀티뷰</a><a data-page="matches" href="minigame.html">미니게임</a><button class="theme-button" onclick="toggleTheme()">🌙 모드</button></nav></header>
-<main id="page-playlist" class="page"><section class="playlist-page-wrap"><div id="playlistTabArea" class="playlist-tab-area"></div><div class="youtube-layout"><section id="playerBox" class="youtube-player-box"></section><aside class="youtube-list-box"><h2 id="youtubeListTitle" class="youtube-list-title">재생목록</h2><div id="youtubeList" class="youtube-list"><div class="empty-playlist">불러오는 중…</div></div></aside></div></section></main></div>
-<footer class="footer"><div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div><div class="footer-links"><a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon"><img src="icons/soop-logo.png" alt="SOOP"></a><a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon"><img src="icons/youtube-logo.png" alt="YouTube"></a></div></footer><script type="module" src="./playlist.js"></script><script src="./theme.js?v=3"></script></body></html>
+
+<footer class="footer">
+  <div class="footer-copy">© 2026 주니.킨콘. All Rights Reserved.</div>
+  <div class="footer-links">
+    <a href="https://www.sooplive.com/station/joony86" target="_blank" class="footer-icon"><img src="icons/soop-logo.png" alt="SOOP" /></a>
+    <a href="https://www.youtube.com/@kinkonvv" target="_blank" class="footer-icon"><img src="icons/youtube-logo.png" alt="YouTube" /></a>
+  </div>
+</footer>
+
+<script type="module" src="./playlist.js"></script>
+<script src="./theme.js?v=3"></script>
+</body>
+</html>
