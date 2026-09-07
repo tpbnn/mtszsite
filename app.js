@@ -561,6 +561,80 @@ function setupSelects(){
         .join('');
 
 
+    const universityFilterMenu =
+      document.getElementById(
+        'universityFilterMenu'
+      );
+
+
+    if(universityFilterMenu){
+
+      const universities =
+        [
+          ...new Set(
+            tierMembers
+              .map(
+                m => String(m.crew || '').trim()
+              )
+              .filter(Boolean)
+          )
+        ]
+        .sort(
+          (a,b) => {
+
+            const aIsFA =
+              String(a).trim().toUpperCase()
+              ===
+              'FA';
+
+            const bIsFA =
+              String(b).trim().toUpperCase()
+              ===
+              'FA';
+
+
+            if(aIsFA !== bIsFA){
+              return aIsFA ? 1 : -1;
+            }
+
+
+            return a.localeCompare(
+              b,
+              'ko',
+              {
+                numeric:true
+              }
+            );
+
+          }
+        );
+
+
+      universityFilterMenu.innerHTML =
+        universities
+          .map(
+            university => `
+
+              <label class="multi-filter-option">
+
+                <input
+                  type="checkbox"
+                  name="universityFilterMulti"
+                  value="${escapeHtml(university)}"
+                  onchange="onMultiFilterChange()"
+                >
+
+                ${escapeHtml(university)}
+
+              </label>
+
+            `
+          )
+          .join('');
+
+    }
+
+
     /*
       새로고침 직후
       HTML 쪽에 저장된 필터 복원
@@ -1321,6 +1395,20 @@ function renderTierCards(){
     '';
 
 
+  /* 체크된 대학 전체 */
+
+  const selectedUniversities =
+    Array.from(
+      document.querySelectorAll(
+        'input[name="universityFilterMulti"]:checked'
+      )
+    )
+    .map(
+      el =>
+        el.value
+    );
+
+
   /* 체크된 티어 전체 */
 
   const selectedTiers =
@@ -1370,6 +1458,16 @@ function renderTierCards(){
         (
           !q ||
           m.name.includes(q)
+        )
+
+        &&
+
+        (
+          selectedUniversities.length === 0
+          ||
+          selectedUniversities.includes(
+            String(m.crew || '').trim()
+          )
         )
 
         &&
