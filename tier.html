@@ -415,7 +415,7 @@
 /* 티어표 필터 + 버튼 한 줄 배치 */
 #page-tiers .filters{
   display:grid !important;
-  grid-template-columns:minmax(280px,1.6fr) minmax(150px,.72fr) minmax(150px,.72fr) minmax(135px,.68fr) 92px 118px !important;
+  grid-template-columns:minmax(220px,1.5fr) minmax(135px,.72fr) minmax(130px,.68fr) minmax(130px,.68fr) minmax(120px,.64fr) 92px 118px !important;
   gap:10px !important;
   align-items:center;
   overflow:visible !important;
@@ -845,7 +845,14 @@ body.light-mode #page-tiers .live-filter-option.active{
   <section class="card panel">
     <div class="section-title"><h2>티어표 & 선수 검색</h2><span>에펨코리아 티어표 기반 / 라이브 자동 확인</span></div>
     <div class="filters">
-      <input id="searchInput" placeholder="선수 닉네임 검색" oninput="renderTierCards()" />
+      <input id="searchInput" placeholder="선수 닉네임 검색" oninput="onTierSearchInput()" />
+
+      <div class="multi-filter" id="universityMultiFilter">
+        <button type="button" class="multi-filter-button" onclick="toggleMultiDropdown('universityMultiFilter')">
+          <span id="universityFilterLabel">전체 대학</span>
+        </button>
+        <div class="multi-filter-menu" id="universityFilterMenu"></div>
+      </div>
 
       <div class="multi-filter" id="tierMultiFilter">
         <button type="button" class="multi-filter-button" onclick="toggleMultiDropdown('tierMultiFilter')">
@@ -898,7 +905,8 @@ body.light-mode #page-tiers .live-filter-option.active{
   </div>
 
 <script>
-const TIER_FILTER_STORAGE_KEY = 'calmTierFilters';
+/* V3: 마지막 선택값은 티어와 종족만 저장 */
+const TIER_FILTER_STORAGE_KEY = 'calmTierFiltersV3';
 
 function getCheckedValues(name){
   return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
@@ -913,11 +921,20 @@ function setCheckedValues(name, values){
 }
 
 function updateMultiFilterLabels(){
+  const universities = getCheckedValues('universityFilterMulti');
   const tiers = getCheckedValues('tierFilterMulti');
   const races = getCheckedValues('raceFilterMulti');
 
+  const universityLabel = document.getElementById('universityFilterLabel');
   const tierLabel = document.getElementById('tierFilterLabel');
   const raceLabel = document.getElementById('raceFilterLabel');
+
+  if(universityLabel){
+    universityLabel.textContent =
+      universities.length === 0 ? '전체 대학' :
+      universities.length <= 2 ? universities.join(', ') :
+      `${universities[0]} 외 ${universities.length - 1}개`;
+  }
 
   if(tierLabel){
     tierLabel.textContent =
@@ -939,6 +956,14 @@ function updateMultiFilterLabels(){
 
 function onMultiFilterChange(){
   updateMultiFilterLabels();
+  saveTierFilterState();
+
+  if(typeof window.renderTierCards === 'function'){
+    window.renderTierCards();
+  }
+}
+
+function onTierSearchInput(){
   if(typeof window.renderTierCards === 'function'){
     window.renderTierCards();
   }
@@ -969,7 +994,7 @@ document.addEventListener('click', e => {
 function updateLiveFilterUI(){
   const live = document.getElementById('liveFilter');
   const label = document.getElementById('liveFilterLabel');
-  const value = live?.value || 'live';
+  const value = live?.value || 'all';
 
   if(label){
     label.textContent = value === 'all' ? '전체' : '라이브 중';
@@ -997,20 +1022,24 @@ function selectLiveFilter(value){
 function getCurrentTierFilterState(){
   return {
     tiers: getCheckedValues('tierFilterMulti'),
-    races: getCheckedValues('raceFilterMulti'),
-    live: document.getElementById('liveFilter')?.value || 'live'
+    races: getCheckedValues('raceFilterMulti')
   };
 }
 
-function refreshTierPage(){
-  sessionStorage.setItem(
+function saveTierFilterState(){
+  localStorage.setItem(
     TIER_FILTER_STORAGE_KEY,
     JSON.stringify(getCurrentTierFilterState())
   );
+}
+
+function refreshTierPage(){
+  saveTierFilterState();
   location.reload();
 }
 
 function resetTierFilters(){
+  setCheckedValues('universityFilterMulti', []);
   setCheckedValues('tierFilterMulti', []);
   setCheckedValues('raceFilterMulti', []);
 
@@ -1019,6 +1048,7 @@ function resetTierFilters(){
 
   updateMultiFilterLabels();
   updateLiveFilterUI();
+  saveTierFilterState();
 
   document.querySelectorAll('.multi-filter.open')
     .forEach(el => el.classList.remove('open'));
@@ -1034,7 +1064,7 @@ window.restoreTierMultiFilters = function(){
 
   try{
     saved = JSON.parse(
-      sessionStorage.getItem(TIER_FILTER_STORAGE_KEY) || 'null'
+      localStorage.getItem(TIER_FILTER_STORAGE_KEY) || 'null'
     );
   }catch(e){
     saved = null;
@@ -1045,23 +1075,23 @@ window.restoreTierMultiFilters = function(){
     return;
   }
 
+  setCheckedValues('universityFilterMulti', []);
   setCheckedValues('tierFilterMulti', saved.tiers || []);
   setCheckedValues('raceFilterMulti', saved.races || []);
 
+  const search = document.getElementById('searchInput');
+  if(search) search.value = '';
+
   const live = document.getElementById('liveFilter');
-  if(live) live.value = saved.live || 'live';
+  if(live) live.value = 'live';
 
   updateMultiFilterLabels();
   updateLiveFilterUI();
-  sessionStorage.removeItem(TIER_FILTER_STORAGE_KEY);
 };
 document.addEventListener('DOMContentLoaded', updateLiveFilterUI);
 </script>
 
-  
-
-
-<script type="module" src="app.js"></script>
+<script type="module" src="./app.js?v=20260907-1"></script>
 <script src="./theme.js?v=3"></script>
 </body>
 <footer class="footer">
