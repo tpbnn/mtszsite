@@ -1760,7 +1760,7 @@ function renderTierCards(){
 
     `
       <p class="meta">
-        검색 결과가 없습니다.
+        데이터 로딩 중... 오랫동안 반응이 없다면 새로고침 버튼을 눌러주세요.
       </p>
     `;
 
