@@ -617,6 +617,139 @@ body.light-mode .member-search-list::-webkit-scrollbar-thumb {
       }
     }
 
+  
+    /* ===== 2026-09-09 멀티뷰 종족별 3열 UI 최종 수정 ===== */
+    .broadcast-header-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:4px;
+    }
+    .broadcast-header-row h3{ margin:0 !important; }
+    .broadcast-header-row .broadcast-actions{
+      margin:0 !important;
+      flex:0 0 auto;
+    }
+    .broadcast-header-row .reset-selection-button{
+      min-height:44px;
+    }
+    .broadcast-header-row .open-multiview-button{
+      width:auto !important;
+      min-width:220px;
+      min-height:44px;
+      padding:0 24px !important;
+    }
+
+    .race-groups{
+      display:grid !important;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px !important;
+      width:100%;
+      margin-top:14px;
+    }
+    .race-group{
+      min-width:0;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      background:rgba(255,255,255,.025);
+    }
+    .race-group-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      min-height:38px;
+      margin-bottom:8px;
+      padding:0 10px;
+      border-left:3px solid rgba(255,255,255,.25);
+      font-size:14px;
+      font-weight:900;
+    }
+    .race-group-header .race-title{
+      display:flex;
+      align-items:center;
+      gap:7px;
+    }
+    .race-group-header .race-code{
+      font-size:17px;
+      font-weight:1000;
+    }
+    .race-group-header .race-count{
+      color:var(--muted,#9ca3af);
+      font-size:12px;
+      font-weight:900;
+    }
+    .race-group.race-t .race-group-header{border-left-color:#00a2ff}
+    .race-group.race-z .race-group-header{border-left-color:#ff2a51}
+    .race-group.race-p .race-group-header{border-left-color:#65f0cf}
+    .race-group.race-t .race-code{color:#20b7ff}
+    .race-group.race-z .race-code{color:#ff3c62}
+    .race-group.race-p .race-code{color:#65f0cf}
+
+    .race-member-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+    }
+    .race-member-grid .member-item{
+      width:100% !important;
+      min-width:0 !important;
+      max-width:none !important;
+      min-height:54px;
+      padding:8px 9px !important;
+      gap:6px !important;
+      overflow:hidden;
+    }
+    .race-member-grid .member-item > div:first-child{
+      min-width:0;
+      overflow:hidden;
+    }
+    .race-member-grid .member-name{
+      font-size:13px !important;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .race-member-grid .member-id{
+      font-size:10px !important;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .race-member-grid .add-badge{
+      padding:5px 7px;
+      font-size:10px;
+    }
+
+    .member-search-list,
+    .university-member-list{
+      display:block !important;
+      min-height:0 !important;
+    }
+
+    body.light-mode .race-group{
+      background:#f8faff;
+      border-color:#d7deed;
+    }
+
+    @media (max-width:1200px){
+      .race-member-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width:900px){
+      .race-groups{grid-template-columns:1fr !important}
+      .race-member-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .broadcast-header-row{align-items:flex-start;flex-direction:column}
+      .broadcast-header-row .broadcast-actions{width:100%}
+      .broadcast-header-row .open-multiview-button{flex:1 1 auto;min-width:0}
+    }
+    @media (max-width:600px){
+      .race-member-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .broadcast-header-row .broadcast-actions{flex-direction:column}
+      .broadcast-header-row .reset-selection-button,
+      .broadcast-header-row .open-multiview-button{width:100% !important}
+    }
+
   </style>
 </head>
 
@@ -685,10 +818,19 @@ body.light-mode .member-search-list::-webkit-scrollbar-thumb {
 
         <div class="multiview-wrap">
           <div class="multiview-card">
-            <h3>
-              방송 선택
-              <span id="selectedCount" class="count-chip">0 / 8</span>
-            </h3>
+            <div class="broadcast-header-row">
+              <h3>
+                방송 선택
+                <span id="selectedCount" class="count-chip">0 / 8</span>
+              </h3>
+
+              <div class="broadcast-actions">
+                <button class="reset-selection-button" onclick="resetStreamers()">초기화</button>
+                <button class="open-multiview-button" onclick="openMultiview()">
+                  멀티뷰 새창 열기
+                </button>
+              </div>
+            </div>
             <p class="multiview-desc">
               스트리머 이름을 검색하거나, SOOP 아이디를 직접 입력하세요.
             </p>
@@ -704,12 +846,7 @@ body.light-mode .member-search-list::-webkit-scrollbar-thumb {
 
             <div id="selectedList" class="selected-list"></div>
 
-            <div class="broadcast-actions">
-              <button class="reset-selection-button" onclick="resetStreamers()">초기화</button>
-              <button class="open-multiview-button" onclick="openMultiview()">
-                멀티뷰 새창 열기
-              </button>
-            </div>
+            
           </div>
 
           <div class="multiview-card">
@@ -823,11 +960,12 @@ async function loadTierMembers() {
     const nameCol = headers.findIndex(header => header === "이름");
     const idCol = headers.findIndex(header => header === "방송국ID");
     const universityCol = headers.findIndex(header => header === "소속");
+    const raceCol = headers.findIndex(header => header === "종족");
 
-    if (nameCol < 0 || idCol < 0 || universityCol < 0) {
+    if (nameCol < 0 || idCol < 0 || universityCol < 0 || raceCol < 0) {
       console.error("tier 헤더:", headers);
       throw new Error(
-        `필수 열을 찾지 못했습니다. 이름=${nameCol}, 방송국ID=${idCol}, 소속=${universityCol}`
+        `필수 열을 찾지 못했습니다. 이름=${nameCol}, 방송국ID=${idCol}, 소속=${universityCol}, 종족=${raceCol}`
       );
     }
 
@@ -836,7 +974,8 @@ async function loadTierMembers() {
       .map(row => ({
         name: String(row[nameCol] || "").trim(),
         id: String(row[idCol] || "").trim(),
-        university: String(row[universityCol] || "").trim()
+        university: String(row[universityCol] || "").trim(),
+        race: String(row[raceCol] || "").trim().toUpperCase()
       }))
       .filter(member => member.name && member.id);
 
@@ -897,9 +1036,14 @@ async function loadRecommendedMembers() {
 
       if (!name || !id) return;
 
+      const tierMember =
+        memberList.find(member => member.id === id) ||
+        memberList.find(member => normalizeText(member.name) === normalizeText(name));
+
       recommendedMembers.push({
         name,
         id,
+        race: String(tierMember?.race || "").toUpperCase(),
         order: Number(data.order || 999),
         recommend: data.multiviewRecommend === true
       });
@@ -1048,10 +1192,69 @@ const name = member ? member.name : "직접 입력";
       }).join("");
     }
 
+function getRaceMeta(race) {
+  const meta = {
+    T: { label: "테란", className: "race-t" },
+    Z: { label: "저그", className: "race-z" },
+    P: { label: "프로토스", className: "race-p" }
+  };
+  return meta[race] || null;
+}
+
+function renderRaceMemberGroups(members) {
+  const raceOrder = ["T", "Z", "P"];
+
+  return `
+    <div class="race-groups">
+      ${raceOrder.map(race => {
+        const meta = getRaceMeta(race);
+        const raceMembers = members.filter(member =>
+          String(member.race || "").trim().toUpperCase() === race
+        );
+
+        return `
+          <section class="race-group ${meta.className}">
+            <div class="race-group-header">
+              <div class="race-title">
+                <span class="race-code">${race}</span>
+                <span>${meta.label}</span>
+              </div>
+              <span class="race-count">${raceMembers.length}명</span>
+            </div>
+
+            <div class="race-member-grid">
+              ${raceMembers.length
+                ? raceMembers.map(member => {
+                    const alreadySelected = selectedStreamers.includes(member.id);
+                    return `
+                      <div
+                        class="member-item ${alreadySelected ? "is-selected" : ""}"
+                        onclick="addMemberFromList('${escapeUniversityJs(member.id)}')"
+                        title="${escapeUniversityHtml(member.name)} / ${escapeUniversityHtml(member.id)}"
+                      >
+                        <div>
+                          <div class="member-name">${escapeUniversityHtml(member.name)}</div>
+                          <div class="member-id">${escapeUniversityHtml(member.id)}</div>
+                        </div>
+                        <div class="add-badge">
+                          ${alreadySelected ? "선택됨" : "추가"}
+                        </div>
+                      </div>
+                    `;
+                  }).join("")
+                : `<div class="selected-empty" style="grid-column:1/-1;min-height:54px!important">해당 종족 인원이 없습니다.</div>`
+              }
+            </div>
+          </section>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
 function renderMemberList() {
   const list = document.getElementById("memberSearchList");
 
-  // 캄몬스타즈 멤버 영역에는 Firebase members 컬렉션만 표시
   const filtered = recommendedMembers.filter((member, index, arr) =>
     member &&
     member.id &&
@@ -1067,26 +1270,8 @@ function renderMemberList() {
     return;
   }
 
-  list.innerHTML = filtered.map(member => {
-    const alreadySelected = selectedStreamers.includes(member.id);
-
-    return `
-      <div
-        class="member-item ${alreadySelected ? "is-selected" : ""}"
-        onclick="addMemberFromList('${member.id}')"
-      >
-        <div>
-          <div class="member-name">${member.name}</div>
-          <div class="member-id">${member.id}</div>
-        </div>
-        <div class="add-badge">
-          ${alreadySelected ? "선택됨" : "추가"}
-        </div>
-      </div>
-    `;
-  }).join("");
+  list.innerHTML = renderRaceMemberGroups(filtered);
 }
-
 
 function renderUniversityOptions() {
   const menu = document.getElementById("universityDropdownMenu");
@@ -1237,24 +1422,7 @@ function renderUniversityMembers() {
     return;
   }
 
-  list.innerHTML = members.map(member => {
-    const alreadySelected = selectedStreamers.includes(member.id);
-
-    return `
-      <div
-        class="member-item ${alreadySelected ? "is-selected" : ""}"
-        onclick="addMemberFromList('${escapeUniversityJs(member.id)}')"
-      >
-        <div>
-          <div class="member-name">${escapeUniversityHtml(member.name)}</div>
-          <div class="member-id">${escapeUniversityHtml(member.id)}</div>
-        </div>
-        <div class="add-badge">
-          ${alreadySelected ? "선택됨" : "추가"}
-        </div>
-      </div>
-    `;
-  }).join("");
+  list.innerHTML = renderRaceMemberGroups(members);
 }
 
 function escapeUniversityHtml(value) {
@@ -1273,12 +1441,14 @@ function escapeUniversityJs(value) {
 }
 
     function addMemberFromList(id) {
-      if (selectedStreamers.includes(id)) {
-        alert("이미 선택된 방송입니다.");
-        return;
+      const selectedIndex = selectedStreamers.indexOf(id);
+
+      if (selectedIndex >= 0) {
+        selectedStreamers.splice(selectedIndex, 1);
+      } else {
+        addStreamerById(id);
       }
 
-      addStreamerById(id);
       renderSelectedList();
       renderMemberList();
       renderUniversityMembers();
