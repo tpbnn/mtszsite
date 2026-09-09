@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>멀티뷰 플레이어</title>
+  <title>캄몬스타즈-멀티뷰 플레이어</title>
 
   <style>
     * { box-sizing: border-box; }
@@ -236,6 +236,18 @@
     .control-btn.delete {
       background: rgba(239,68,68,.14);
       color: #ff9c9c;
+    }
+
+    .control-btn.refresh {
+      background: rgba(29,102,255,.14);
+      color: #9fc0ff;
+      border-color: rgba(92,145,255,.32);
+    }
+
+    .control-btn.refresh:hover {
+      background: rgba(29,102,255,.30);
+      color: #fff;
+      border-color: rgba(92,145,255,.72);
     }
 
     .settings-note {
@@ -814,6 +826,11 @@
                     data-id="${escapeAttr(item.id)}"
                     ${index === streamItems.length - 1 ? "disabled" : ""}>▼</button>
 
+            <button class="control-btn refresh"
+                    type="button"
+                    data-action="refresh"
+                    data-id="${escapeAttr(item.id)}">새로고침</button>
+
             <button class="control-btn delete"
                     type="button"
                     data-action="delete"
@@ -1119,6 +1136,18 @@
       renderSettings();
     }
 
+    function refreshStream(id) {
+      const item = streamItems.find(item => item.id === id);
+      if (!item || !item.iframe) return;
+
+      // 해당 방송 iframe만 새 URL로 다시 로드
+      // 전체 멀티뷰 및 다른 방송은 건드리지 않는다.
+      const refreshedUrl = new URL(makeEmbedUrl(item.id));
+      refreshedUrl.searchParams.set("_refresh", Date.now().toString());
+
+      item.iframe.src = refreshedUrl.toString();
+    }
+
     function deleteStream(id) {
       const index = streamItems.findIndex(item => item.id === id);
       if (index < 0) return;
@@ -1154,6 +1183,7 @@
 
       if (action === "up") moveStream(id, -1);
       if (action === "down") moveStream(id, 1);
+      if (action === "refresh") refreshStream(id);
       if (action === "delete") deleteStream(id);
     });
 
