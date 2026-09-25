@@ -1120,13 +1120,18 @@ async function rebuildPublicPlaylistCache(silent = false) {
       videos: publicVideos,
       updatedAt: now
     });
-    indexItems.push({
-      id: playlist.id,
-      name: playlist.name || "재생목록",
-      order: Number(playlist.order || 0),
-      videoCount: publicVideos.length,
-      hasNew: publicVideos.some(isNewVideo)
-    });
+    const newestCreatedAt = publicVideos
+  .map(video => video.createdAt)
+  .filter(Boolean)
+  .sort((a, b) => new Date(b) - new Date(a))[0] || "";
+
+indexItems.push({
+  id: playlist.id,
+  name: playlist.name || "재생목록",
+  order: Number(playlist.order || 0),
+  videoCount: publicVideos.length,
+  newestCreatedAt
+});
   }
 
   await setDoc(doc(db, "playlistPublicCache", "index"), {
@@ -2061,17 +2066,36 @@ function isNewVideo(video) {
   );
 }
 
-function playlistHasNewVideo(
-  playlistId
-) {
-  const cachedPlaylist = playlists.find(item => item.id === playlistId);
-  if (typeof cachedPlaylist?.hasNew === "boolean") {
-    return cachedPlaylist.hasNew;
+function playlistHasNewVideo(playlistId) {
+  const cachedPlaylist = playlists.find(
+    item => item.id === playlistId
+  );
+
+  if (cachedPlaylist?.newestCreatedAt) {
+    const created = new Date(
+      cachedPlaylist.newestCreatedAt
+    );
+
+    if (Number.isNaN(created.getTime())) {
+      return false;
+    }
+
+    const now = new Date();
+    const sevenDays =
+      7 * 24 * 60 * 60 * 1000;
+
+    const diff =
+      now.getTime() - created.getTime();
+
+    return (
+      diff >= 0 &&
+      diff < sevenDays
+    );
   }
+
   return videos.some(
     video =>
-      video.playlistId ===
-        playlistId &&
+      video.playlistId === playlistId &&
       video.public !== false &&
       isNewVideo(video)
   );
