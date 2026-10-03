@@ -851,9 +851,10 @@ async function runYoutubePlaylistAutoImport(
     }
 
     if(newItems.length){
-      await loadVideos();
-      renderManager();
-    }
+  await loadVideos();
+  await rebuildPublicPlaylistCache(true);
+  renderManager();
+}
 
     const checkedAt =
       new Date().toLocaleString("ko-KR");
